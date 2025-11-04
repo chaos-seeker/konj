@@ -8,7 +8,7 @@ import { SearchIcon, ShoppingBag, UserIcon } from "lucide-react";
 export function Header() {
   return (
     <header>
-      <div className="flex flex-col gap-4lg:flex-row bg-white py-4 rounded-b-xl container">
+      <div className="flex flex-col gap-4lg:flex-row bg-white py-4 border border-slate-200 rounded-b-xl container">
         <div className="flex gap-4 w-full items-center justify-between">
           <div className="flex-shrink-0">
             <Logo />

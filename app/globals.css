@@ -101,7 +101,7 @@
   --color-accent: #f7f7f7;
   --color-accent-foreground: #343434;
   --color-destructive: #ff2e3c;
-  --color-border: #C3C3C3;
+  --color-border: #c3c3c3;
   --color-input: #e5e5e5;
   --color-ring: #b4b4b4;
   --color-chart-1: #f59e0b;
@@ -184,4 +184,13 @@
 
 @utility container {
   @apply mx-auto px-4 max-w-7xl;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
