@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Vazirmatn } from "next/font/google";
 import "./globals.css";
+import LayouBaset from "@/containers/layout/base";
+import { Providers } from "./providers";
 
 const vazirmatn = Vazirmatn({
   variable: "--font-vazirmatn",
@@ -18,8 +20,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={vazirmatn.variable}>{children}</body>
+    <html lang="fs" dir="rtl">
+      <body className={vazirmatn.className}>{
+        <LayouBaset>
+          <Providers>
+            {children}
+          </Providers>
+        </LayouBaset>
+      }</body>
     </html>
   );
 }

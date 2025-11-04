@@ -5,7 +5,6 @@
 
 @theme inline {
   /* custom */
-  --text-zsp: 11px;
   --text-xsp: 13px;
   --text-smp: 15px;
   --text-mdp: 17px;
@@ -33,13 +32,6 @@
   --font-weight-body-desktop: 400;
   --font-size-caption-desktop: 12px;
   --font-weight-caption-desktop: 300;
-  --font-sans: var(--font-vazirmatn);
-  --color-background: oklch(1 0 0);
-  --color-foreground: oklch(0.145 0 0);
-  --color-card: oklch(1 0 0);
-  --color-card-foreground: oklch(0.145 0 0);
-  --color-popover: oklch(1 0 0);
-  --color-popover-foreground: oklch(0.145 0 0);
   --color-primary-50: #fbf8fb;
   --color-primary-100: #f5f0f7;
   --color-primary-200: #eadfef;
@@ -95,30 +87,36 @@
   --color-gray-950: #000000;
   --color-gray: #555555;
   --color-gray-foreground: #ffffff;
+  --color-background: #f5f6f8;
+  --color-foreground: #252525;
   /* shadcnui */
-  --color-secondary: oklch(0.97 0 0);
-  --color-secondary-foreground: oklch(0.205 0 0);
-  --color-muted: oklch(0.97 0 0);
-  --color-muted-foreground: oklch(0.556 0 0);
-  --color-accent: oklch(0.97 0 0);
-  --color-accent-foreground: oklch(0.205 0 0);
+  --color-card: #ffffff;
+  --color-card-foreground: #252525;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #252525;
+  --color-secondary: #f7f7f7;
+  --color-secondary-foreground: #343434;
+  --color-muted: #f7f7f7;
+  --color-muted-foreground: #8e8e8e;
+  --color-accent: #f7f7f7;
+  --color-accent-foreground: #343434;
   --color-destructive: #ff2e3c;
-  --color-border: oklch(0.922 0 0);
-  --color-input: oklch(0.922 0 0);
-  --color-ring: oklch(0.708 0 0);
-  --color-chart-1: oklch(0.646 0.222 41.116);
-  --color-chart-2: oklch(0.6 0.118 184.704);
-  --color-chart-3: oklch(0.398 0.07 227.392);
-  --color-chart-4: oklch(0.828 0.189 84.429);
-  --color-chart-5: oklch(0.769 0.188 70.08);
-  --color-sidebar: oklch(0.985 0 0);
-  --color-sidebar-foreground: oklch(0.145 0 0);
-  --color-sidebar-primary: oklch(0.205 0 0);
-  --color-sidebar-primary-foreground: oklch(0.985 0 0);
-  --color-sidebar-accent: oklch(0.97 0 0);
-  --color-sidebar-accent-foreground: oklch(0.205 0 0);
-  --color-sidebar-border: oklch(0.922 0 0);
-  --color-sidebar-ring: oklch(0.708 0 0);
+  --color-border: #C3C3C3;
+  --color-input: #e5e5e5;
+  --color-ring: #b4b4b4;
+  --color-chart-1: #f59e0b;
+  --color-chart-2: #10b981;
+  --color-chart-3: #3b82f6;
+  --color-chart-4: #f97316;
+  --color-chart-5: #8b5cf6;
+  --color-sidebar: #fafafa;
+  --color-sidebar-foreground: #252525;
+  --color-sidebar-primary: #343434;
+  --color-sidebar-primary-foreground: #fafafa;
+  --color-sidebar-accent: #f7f7f7;
+  --color-sidebar-accent-foreground: #343434;
+  --color-sidebar-border: #ebebeb;
+  --color-sidebar-ring: #b4b4b4;
   --radius-sm: calc(0.625rem - 4px);
   --radius-md: calc(0.625rem - 2px);
   --radius-lg: 0.625rem;
@@ -130,9 +128,16 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
-    font-size: var(--font-size-body-mobile);
-    font-weight: var(--font-weight-body-mobile);
+    @apply bg-background text-foreground  flex min-h-dvh flex-col overflow-x-hidden text-[var(--font-size-body-mobile)] font-[var(--font-weight-body-mobile)];
+  }
+  input {
+    @apply outline-none;
+  }
+  main {
+    @apply h-full flex-1 py-6 flex flex-col gap-8;
+  }
+  button {
+    @apply cursor-pointer;
   }
   main {
     @apply h-full flex-1 py-6 flex flex-col gap-8;
@@ -141,49 +146,38 @@
     @apply cursor-pointer;
   }
   h1 {
-    font-size: var(--font-size-h1-mobile);
-    font-weight: var(--font-weight-h1-mobile);
+    @apply text-[var(--font-size-h1-mobile)] font-[var(--font-weight-h1-mobile)];
   }
   h2 {
-    font-size: var(--font-size-h2-mobile);
-    font-weight: var(--font-weight-h2-mobile);
+    @apply text-[var(--font-size-h2-mobile)] font-[var(--font-weight-h2-mobile)];
   }
   .title {
-    font-size: var(--font-size-title-mobile);
-    font-weight: var(--font-weight-title-mobile);
+    @apply text-[var(--font-size-title-mobile)] font-[var(--font-weight-title-mobile)];
   }
   .subtitle {
-    font-size: var(--font-size-subtitle-mobile);
-    font-weight: var(--font-weight-subtitle-mobile);
+    @apply text-[var(--font-size-subtitle-mobile)] font-[var(--font-weight-subtitle-mobile)];
   }
   .caption {
-    font-size: var(--font-size-caption-mobile);
-    font-weight: var(--font-weight-caption-mobile);
+    @apply text-[var(--font-size-caption-mobile)] font-[var(--font-weight-caption-mobile)];
   }
   @media (min-width: 1024px) {
     h1 {
-      font-size: var(--font-size-h1-desktop);
-      font-weight: var(--font-weight-h1-desktop);
+      @apply text-[var(--font-size-h1-desktop)] font-[var(--font-weight-h1-desktop)];
     }
     h2 {
-      font-size: var(--font-size-h2-desktop);
-      font-weight: var(--font-weight-h2-desktop);
+      @apply text-[var(--font-size-h2-desktop)] font-[var(--font-weight-h2-desktop)];
     }
     .title {
-      font-size: var(--font-size-title-desktop);
-      font-weight: var(--font-weight-title-desktop);
+      @apply text-[var(--font-size-title-desktop)] font-[var(--font-weight-title-desktop)];
     }
     .subtitle {
-      font-size: var(--font-size-subtitle-desktop);
-      font-weight: var(--font-weight-subtitle-desktop);
+      @apply text-[var(--font-size-subtitle-desktop)] font-[var(--font-weight-subtitle-desktop)];
     }
     body {
-      font-size: var(--font-size-body-desktop);
-      font-weight: var(--font-weight-body-desktop);
+      @apply text-[var(--font-size-body-desktop)] font-[var(--font-weight-body-desktop)];
     }
     .caption {
-      font-size: var(--font-size-caption-desktop);
-      font-weight: var(--font-weight-caption-desktop);
+      @apply text-[var(--font-size-caption-desktop)] font-[var(--font-weight-caption-desktop)];
     }
   }
 }
