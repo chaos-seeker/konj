@@ -8,7 +8,6 @@ import { useKillua } from "killua";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/ui/dialog";
@@ -68,6 +67,9 @@ export function ModalLogin({
           username: result.data.username,
           fullName: result.data.fullName,
         });
+        
+        // Set token in cookie for middleware
+        document.cookie = `auth-token=${result.data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
       }
 
       toast.success(result.message || "ورود با موفقیت انجام شد");
@@ -121,7 +123,7 @@ export function ModalLogin({
                 </FormItem>
               )}
             />
-            <DialogFooter className="flex-col gap-2">
+            <div className="flex flex-col gap-2 mt-6">
               <Button
                 type="submit"
                 disabled={!form.formState.isValid || isSubmitting}
@@ -141,7 +143,7 @@ export function ModalLogin({
                   حساب کاربری ندارید؟ ثبت‌نام کنید
                 </button>
               )}
-            </DialogFooter>
+            </div>
           </form>
         </Form>
       </DialogContent>

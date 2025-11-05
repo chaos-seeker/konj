@@ -4,6 +4,7 @@ import { useKillua } from "killua";
 import { cartSlice } from "@/slices/cart";
 import { CartItems } from "@/containers/routes/cart/cart-items";
 import { CartSummary } from "@/containers/routes/cart/cart-summary";
+import { ViewportAnimation } from "@/components/viewport-animation";
 import Image from "next/image";
 
 export default function CartPage() {
@@ -13,7 +14,7 @@ export default function CartPage() {
 
   if (isEmpty) {
     return (
-      <>
+      <ViewportAnimation>
         <div className="container">
           <div className="items-center flex flex-col gap-6 justify-center py-10">
             <Image
@@ -25,22 +26,26 @@ export default function CartPage() {
             <p className="text-muted-foreground">سبد خرید خالی است!</p>
           </div>
         </div>
-      </>
+      </ViewportAnimation>
     );
   }
 
   return (
-    <>
+    <ViewportAnimation>
       <div className="container">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <CartItems />
-          </div>
-          <div className="lg:col-span-1">
-            <CartSummary />
-          </div>
+          <ViewportAnimation>
+            <div className="lg:col-span-2">
+              <CartItems />
+            </div>
+          </ViewportAnimation>
+          <ViewportAnimation>
+            <div className="lg:col-span-1">
+              <CartSummary />
+            </div>
+          </ViewportAnimation>
         </div>
       </div>
-    </>
+    </ViewportAnimation>
   );
 }

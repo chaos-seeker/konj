@@ -7,7 +7,6 @@ import { z } from "zod";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/ui/dialog";
@@ -132,7 +131,7 @@ export function ModalRegister({
                 </FormItem>
               )}
             />
-            <DialogFooter className="flex-col gap-2">
+            <div className="flex flex-col gap-2 mt-6">
               <Button
                 type="submit"
                 disabled={!form.formState.isValid || isSubmitting}
@@ -152,7 +151,7 @@ export function ModalRegister({
                   قبلاً ثبت‌نام کرده‌اید؟ وارد شوید
                 </button>
               )}
-            </DialogFooter>
+            </div>
           </form>
         </Form>
       </DialogContent>

@@ -66,7 +66,7 @@ export function Box({ book }: IBoxProps) {
                       <span key={a.slug}>
                         {" "}
                         <Link
-                          href={`/authors/${a.slug}`}
+                          href={`/explore?authors=${encodeURIComponent(a.slug)}`}
                           className="text-primary hover:underline"
                         >
                           {a.fullName}
@@ -87,7 +87,7 @@ export function Box({ book }: IBoxProps) {
                       <span key={t.slug}>
                         {" "}
                         <Link
-                          href={`/translators/${t.slug}`}
+                          href={`/explore?translators=${encodeURIComponent(t.slug)}`}
                           className="text-primary hover:underline"
                         >
                           {t.fullName}
@@ -104,7 +104,7 @@ export function Box({ book }: IBoxProps) {
                 ناشر:{" "}
                 {book.publisher && book.publisher.name ? (
                   <Link
-                    href={`/publishers/${book.publisher.slug}`}
+                    href={`/explore?publishers=${encodeURIComponent(book.publisher.slug)}`}
                     className="text-primary hover:underline"
                   >
                     {book.publisher.name}
@@ -117,7 +117,7 @@ export function Box({ book }: IBoxProps) {
                 دسته بندی:{" "}
                 {book.category ? (
                   <Link
-                    href={`/categories/${book.category.slug}`}
+                    href={`/explore?categories=${encodeURIComponent(book.category.slug)}`}
                     className="text-primary hover:underline"
                   >
                     {book.category.name}
