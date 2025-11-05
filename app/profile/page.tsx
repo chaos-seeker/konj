@@ -24,11 +24,11 @@ export default function ProfilePage() {
     <ViewportAnimation>
       <div className="container">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <ViewportAnimation className="lg:col-span-1 lg:sticky lg:top-6 lg:self-start lg:order-2">
+          <ViewportAnimation className="lg:col-span-1 lg:sticky lg:top-6 lg:self-start">
             <ProfileSidebar />
           </ViewportAnimation>
-          <ViewportAnimation className="lg:col-span-3 lg:order-1 w-full">
-              <UserOrdersList fullName={fullName} />
+          <ViewportAnimation className="lg:col-span-3 w-full">
+            <UserOrdersList fullName={fullName} />
           </ViewportAnimation>
         </div>
       </div>
