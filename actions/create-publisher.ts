@@ -33,7 +33,7 @@ export async function createPublisher(formData: FormData) {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    await redis.set(`publisher:${slug}`, JSON.stringify(publisher));
+    await redis.set(`publisher:${slug}`, publisher);
     await redis.zadd("publishers:list", {
       score: Date.now(),
       member: slug,

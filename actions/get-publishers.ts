@@ -8,7 +8,6 @@ export async function getPublishers() {
       (await redis.zrange<string[]>("publishers:list", 0, -1, {
         rev: true,
       })) || [];
-
     if (!slugs || slugs.length === 0) {
       return {
         success: true,
@@ -17,9 +16,12 @@ export async function getPublishers() {
     }
     const publishers = await Promise.all(
       slugs.map(async (slug) => {
-        const publisherData = await redis.get<string>(`publisher:${slug}`);
+        const publisherData = await redis.get(`publisher:${slug}`);
         if (publisherData) {
-          return JSON.parse(publisherData);
+          if (typeof publisherData === "string") {
+            return JSON.parse(publisherData);
+          }
+          return publisherData;
         }
         return null;
       })

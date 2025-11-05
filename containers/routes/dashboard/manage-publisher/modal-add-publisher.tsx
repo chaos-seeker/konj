@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
@@ -59,6 +60,7 @@ export function ModalAddPublisher({
   onOpenChange,
 }: ModalAddPublisherProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
 
   const form = useForm<PublisherFormValues>({
     resolver: zodResolver(publisherSchema),
@@ -82,6 +84,9 @@ export function ModalAddPublisher({
       if (!result.success) {
         throw new Error(result.error || "خطا در افزودن ناشر");
       }
+
+      // Invalidate and refetch publishers query
+      await queryClient.invalidateQueries({ queryKey: ["publishers"] });
 
       toast.success(result.message || "ناشر با موفقیت افزوده شد");
       form.reset();
