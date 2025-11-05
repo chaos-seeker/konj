@@ -206,7 +206,6 @@ export function EditBookForm({ slug }: EditBookFormProps) {
         };
         reader.readAsDataURL(data.image);
       } else {
-        // Keep existing image if no new image is uploaded
         if (book?.image) {
           formData.append("image", book.image);
         }

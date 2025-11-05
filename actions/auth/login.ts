@@ -14,7 +14,6 @@ export async function login(data: { username: string; password: string }) {
       } as const;
     }
 
-    // Normalize username to lowercase
     username = username.toLowerCase().trim();
     password = password.trim();
 

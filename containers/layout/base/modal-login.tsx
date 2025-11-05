@@ -68,7 +68,6 @@ export function ModalLogin({
           fullName: result.data.fullName,
         });
         
-        // Set token in cookie for middleware
         document.cookie = `auth-token=${result.data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
       }
 

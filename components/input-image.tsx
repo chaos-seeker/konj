@@ -156,7 +156,6 @@ export function InputImage({
         accept={accept}
         className="hidden"
         onChange={handleImageChange}
-        // Do not use native required on a hidden input; validation handled by form schema
       />
       {displayError && (
         <p className="text-sm font-medium text-destructive">{displayError}</p>

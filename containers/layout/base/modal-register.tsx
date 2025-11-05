@@ -61,7 +61,6 @@ export function ModalRegister({
       toast.success(result.message || "ثبت‌نام با موفقیت انجام شد");
       form.reset();
       onOpenChange(false);
-      // Switch to login modal after successful registration
       if (onSwitchToLogin) {
         setTimeout(() => {
           onSwitchToLogin();

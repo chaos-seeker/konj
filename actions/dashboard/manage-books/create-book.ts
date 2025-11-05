@@ -15,11 +15,11 @@ export async function createBook(formData: FormData) {
     const description = formData.get("description") as string;
     const categorySlug = formData.get("categorySlug") as string;
     const publisherSlug = formData.get("publisherSlug") as string;
-    const authorSlugs = formData.get("authorSlugs") as string; // JSON array
-    const translatorSlugs = formData.get("translatorSlugs") as string; // JSON array
+    const authorSlugs = formData.get("authorSlugs") as string;
+    const translatorSlugs = formData.get("translatorSlugs") as string;
     const pages = formData.get("pages") as string;
     const publicationYear = formData.get("publicationYear") as string;
-    const image = formData.get("image") as string | null; // base64
+    const image = formData.get("image") as string | null;
 
     if (
       !name ||
@@ -39,7 +39,6 @@ export async function createBook(formData: FormData) {
       };
     }
 
-    // Check if slug already exists
     const existingBook = await redis.get(`book:${slug}`);
     if (existingBook) {
       return {
@@ -48,7 +47,6 @@ export async function createBook(formData: FormData) {
       };
     }
 
-    // Verify category exists
     const category = await redis.get(`category:${categorySlug}`);
     if (!category) {
       return {
@@ -57,7 +55,6 @@ export async function createBook(formData: FormData) {
       };
     }
 
-    // Verify publisher exists
     const publisher = await redis.get(`publisher:${publisherSlug}`);
     if (!publisher) {
       return {
@@ -66,7 +63,6 @@ export async function createBook(formData: FormData) {
       };
     }
 
-    // Verify authors exist
     const authorSlugArray = JSON.parse(authorSlugs) as string[];
     const authors = await Promise.all(
       authorSlugArray.map(async (authorSlug) => {
@@ -81,7 +77,6 @@ export async function createBook(formData: FormData) {
       };
     }
 
-    // Verify translators exist
     const translatorSlugArray = JSON.parse(translatorSlugs) as string[];
     const translators = await Promise.all(
       translatorSlugArray.map(async (translatorSlug) => {
@@ -119,16 +114,13 @@ export async function createBook(formData: FormData) {
       comments: [],
     };
 
-    // Store book by slug
     await redis.set(`book:${slug}`, book);
 
-    // Add to books list (sorted set by timestamp)
     await redis.zadd("books:list", {
       score: Date.now(),
       member: slug,
     });
 
-    // Revalidate listing and add page
     revalidatePath("/dashboard/manage-books");
     revalidatePath("/dashboard/manage-books/add");
 

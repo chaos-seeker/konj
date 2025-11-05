@@ -18,12 +18,10 @@ export async function register(data: {
       } as const;
     }
 
-    // Normalize username to lowercase
     username = username.toLowerCase().trim();
     fullName = fullName.trim();
     password = password.trim();
 
-    // Check if username already exists
     const existingUser = await redis.get(`user:${username}`);
     if (existingUser) {
       return {

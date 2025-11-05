@@ -21,7 +21,6 @@ export function ProfileSidebar() {
 
   return (
     <aside className="rounded-xl border bg-white border-slate-200 p-6">
-      {/* User Info */}
       <div className="flex items-center gap-4 mb-6 pb-6 border-b">
         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
           <UserIcon className="w-8 h-8 text-primary" />
@@ -32,7 +31,6 @@ export function ProfileSidebar() {
         </div>
       </div>
 
-      {/* Menu */}
       <nav className="flex flex-col gap-2">
         <Button
           variant="default"
