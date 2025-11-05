@@ -24,7 +24,7 @@ export const ProductCart = (props: ProductCartProps) => {
   return (
     <Link href={`/product/${props.id}`} className="block group">
       <div className="relative bg-white rounded-lg overflow-hidden border hover:border-primary transition-colors">
-        <div className="relative bg-gray-20 w-full aspect-[3/4] overflow-hidden">
+        <div className="relative bg-gray-20 w-full aspect-3/4 overflow-hidden">
           <Image
             src={props.image}
             alt={props.title}
@@ -41,13 +41,13 @@ export const ProductCart = (props: ProductCartProps) => {
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4 fill-warning text-warning" />
               <span className="text-xs pt-1 text-muted-foreground">
-                ({props.rating.toFixed(1)})
+                {props.rating.toFixed(1)}
               </span>
             </div>
             <div className="flex items-center gap-1">
               <MessageCircle className="w-4 h-4 fill-primary text-primary" />
               <span className="text-xs pt-1 text-muted-foreground">
-                ({props.commments})
+                {props.commments}
               </span>
             </div>
           </div>

@@ -82,7 +82,7 @@ export const Lowest = () => {
             {data.map((item) => (
               <div
                 key={item.id}
-                className="min-w-[180px] max-w-[180px] snap-start flex-shrink-0"
+                className="min-w-[200px] max-w-[200px] snap-start shrink-0"
               >
                 <ProductCart {...item} />
               </div>
