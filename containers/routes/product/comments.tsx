@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import type { TBook } from "@/types/book";
+import type { TComment } from "@/types/comment";
 import { Star, User, ChevronDown } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { useQuery } from "@tanstack/react-query";
+import { getBookComments } from "@/actions/comments/get-book-comments";
 
 interface CommentsProps {
   book: TBook;
@@ -11,7 +14,13 @@ interface CommentsProps {
 
 export function Comments({ book }: CommentsProps) {
   const [showAll, setShowAll] = useState(false);
-  const comments = book.comments || [];
+  const { data: comments = [] } = useQuery<TComment[]>({
+    queryKey: ["book-comments", book.slug],
+    queryFn: async () => {
+      const result = await getBookComments(book.slug);
+      return result.success ? result.data : [];
+    },
+  });
   const displayedComments = showAll ? comments : comments.slice(0, 2);
 
   return (
@@ -21,8 +30,8 @@ export function Comments({ book }: CommentsProps) {
           <h2 className="text-mdp font-bold mb-4">نقد ها و امتیازات</h2>
           <div className="flex flex-col gap-4">
             {displayedComments.length > 0 ? (
-              displayedComments.map((comment, idx) => (
-                <div key={idx} className="flex gap-3">
+              displayedComments.map((comment) => (
+                <div key={comment.id} className="flex gap-3">
                   <div className="shrink-0">
                     <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
                       <User className="size-5 text-muted-foreground" />
@@ -49,7 +58,8 @@ export function Comments({ book }: CommentsProps) {
                     <p className="text-sm text-muted-foreground">
                       {comment.text}
                     </p>
-                    {idx < displayedComments.length - 1 && (
+                    {displayedComments.indexOf(comment) <
+                      displayedComments.length - 1 && (
                       <hr className="mt-4 border-t" />
                     )}
                   </div>

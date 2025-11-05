@@ -10,6 +10,12 @@ import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/ui/form";
+import { useKillua } from "killua";
+import { userSlice } from "@/slices/user";
+import { ModalLogin } from "@/containers/layout/base/modal-login";
+import toast from "react-hot-toast";
+import { addComment } from "@/actions/comments/add-comment";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface AddNewCommentProps {
   book: TBook;
@@ -27,6 +33,11 @@ const commentSchema = z.object({
 type CommentFormValues = z.infer<typeof commentSchema>;
 
 export function AddNewComment({ book }: AddNewCommentProps) {
+  const user = useKillua(userSlice);
+  const isAuthenticated = user.selectors.isAuthenticated();
+  const [loginOpen, setLoginOpen] = useState(false);
+  const queryClient = useQueryClient();
+
   const form = useForm<CommentFormValues>({
     resolver: zodResolver(commentSchema),
     mode: "onChange",
@@ -39,9 +50,44 @@ export function AddNewComment({ book }: AddNewCommentProps) {
   const maxLength = 500;
 
   const onSubmit = async (values: CommentFormValues) => {
-    // TODO: send to backend with book.slug or book.id
-    console.log({ slug: book.slug, ...values });
-    form.reset({ text: "", rating: 0 });
+    if (!isAuthenticated) {
+      toast.error("باید برای نظر گذاشتن ابتدا وارد شوید!");
+      setLoginOpen(true);
+      return;
+    }
+
+    const token = user.selectors.getToken();
+    const fullName = user.selectors.getFullName();
+
+    if (!token || !fullName) {
+      toast.error("لطفاً دوباره وارد شوید");
+      setLoginOpen(true);
+      return;
+    }
+
+    try {
+      const result = await addComment({
+        bookSlug: book.slug,
+        fullName,
+        text: values.text,
+        rating: values.rating,
+        token,
+      });
+
+      if (!result.success) {
+        toast.error(result.error || "خطا در ثبت نظر");
+        return;
+      }
+
+      toast.success(result.message || "نظر شما با موفقیت ثبت شد");
+      form.reset({ text: "", rating: 0 });
+      // Invalidate comments cache to refresh the list after admin approval
+      await queryClient.invalidateQueries({
+        queryKey: ["book-comments", book.slug],
+      });
+    } catch {
+      toast.error("خطا در ثبت نظر");
+    }
   };
 
   return (
@@ -63,7 +109,6 @@ export function AddNewComment({ book }: AddNewCommentProps) {
                       <div className="relative">
                         <Textarea
                           {...field}
-                          placeholder="کتاب خوبی است"
                           className="w-full min-h-[120px] p-3 resize-none"
                           maxLength={maxLength}
                         />
@@ -130,6 +175,7 @@ export function AddNewComment({ book }: AddNewCommentProps) {
               </Button>
             </form>
           </Form>
+          <ModalLogin open={loginOpen} onOpenChange={setLoginOpen} />
         </div>
       </div>
     </section>
