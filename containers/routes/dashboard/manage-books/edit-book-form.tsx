@@ -31,6 +31,7 @@ import { getBook } from "@/actions/dashboard/manage-books/get-book";
 import { getCategories } from "@/actions/dashboard/manage-categories/get-categories";
 import { getPublishers } from "@/actions/dashboard/manage-publishers/get-publishers";
 import { getAuthors } from "@/actions/dashboard/manage-authors/get-authors";
+import { getBooks } from "@/actions/dashboard/manage-books/get-books";
 import { getTranslators } from "@/actions/dashboard/manage-translators/get-translators";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
@@ -83,17 +84,38 @@ export function EditBookForm({ slug }: EditBookFormProps) {
     },
   });
 
-  const { data: book, isLoading: isLoadingBook } = useQuery({
+  const {
+    data: book,
+    isLoading: isLoadingBook,
+    isError,
+  } = useQuery({
     queryKey: ["book", slug],
     queryFn: async () => {
-      const result = await getBook(slug);
-      if (!result.success) {
-        toast.error(result.error!);
-        return null;
+      const raw = decodeURIComponent(slug || "").trim();
+      const lower = raw.toLowerCase();
+
+      const direct = await getBook(raw);
+      if (direct.success && direct.data) return direct.data;
+
+      if (lower !== raw) {
+        const directLower = await getBook(lower);
+        if (directLower.success && directLower.data) return directLower.data;
       }
-      return result.data;
+
+      const all = await getBooks();
+      if (all.success && Array.isArray(all.data)) {
+        const found = all.data.find((b) => {
+          const bs = String(b.slug || "").trim();
+          return bs === raw || bs.toLowerCase() === lower;
+        });
+        if (found) return found;
+      }
+      throw new Error("NOT_FOUND");
     },
     enabled: !!slug,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
+    retry: 0,
   });
 
   const { data: categories } = useQuery({
@@ -178,6 +200,7 @@ export function EditBookForm({ slug }: EditBookFormProps) {
             throw new Error(result.error || "خطا در به‌روزرسانی کتاب");
           }
           toast.success(result.message || "کتاب با موفقیت به‌روزرسانی شد");
+          await queryClient.invalidateQueries({ queryKey: ["book", slug] });
           await queryClient.invalidateQueries({ queryKey: ["books"] });
           router.push("/dashboard/manage-books");
         };
@@ -192,6 +215,7 @@ export function EditBookForm({ slug }: EditBookFormProps) {
           throw new Error(result.error || "خطا در به‌روزرسانی کتاب");
         }
         toast.success(result.message || "کتاب با موفقیت به‌روزرسانی شد");
+        await queryClient.invalidateQueries({ queryKey: ["book", slug] });
         await queryClient.invalidateQueries({ queryKey: ["books"] });
         router.push("/dashboard/manage-books");
       }
@@ -212,7 +236,7 @@ export function EditBookForm({ slug }: EditBookFormProps) {
     );
   }
 
-  if (!book) {
+  if (isError || !book) {
     return (
       <div className="items-center flex flex-col gap-6 justify-center py-10">
         <Image
@@ -413,7 +437,7 @@ export function EditBookForm({ slug }: EditBookFormProps) {
                       }))}
                       placeholder="انتخاب نویسندگان"
                       emptyIndicator={
-                        <p className="text-center text-lg leading-10 text-gray-600  text-smp">
+                        <p className="text-center text-lg leading-10 text-gray-600 text-smp">
                           نویسنده‌ای یافت نشد.
                         </p>
                       }
@@ -449,7 +473,7 @@ export function EditBookForm({ slug }: EditBookFormProps) {
                       }))}
                       placeholder="انتخاب مترجمین"
                       emptyIndicator={
-                        <p className="text-center text-lg leading-10 text-gray-600  text-smp">
+                        <p className="text-center text-lg leading-10 text-gray-600 text-smp">
                           مترجمی یافت نشد.
                         </p>
                       }

@@ -350,7 +350,7 @@ export function AddBookForm() {
                       }))}
                       placeholder="انتخاب نویسندگان"
                       emptyIndicator={
-                        <p className="text-center text-lg leading-10 text-gray-600  text-smp">
+                        <p className="text-center text-lg leading-10 text-gray-600 text-smp">
                           نویسنده‌ای یافت نشد.
                         </p>
                       }
@@ -386,7 +386,7 @@ export function AddBookForm() {
                       }))}
                       placeholder="انتخاب مترجمین"
                       emptyIndicator={
-                        <p className="text-center text-lg leading-10 text-gray-600  text-smp">
+                        <p className="text-center text-lg leading-10 text-gray-600 text-smp">
                           مترجمی یافت نشد.
                         </p>
                       }
