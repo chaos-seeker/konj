@@ -115,15 +115,15 @@ export const Tabs = () => {
     },
     {
       label: "مدیریت سفارش ها",
-      href: "/dashboard/orders",
+      href: "/dashboard/manage-orders",
     },
     {
       label: "مدیریت کاربران",
-      href: "/dashboard/users",
+      href: "/dashboard/manage-users",
     },
     {
       label: "مدیریت نظرات",
-      href: "/dashboard/comments",
+      href: "/dashboard/manage-comments",
     },
   ];
 

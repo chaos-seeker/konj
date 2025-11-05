@@ -1,6 +1,7 @@
 export type TComment = {
   id: string;
   bookSlug: string;
+  bookName?: string;
   fullName: string;
   text: string;
   rating: number;

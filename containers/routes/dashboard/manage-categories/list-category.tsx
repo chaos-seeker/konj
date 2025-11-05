@@ -18,6 +18,7 @@ import { toast } from "react-hot-toast";
 import { Button } from "@/ui/button";
 import { ModalEditCategory } from "./modal-edit-category";
 import type { TCategory } from "@/types/category";
+import { formatDate } from "@/utils/format-date";
 
 export function ListCategory() {
   const queryClient = useQueryClient();
@@ -107,9 +108,7 @@ export function ListCategory() {
                       {category.slug}
                     </code>
                   </TableCell>
-                  <TableCell>
-                    {new Date(category.updatedAt).toLocaleDateString("fa-IR")}
-                  </TableCell>
+                  <TableCell>{formatDate(category.updatedAt)}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Button

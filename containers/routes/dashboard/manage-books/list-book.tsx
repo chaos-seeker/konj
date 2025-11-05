@@ -17,6 +17,7 @@ import { toast } from "react-hot-toast";
 import { Button } from "@/ui/button";
 import Link from "next/link";
 import type { TBook } from "@/types/book";
+import { formatDate } from "@/utils/format-date";
 
 export function ListBook() {
   const queryClient = useQueryClient();
@@ -125,9 +126,7 @@ export function ListBook() {
                       <span>{book.price.toLocaleString()} تومان</span>
                     )}
                   </TableCell>
-                  <TableCell>
-                    {new Date(book.updatedAt).toLocaleDateString("fa-IR")}
-                  </TableCell>
+                  <TableCell>{formatDate(book.updatedAt)}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Button variant="ghost" size="icon" asChild>

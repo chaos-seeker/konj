@@ -18,6 +18,7 @@ import { toast } from "react-hot-toast";
 import { Button } from "@/ui/button";
 import { ModalEditTranslator } from "./modal-edit-translator";
 import type { TTranslator } from "@/types/translator";
+import { formatDate } from "@/utils/format-date";
 
 export function ListTranslator() {
   const queryClient = useQueryClient();
@@ -107,9 +108,7 @@ export function ListTranslator() {
                       {translator.slug}
                     </code>
                   </TableCell>
-                  <TableCell>
-                    {new Date(translator.updatedAt).toLocaleDateString("fa-IR")}
-                  </TableCell>
+                  <TableCell>{formatDate(translator.updatedAt)}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Button

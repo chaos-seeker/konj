@@ -18,6 +18,7 @@ import { toast } from "react-hot-toast";
 import { Button } from "@/ui/button";
 import { ModalEditAuthor } from "./modal-edit-author";
 import type { TAuthor } from "@/types/author";
+import { formatDate } from "@/utils/format-date";
 
 export function ListAuthor() {
   const queryClient = useQueryClient();
@@ -109,9 +110,7 @@ export function ListAuthor() {
                       {author.slug}
                     </code>
                   </TableCell>
-                  <TableCell>
-                    {new Date(author.updatedAt).toLocaleDateString("fa-IR")}
-                  </TableCell>
+                  <TableCell>{formatDate(author.updatedAt)}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Button

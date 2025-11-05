@@ -18,6 +18,7 @@ import { toast } from "react-hot-toast";
 import { Button } from "@/ui/button";
 import { ModalEditPublisher } from "./modal-edit-publisher";
 import type { TPublisher } from "@/types/publisher";
+import { formatDate } from "@/utils/format-date";
 
 export function ListPublisher() {
   const queryClient = useQueryClient();
@@ -107,9 +108,7 @@ export function ListPublisher() {
                       {publisher.slug}
                     </code>
                   </TableCell>
-                  <TableCell>
-                    {new Date(publisher.updatedAt).toLocaleDateString("fa-IR")}
-                  </TableCell>
+                  <TableCell>{formatDate(publisher.updatedAt)}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Button
