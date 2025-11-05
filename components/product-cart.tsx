@@ -60,7 +60,7 @@ export const ProductCart = (props: ProductCartProps) => {
           />
         </div>
         <div className="px-4 pt-4 pb-2 text-right">
-          <h3 className="font-bold truncate text-foreground leading-tight group-hover:text-primary transition-colors">
+          <h3 className="font-medium text-smp truncate text-foreground leading-tight group-hover:text-primary transition-colors">
             {normalized.title}
           </h3>
           <p className="text-sm text-muted-foreground">{normalized.author}</p>

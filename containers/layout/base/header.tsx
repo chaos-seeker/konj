@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { SearchIcon, ShoppingBag, UserIcon } from "lucide-react";
 import { useKillua } from "killua";
 import { cartSlice } from "@/slices/cart";
@@ -114,16 +115,34 @@ const User = () => {
 };
 
 const Search = () => {
+  const router = useRouter();
+  const [searchText, setSearchText] = useState("");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmedText = searchText.trim();
+    if (trimmedText) {
+      router.push(`/explore?text=${encodeURIComponent(trimmedText)}`);
+    } else {
+      router.push("/explore");
+    }
+  };
+
   return (
-    <div className="border focus-within:border-primary focus-visible:ring-ring/50 lg:p-2 max-w-[200px] sm:max-w-[300px] flex items-center gap-2 justify-between focus-visible:ring-[3px] rounded-md px-2 py-1 w-full shrink-0">
+    <form
+      onSubmit={handleSearch}
+      className="border focus-within:border-primary focus-visible:ring-ring/50 lg:p-2 max-w-[200px] sm:max-w-[300px] flex items-center gap-2 justify-between focus-visible:ring-[3px] rounded-md px-2 py-1 w-full shrink-0"
+    >
       <input
         type="text"
         placeholder="جستجو کنید ..."
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
         className="flex-1 outline-none w-full"
       />
-      <button>
+      <button type="submit">
         <SearchIcon className="size-4 lg:size-5 hover:text-primary transition-colors text-muted-foreground shrink-0" />
       </button>
-    </div>
+    </form>
   );
 };

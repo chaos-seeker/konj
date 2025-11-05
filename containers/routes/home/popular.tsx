@@ -15,7 +15,7 @@ export const Popular = async () => {
       <div className="container flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h2 className="font-medium">پر فروش ترین کتاب ها</h2>
-          <Link href="/books" className="flex items-center gap-2 group">
+          <Link href="/explore" className="flex items-center gap-2 group">
             <span className="group-hover:text-primary transition-colors">
               مشاهده همه
             </span>

@@ -21,7 +21,7 @@ export const Lowest = async () => {
       <div className="container flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h2 className="font-medium">ارزان ترین کتاب ها</h2>
-          <Link href="/books" className="flex items_center gap-2 group">
+          <Link href="/explore" className="flex items_center gap-2 group">
             <span className="group-hover:text-primary transition-colors">
               مشاهده همه
             </span>

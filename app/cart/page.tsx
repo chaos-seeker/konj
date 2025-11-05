@@ -14,7 +14,7 @@ export default function CartPage() {
   if (isEmpty) {
     return (
       <>
-        <div className="container py-6">
+        <div className="container">
           <div className="items-center flex flex-col gap-6 justify-center py-10">
             <Image
               src="/images/global/not-found.png"

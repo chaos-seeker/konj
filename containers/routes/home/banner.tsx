@@ -10,7 +10,7 @@ export const Banner = (props: BannerProps) => {
   return (
     <div className="container">
       <div className="relative w-full aspect-16/14 md:aspect-21/7 overflow-hidden rounded-lg">
-        <Link href="/">
+        <Link href="/explore">
           <Image
             src={props.imageMobile}
             alt="banner"
