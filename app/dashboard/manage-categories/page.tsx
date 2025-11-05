@@ -3,9 +3,7 @@ import { ListCategory } from "@/containers/routes/dashboard/manage-categories/li
 export default function CategoriesPage() {
   return (
     <>
-      <div className="container">
-        <ListCategory />
-      </div>
+      <ListCategory />
     </>
   );
 }

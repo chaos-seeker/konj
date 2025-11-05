@@ -22,7 +22,11 @@ export function Header() {
       <div className="flex flex-col gap-4 lg:flex-row bg-white py-4 border border-slate-200 container">
         <div className="flex gap-4 w-full items-center justify-between">
           <Logo />
-          {pathname.includes("/books") && <Button>افزودن کتاب</Button>}
+          {pathname.includes("/manage-books") && (
+            <Button asChild>
+              <Link href="/dashboard/manage-books/add">افزودن کتاب</Link>
+            </Button>
+          )}
           {pathname.includes("/manage-categories") && (
             <Button onClick={() => setIsCategoryModalOpen(true)}>
               افزودن دسته بندی
@@ -91,7 +95,7 @@ export const Tabs = () => {
   const data = [
     {
       label: "مدیریت کتاب ها",
-      href: "/dashboard/books",
+      href: "/dashboard/manage-books",
     },
     {
       label: "مدیریت دسته بندی ها",

@@ -16,8 +16,6 @@ interface InputImageProps {
   className?: string;
   accept?: string;
   maxSize?: number;
-  aspectRatio?: number;
-  required?: boolean;
   id?: string;
 }
 
@@ -30,8 +28,6 @@ export function InputImage({
   className,
   accept = "image/jpeg,image/png,image/webp",
   maxSize = 5 * 1024 * 1024,
-  aspectRatio = 1,
-  required = false,
   id,
 }: InputImageProps) {
   const [preview, setPreview] = useState<string | null>(
@@ -93,17 +89,6 @@ export function InputImage({
 
     const img = document.createElement("img");
     img.onload = () => {
-      const width = img.width;
-      const height = img.height;
-      const ratio = width / height;
-
-      if (Math.abs(ratio - aspectRatio) > 0.01) {
-        const errorMsg = `نسبت تصویر باید ${aspectRatio}:1 باشد`;
-        setError(errorMsg);
-        onError?.(errorMsg);
-        return;
-      }
-
       const reader = new FileReader();
       reader.onloadend = () => {
         const previewUrl = reader.result as string;
@@ -136,7 +121,7 @@ export function InputImage({
   return (
     <div className={cn("space-y-2", className)}>
       {displayPreview ? (
-        <div className="relative w-full border rounded-lg aspect-square max-w-[100px] mx-auto">
+        <div className="relative w-full border rounded-lg aspect-square max-w-[100px] mx-auto bg-white">
           <Image
             src={displayPreview}
             alt="Preview"
@@ -156,7 +141,7 @@ export function InputImage({
       ) : (
         <label
           htmlFor={inputId}
-          className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-accent transition-colors"
+          className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-lg cursor-pointer bg-white transition-colors"
         >
           <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">
@@ -171,7 +156,7 @@ export function InputImage({
         accept={accept}
         className="hidden"
         onChange={handleImageChange}
-        required={required}
+        // Do not use native required on a hidden input; validation handled by form schema
       />
       {displayError && (
         <p className="text-sm font-medium text-destructive">{displayError}</p>

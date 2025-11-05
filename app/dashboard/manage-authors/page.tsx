@@ -3,10 +3,7 @@ import { ListAuthor } from "@/containers/routes/dashboard/manage-authors/list-au
 export default function AuthorsPage() {
   return (
     <>
-      <div className="container">
-        <ListAuthor />
-      </div>
+      <ListAuthor />
     </>
   );
 }
-

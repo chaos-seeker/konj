@@ -3,9 +3,7 @@ import { ListTranslator } from "@/containers/routes/dashboard/manage-translators
 export default function TranslatorsPage() {
   return (
     <>
-      <div className="container">
-        <ListTranslator />
-      </div>
+      <ListTranslator />
     </>
   );
 }
