@@ -14,8 +14,9 @@ export function Description(props: IDescriptionProps) {
 
   return (
     <section>
-      <div className="container">
+      <div>
         <div className="p-4 text-smp rounded-xl bg-white relative">
+        <h2 className="text-mdp font-bold mb-4">توضیحات</h2>
           <p className={`${isExpanded ? "" : "line-clamp-4"} text-justify`}>
             {props.description}
           </p>
