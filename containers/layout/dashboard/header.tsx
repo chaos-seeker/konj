@@ -4,10 +4,13 @@ import { Button } from "@/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ModalAddPublisher } from "@/containers/routes/dashboard/manage-publisher/modal-add-publisher";
 
 export function Header() {
   const pathname = usePathname();
+  const [isPublisherModalOpen, setIsPublisherModalOpen] = useState(false);
+
   return (
     <header>
       <div className="flex flex-col gap-4 lg:flex-row bg-white py-4 border border-slate-200 container">
@@ -19,12 +22,20 @@ export function Header() {
           )}
           {pathname.includes("/authors") && <Button>افزودن نویسنده</Button>}
           {pathname.includes("/translators") && <Button>افزودن مترجم</Button>}
-          {pathname.includes("/publishers") && <Button>افزودن ناشر</Button>}
+          {pathname.includes("/publishers") && (
+            <Button onClick={() => setIsPublisherModalOpen(true)}>
+              افزودن ناشر
+            </Button>
+          )}
         </div>
       </div>
       <div className="container bg-white py-4 border-b border-slate-200 rounded-b-xl">
         <Tabs />
       </div>
+      <ModalAddPublisher
+        open={isPublisherModalOpen}
+        onOpenChange={setIsPublisherModalOpen}
+      />
     </header>
   );
 }

@@ -69,12 +69,12 @@ export const Popular = () => {
     <section>
       <div className="container flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <h2>پر فروش ترین کتاب ها</h2>
+          <h2 className="font-medium">پر فروش ترین کتاب ها</h2>
           <Link href="/books" className="flex items-center gap-2 group">
             <span className="group-hover:text-primary transition-colors">
               مشاهده همه
             </span>
-            <ArrowLeftIcon className="size-4 group-hover:text-primary flex-shrink-0" />
+            <ArrowLeftIcon className="size-4 group-hover:text-primary shrink-0" />
           </Link>
         </div>
         <div className="lg:hidden overflow-x-auto snap-x snap-mandatory">
@@ -82,7 +82,7 @@ export const Popular = () => {
             {data.map((item) => (
               <div
                 key={item.id}
-                className="min-w-[200px] max-w-[200px] snap-start flex-shrink-0"
+                className="min-w-[200px] max-w-[200px] snap-start shrink-0"
               >
                 <ProductCart {...item} />
               </div>

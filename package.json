@@ -10,19 +10,26 @@
   },
   "dependencies": {
     "@bprogress/next": "^3.2.12",
+    "@hookform/resolvers": "^5.2.2",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-slot": "^1.2.4",
     "@tanstack/react-query": "^5.90.6",
+    "@upstash/redis": "^1.35.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.552.0",
+    "mongodb": "^6.20.0",
     "next": "16.0.1",
     "nuqs": "^2.7.2",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "react-hook-form": "^7.66.0",
     "react-hot-toast": "^2.6.0",
     "swiper": "^12.0.3",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
