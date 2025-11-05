@@ -1,11 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { SearchIcon, ShoppingBag, UserIcon } from "lucide-react";
 import { useKillua } from "killua";
 import { cartSlice } from "@/slices/cart";
+import { userSlice } from "@/slices/user";
+import { ModalLogin } from "./modal-login";
+import { ModalRegister } from "./modal-register";
 
 export function Header() {
   return (
@@ -44,7 +48,7 @@ function Logo() {
 const Cart = () => {
   const cart = useKillua(cartSlice);
   const count = cart.selectors.totalCount();
-  
+
   return (
     <Button
       variant="outline"
@@ -65,29 +69,60 @@ const Cart = () => {
 };
 
 const User = () => {
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [registerOpen, setRegisterOpen] = useState(false);
+  const user = useKillua(userSlice);
+  const isAuthenticated = user.selectors.isAuthenticated();
+
+  if (isAuthenticated) {
+    return (
+      <Button
+        variant="outline"
+        size="icon"
+        className="hover:bg-primary lg:size-10 hover:text-white hover:border-primary"
+        asChild
+      >
+        <Link href="/profile">
+          <UserIcon className="size-5 lg:size-6" />
+        </Link>
+      </Button>
+    );
+  }
+
   return (
-    <Button
-      variant="outline"
-      size="icon"
-      className="hover:bg-primary lg:size-10 hover:text-white hover:border-primary"
-    >
-      <Link href="/profile">
+    <>
+      <Button
+        variant="outline"
+        size="icon"
+        className="hover:bg-primary lg:size-10 hover:text-white hover:border-primary"
+        onClick={() => setLoginOpen(true)}
+      >
         <UserIcon className="size-5 lg:size-6" />
-      </Link>
-    </Button>
+      </Button>
+      <ModalLogin
+        open={loginOpen}
+        onOpenChange={setLoginOpen}
+        onSwitchToRegister={() => setRegisterOpen(true)}
+      />
+      <ModalRegister
+        open={registerOpen}
+        onOpenChange={setRegisterOpen}
+        onSwitchToLogin={() => setLoginOpen(true)}
+      />
+    </>
   );
 };
 
 const Search = () => {
   return (
-    <div className="border focus-within:border-primary focus-visible:ring-ring/50 lg:p-2 max-w-[200px] sm:max-w-[300px] flex items-center gap-2 justify-between focus-visible:ring-[3px] rounded-md px-2 py-1 w-full flex-shrink-0">
+    <div className="border focus-within:border-primary focus-visible:ring-ring/50 lg:p-2 max-w-[200px] sm:max-w-[300px] flex items-center gap-2 justify-between focus-visible:ring-[3px] rounded-md px-2 py-1 w-full shrink-0">
       <input
         type="text"
         placeholder="جستجو کنید ..."
-        className="flex-1 outline-none !w-full"
+        className="flex-1 outline-none w-full"
       />
       <button>
-        <SearchIcon className="size-4 lg:size-5 hover:text-primary transition-colors text-muted-foreground flex-shrink-0" />
+        <SearchIcon className="size-4 lg:size-5 hover:text-primary transition-colors text-muted-foreground shrink-0" />
       </button>
     </div>
   );
