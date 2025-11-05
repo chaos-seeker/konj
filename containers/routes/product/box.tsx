@@ -1,12 +1,19 @@
+"use client";
+
 import Image from "next/image";
 import type { TBook } from "@/types/book";
 import { StarIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/ui/button";
+import { cartSlice } from "@/slices/cart";
+import { useKillua } from "killua";
+import toast from "react-hot-toast";
 
-type BoxProps = { book: TBook };
+interface IBoxProps { book: TBook };
 
-export function Box({ book }: BoxProps) {
+export function Box({ book }: IBoxProps) {
+  const cart = useKillua(cartSlice);
+  const isInCart = cart.selectors.isItemInCart(book.slug);
   const discountPrice = book.discount
     ? Math.round(book.price * (1 - book.discount / 100))
     : book.price;
@@ -16,9 +23,19 @@ export function Box({ book }: BoxProps) {
         book.comments.length
       : 3;
 
+  const handleAddToCart = () => {
+    if (isInCart) {
+      cart.reducers.removeFromCart(book.slug);
+      toast.success("از سبد خرید حذف شد");
+    } else {
+      cart.reducers.addToCart(book);
+      toast.success("به سبد خرید اضافه شد");
+    }
+  };
+
   return (
     <section className="container flex justify-center">
-      <div className="p-4 bg-white flex flex-col gap-4 rounded-xl border w-full border-slate-200">
+      <div className=" p-4 bg-white flex flex-col gap-4 rounded-xl border w-full border-slate-200">
         <div className="w-full flex justify-center">
           <div className="relative aspect-3/4 w-[200px] overflow-hidden border bg-white">
             <Image
@@ -39,18 +56,24 @@ export function Box({ book }: BoxProps) {
         <div className="flex flex-col gap-1 border-b pb-4">
           <p className="text-smp text-muted-foreground">
             نویسنده:
-            {book.authors.map((a, idx) => (
-              <span key={a.slug}>
-                {" "}
-                <Link
-                  href={`/authors/${a.slug}`}
-                  className="text-primary hover:underline"
-                >
-                  {a.fullName}
-                </Link>
-                {idx < book.authors.length - 1 ? "،" : ""}
-              </span>
-            ))}
+            {book.authors && book.authors.length > 0 ? (
+              <>
+                {book.authors.map((a, idx) => (
+                  <span key={a.slug}>
+                    {" "}
+                    <Link
+                      href={`/authors/${a.slug}`}
+                      className="text-primary hover:underline"
+                    >
+                      {a.fullName}
+                    </Link>
+                    {idx < book.authors.length - 1 ? "،" : ""}
+                  </span>
+                ))}
+              </>
+            ) : (
+              <span> - </span>
+            )}
           </p>
           <p className="text-smp text-muted-foreground">
             مترجم:
@@ -88,15 +111,13 @@ export function Box({ book }: BoxProps) {
           </p>
           <p className="text-smp text-muted-foreground">
             دسته بندی:{" "}
-            {book.category && book.category ? (
-              <>
-                <Link
-                  href={`/categories/${book.category.slug}`}
-                  className="text-primary hover:underline"
-                >
-                  {book.category.name}
-                </Link>
-              </>
+            {book.category ? (
+              <Link
+                href={`/categories/${book.category.slug}`}
+                className="text-primary hover:underline"
+              >
+                {book.category.name}
+              </Link>
             ) : (
               <span> - </span>
             )}
@@ -124,8 +145,13 @@ export function Box({ book }: BoxProps) {
             </div>
           </div>
         </div>
-        <Button className="w-full h-13 text-mdp text-white">
-          <p>افزودن به سبد خرید</p>
+        <Button
+          className={`w-full h-13 text-mdp text-white ${
+            isInCart ? "bg-error hover:bg-error/90" : ""
+          }`}
+          onClick={handleAddToCart}
+        >
+          <p>{isInCart ? "حذف از سبد خرید" : "افزودن به سبد خرید"}</p>
         </Button>
       </div>
     </section>

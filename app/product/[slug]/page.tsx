@@ -1,5 +1,6 @@
 import { getBook } from "@/actions/dashboard/manage-books/get-book";
 import { Box } from "@/containers/routes/product/box";
+import { Description } from "@/containers/routes/product/description";
 import Image from "next/image";
 
 export default async function ProductPage({
@@ -21,5 +22,10 @@ export default async function ProductPage({
         <p className="text-muted-foreground">کتاب یافت نشد!</p>
       </div>
     );
-  return <Box book={res.data} />;
+  return (
+    <>
+      <Box book={res.data} />
+      <Description description={res.data.description} />
+    </>
+  );
 }

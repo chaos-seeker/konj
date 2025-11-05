@@ -4,17 +4,19 @@ import { Button } from "@/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { SearchIcon, ShoppingBag, UserIcon } from "lucide-react";
+import { useKillua } from "killua";
+import { cartSlice } from "@/slices/cart";
 
 export function Header() {
   return (
     <header>
       <div className="flex flex-col gap-4lg:flex-row bg-white py-4 border border-slate-200 rounded-b-xl container">
         <div className="flex gap-4 w-full items-center justify-between">
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <Logo />
           </div>
           <Search />
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             <Cart />
             <User />
           </div>
@@ -40,17 +42,23 @@ function Logo() {
 }
 
 const Cart = () => {
+  const cart = useKillua(cartSlice);
+  const count = cart.selectors.totalCount();
+  
   return (
     <Button
       variant="outline"
       size="icon"
       className="hover:bg-primary lg:size-10 hover:text-white hover:border-primary relative"
+      asChild
     >
       <Link href="/cart">
         <ShoppingBag className="size-4 lg:size-5" />
-        <span className="absolute -top-1 border border-white -right-1.5 bg-primary text-white text-[8px] rounded-full px-1.5 py-0.5 text-caption">
-          1
-        </span>
+        {count > 0 && (
+          <span className="absolute -top-1 border border-white -right-1.5 bg-primary text-white text-[8px] rounded-full px-1.5 py-0.5 text-caption">
+            {count}
+          </span>
+        )}
       </Link>
     </Button>
   );
