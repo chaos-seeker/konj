@@ -4,7 +4,7 @@ import redis from "@/lib/upstash";
 
 export async function deletePublisher(slug: string) {
   try {
-    // Check if publisher exists
+
     const publisher = await redis.get(`publisher:${slug}`);
     if (!publisher) {
       return {
@@ -13,10 +13,10 @@ export async function deletePublisher(slug: string) {
       };
     }
 
-    // Delete publisher
+
     await redis.del(`publisher:${slug}`);
 
-    // Remove from publishers list
+
     await redis.zrem("publishers:list", slug);
 
     return {

@@ -4,7 +4,7 @@ import redis from "@/lib/upstash";
 
 export async function deleteTranslator(slug: string) {
   try {
-    // Check if translator exists
+
     const translator = await redis.get(`translator:${slug}`);
     if (!translator) {
       return {
@@ -13,10 +13,10 @@ export async function deleteTranslator(slug: string) {
       };
     }
 
-    // Delete translator
+
     await redis.del(`translator:${slug}`);
 
-    // Remove from translators list
+
     await redis.zrem("translators:list", slug);
 
     return {

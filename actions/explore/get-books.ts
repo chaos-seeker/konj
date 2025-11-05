@@ -21,7 +21,6 @@ export async function getBooks(params: GetBooksParams = {}) {
       authors = [],
     } = params;
 
-    // Get all books
     const allBookSlugs = await redis.zrange("books:list", 0, -1);
     if (!allBookSlugs || allBookSlugs.length === 0) {
       return { success: true, data: [] as TBook[] } as const;
@@ -37,7 +36,6 @@ export async function getBooks(params: GetBooksParams = {}) {
 
     let filteredBooks = allBooks.filter((book): book is TBook => book !== null);
 
-    // Search by text (in name, description, or author/translator names)
     if (searchText && searchText.trim()) {
       const searchLower = searchText.toLowerCase().trim();
       filteredBooks = filteredBooks.filter((book) => {
@@ -53,28 +51,24 @@ export async function getBooks(params: GetBooksParams = {}) {
       });
     }
 
-    // Filter by categories
     if (categories.length > 0) {
       filteredBooks = filteredBooks.filter((book) =>
         categories.includes(book.category?.slug || "")
       );
     }
 
-    // Filter by publishers
     if (publishers.length > 0) {
       filteredBooks = filteredBooks.filter((book) =>
         publishers.includes(book.publisher?.slug || "")
       );
     }
 
-    // Filter by translators
     if (translators.length > 0) {
       filteredBooks = filteredBooks.filter((book) =>
         book.translators?.some((t) => translators.includes(t.slug))
       );
     }
 
-    // Filter by authors
     if (authors.length > 0) {
       filteredBooks = filteredBooks.filter((book) =>
         book.authors?.some((a) => authors.includes(a.slug))

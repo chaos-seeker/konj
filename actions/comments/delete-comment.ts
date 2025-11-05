@@ -6,7 +6,6 @@ import { revalidatePath } from "next/cache";
 
 export async function deleteComment(commentId: string) {
   try {
-    // Get comment
     const commentStr = await redis.get(`comment:${commentId}`);
     if (!commentStr) {
       return {
@@ -18,10 +17,8 @@ export async function deleteComment(commentId: string) {
     const comment =
       typeof commentStr === "string" ? JSON.parse(commentStr) : commentStr;
 
-    // Delete comment
     await redis.del(`comment:${commentId}`);
 
-    // Remove from lists
     if (comment.status === "pending") {
       await redis.zrem(`book:${comment.bookSlug}:comments:pending`, commentId);
       await redis.zrem("comments:pending", commentId);
@@ -29,7 +26,6 @@ export async function deleteComment(commentId: string) {
       await redis.zrem(`book:${comment.bookSlug}:comments:approved`, commentId);
       await redis.zrem("comments:approved", commentId);
 
-      // Update book's comments array - remove this comment
       const bookResult = await getBook(comment.bookSlug);
       if (bookResult.success && bookResult.data) {
         const book = bookResult.data;

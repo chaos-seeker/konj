@@ -4,7 +4,6 @@ import redis from "@/lib/upstash";
 
 export async function deleteBook(slug: string) {
   try {
-    // Check if book exists
     const existingBook = await redis.get(`book:${slug}`);
     if (!existingBook) {
       return {
@@ -13,10 +12,8 @@ export async function deleteBook(slug: string) {
       };
     }
 
-    // Delete book
     await redis.del(`book:${slug}`);
 
-    // Remove from books list
     await redis.zrem("books:list", slug);
 
     return {

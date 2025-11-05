@@ -22,7 +22,6 @@ export async function getCategories(searchText?: string) {
       (cat): cat is TCategory => cat !== null
     );
 
-    // Search by text
     if (searchText && searchText.trim()) {
       const searchLower = searchText.toLowerCase().trim();
       categories = categories.filter((cat) =>

@@ -4,7 +4,6 @@ import redis from "@/lib/upstash";
 
 export async function deleteAuthor(slug: string) {
   try {
-    // Check if author exists
     const author = await redis.get(`author:${slug}`);
     if (!author) {
       return {
@@ -13,10 +12,8 @@ export async function deleteAuthor(slug: string) {
       };
     }
 
-    // Delete author
     await redis.del(`author:${slug}`);
 
-    // Remove from authors list
     await redis.zrem("authors:list", slug);
 
     return {

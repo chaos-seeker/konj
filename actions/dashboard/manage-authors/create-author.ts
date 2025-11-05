@@ -14,7 +14,6 @@ export async function createAuthor(formData: FormData) {
       };
     }
 
-    // Check if slug already exists
     const existingAuthor = await redis.get(`author:${slug}`);
 
     if (existingAuthor) {
@@ -33,10 +32,8 @@ export async function createAuthor(formData: FormData) {
       updatedAt: new Date().toISOString(),
     };
 
-    // Store author by slug
     await redis.set(`author:${slug}`, author);
 
-    // Add to authors list (sorted set by timestamp)
     await redis.zadd("authors:list", {
       score: Date.now(),
       member: slug,

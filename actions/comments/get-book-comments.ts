@@ -5,7 +5,6 @@ import type { TComment } from "@/types/comment";
 
 export async function getBookComments(bookSlug: string) {
   try {
-    // Get approved comment IDs for this book
     const approvedCommentIds = await redis.zrange(
       `book:${bookSlug}:comments:approved`,
       0,
@@ -19,7 +18,6 @@ export async function getBookComments(bookSlug: string) {
       } as const;
     }
 
-    // Fetch all comment data
     const comments = await Promise.all(
       approvedCommentIds.map(async (commentId) => {
         const commentStr = await redis.get(`comment:${commentId}`);

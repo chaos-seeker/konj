@@ -20,7 +20,6 @@ export async function getPublishers(searchText?: string) {
 
     let publishers = allPublishers.filter((pub): pub is TPublisher => pub !== null);
 
-    // Search by text
     if (searchText && searchText.trim()) {
       const searchLower = searchText.toLowerCase().trim();
       publishers = publishers.filter((pub) =>

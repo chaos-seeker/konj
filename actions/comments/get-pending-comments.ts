@@ -6,7 +6,6 @@ import { getBook } from "@/actions/dashboard/manage-books/get-book";
 
 export async function getPendingComments() {
   try {
-    // Get all pending comment IDs
     const pendingCommentIds = await redis.zrange("comments:pending", 0, -1);
 
     if (!pendingCommentIds || pendingCommentIds.length === 0) {
@@ -16,7 +15,6 @@ export async function getPendingComments() {
       } as const;
     }
 
-    // Fetch all comment data with book names
     const comments = await Promise.all(
       pendingCommentIds.map(async (commentId) => {
         const commentStr = await redis.get(`comment:${commentId}`);
@@ -24,7 +22,6 @@ export async function getPendingComments() {
         const comment =
           typeof commentStr === "string" ? JSON.parse(commentStr) : commentStr;
 
-        // Get book name
         const bookResult = await getBook(comment.bookSlug);
         if (bookResult.success && bookResult.data) {
           comment.bookName = bookResult.data.name;
@@ -38,7 +35,6 @@ export async function getPendingComments() {
       (c): c is TComment => c !== null && c.status === "pending"
     );
 
-    // Sort by creation date (newest first)
     validComments.sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()

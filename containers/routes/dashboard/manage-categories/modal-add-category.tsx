@@ -72,7 +72,7 @@ export function ModalAddCategory({
         throw new Error(result.error || "خطا در افزودن دسته بندی");
       }
 
-      // Invalidate and refetch categories query
+
       await queryClient.invalidateQueries({ queryKey: ["categories"] });
 
       toast.success(result.message || "دسته بندی با موفقیت افزوده شد");
@@ -119,7 +119,7 @@ export function ModalAddCategory({
                     <Input
                       {...field}
                       onChange={(e) => {
-                        // Convert to lowercase and replace spaces with hyphens
+
                         const value = e.target.value
                           .toLowerCase()
                           .replace(/\s+/g, "-")

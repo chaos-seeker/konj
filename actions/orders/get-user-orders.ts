@@ -13,7 +13,6 @@ export async function getUserOrders(fullName: string) {
       } as const;
     }
 
-    // Get all order IDs from the sorted set
     const orderIds = await redis.zrange("orders:list", 0, -1);
 
     if (!orderIds || orderIds.length === 0) {
@@ -23,7 +22,6 @@ export async function getUserOrders(fullName: string) {
       } as const;
     }
 
-    // Fetch all order data
     const orders = await Promise.all(
       orderIds.map(async (orderId) => {
         const orderStr = await redis.get(`order:${orderId}`);
@@ -35,12 +33,10 @@ export async function getUserOrders(fullName: string) {
 
     const validOrders = orders.filter((o): o is TOrder => o !== null);
 
-    // Filter by user's fullName
     const userOrders = validOrders.filter(
       (order) => order.fullName?.toLowerCase() === fullName.toLowerCase()
     );
 
-    // Sort by creation date (newest first)
     userOrders.sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()

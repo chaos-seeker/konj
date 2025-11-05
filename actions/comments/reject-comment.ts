@@ -5,7 +5,6 @@ import { revalidatePath } from "next/cache";
 
 export async function rejectComment(commentId: string) {
   try {
-    // Get comment
     const commentStr = await redis.get(`comment:${commentId}`);
     if (!commentStr) {
       return {
@@ -17,7 +16,6 @@ export async function rejectComment(commentId: string) {
     const comment =
       typeof commentStr === "string" ? JSON.parse(commentStr) : commentStr;
 
-    // Update comment status
     const updatedComment = {
       ...comment,
       status: "rejected" as const,
@@ -26,7 +24,6 @@ export async function rejectComment(commentId: string) {
 
     await redis.set(`comment:${commentId}`, JSON.stringify(updatedComment));
 
-    // Remove from pending lists
     await redis.zrem(`book:${comment.bookSlug}:comments:pending`, commentId);
     await redis.zrem("comments:pending", commentId);
 

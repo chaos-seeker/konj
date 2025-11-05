@@ -11,7 +11,6 @@ export type TUser = {
 
 export async function getUsers() {
   try {
-    // Get all usernames from the sorted set
     const usernames = await redis.zrange("users:list", 0, -1);
 
     if (!usernames || usernames.length === 0) {
@@ -21,7 +20,6 @@ export async function getUsers() {
       } as const;
     }
 
-    // Fetch all user data
     const users = await Promise.all(
       usernames.map(async (username) => {
         const userStr = await redis.get(`user:${username}`);
@@ -38,7 +36,6 @@ export async function getUsers() {
 
     const validUsers = users.filter((u): u is TUser => u !== null);
 
-    // Sort by creation date (newest first)
     validUsers.sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()

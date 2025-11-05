@@ -54,7 +54,6 @@ export async function updateBook(oldSlug: string, formData: FormData) {
       }
     }
 
-    // Verify category exists
     const category = await redis.get(`category:${categorySlug}`);
     if (!category) {
       return {

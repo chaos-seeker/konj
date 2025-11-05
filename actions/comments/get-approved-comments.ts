@@ -6,7 +6,6 @@ import { getBook } from "@/actions/dashboard/manage-books/get-book";
 
 export async function getApprovedComments() {
   try {
-    // Get all approved comment IDs
     const approvedCommentIds = await redis.zrange(
       "comments:approved",
       0,
@@ -20,7 +19,6 @@ export async function getApprovedComments() {
       } as const;
     }
 
-    // Fetch all comment data with book names
     const comments = await Promise.all(
       approvedCommentIds.map(async (commentId) => {
         const commentStr = await redis.get(`comment:${commentId}`);
@@ -29,7 +27,6 @@ export async function getApprovedComments() {
           ? JSON.parse(commentStr)
           : commentStr;
         
-        // Get book name
         const bookResult = await getBook(comment.bookSlug);
         if (bookResult.success && bookResult.data) {
           comment.bookName = bookResult.data.name;
@@ -43,7 +40,6 @@ export async function getApprovedComments() {
       (c): c is TComment => c !== null && c.status === "approved"
     );
 
-    // Sort by creation date (newest first)
     validComments.sort((a, b) => 
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );

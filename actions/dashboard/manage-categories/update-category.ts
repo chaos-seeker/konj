@@ -14,7 +14,7 @@ export async function updateCategory(oldSlug: string, formData: FormData) {
       };
     }
 
-    // Check if category exists
+
     const existingCategory = await redis.get(`category:${oldSlug}`);
     if (!existingCategory) {
       return {
@@ -23,7 +23,7 @@ export async function updateCategory(oldSlug: string, formData: FormData) {
       };
     }
 
-    // If slug changed, check if new slug is available
+
     if (oldSlug !== slug) {
       const slugExists = await redis.get(`category:${slug}`);
       if (slugExists) {
@@ -34,7 +34,7 @@ export async function updateCategory(oldSlug: string, formData: FormData) {
       }
     }
 
-    // Get existing category data
+
     const categoryData =
       typeof existingCategory === "string"
         ? JSON.parse(existingCategory)
@@ -47,7 +47,7 @@ export async function updateCategory(oldSlug: string, formData: FormData) {
       updatedAt: new Date().toISOString(),
     };
 
-    // If slug changed, delete old entry and create new one
+
     if (oldSlug !== slug) {
       await redis.del(`category:${oldSlug}`);
       await redis.zrem("categories:list", oldSlug);
@@ -57,7 +57,7 @@ export async function updateCategory(oldSlug: string, formData: FormData) {
         member: slug,
       });
     } else {
-      // Just update the existing entry
+
       await redis.set(`category:${slug}`, updatedCategory);
     }
 

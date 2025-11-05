@@ -81,7 +81,6 @@ export function AddNewComment({ book }: AddNewCommentProps) {
 
       toast.success(result.message || "نظر شما با موفقیت ثبت شد");
       form.reset({ text: "", rating: 0 });
-      // Invalidate comments cache to refresh the list after admin approval
       await queryClient.invalidateQueries({
         queryKey: ["book-comments", book.slug],
       });

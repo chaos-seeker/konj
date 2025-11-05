@@ -114,7 +114,7 @@ export function ModalAddTranslator({
                     <Input
                       {...field}
                       onChange={(e) => {
-                        // Convert to lowercase and replace spaces with hyphens
+
                         const value = e.target.value
                           .toLowerCase()
                           .replace(/\s+/g, "-")

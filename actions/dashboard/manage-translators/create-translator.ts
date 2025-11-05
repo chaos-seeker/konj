@@ -14,7 +14,7 @@ export async function createTranslator(formData: FormData) {
       };
     }
 
-    // Check if slug already exists
+
     const existingTranslator = await redis.get(`translator:${slug}`);
 
     if (existingTranslator) {
@@ -33,10 +33,10 @@ export async function createTranslator(formData: FormData) {
       updatedAt: new Date().toISOString(),
     };
 
-    // Store translator by slug
+
     await redis.set(`translator:${slug}`, translator);
 
-    // Add to translators list (sorted set by timestamp)
+
     await redis.zadd("translators:list", {
       score: Date.now(),
       member: slug,

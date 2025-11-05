@@ -14,7 +14,6 @@ export async function updateAuthor(oldSlug: string, formData: FormData) {
       };
     }
 
-    // Check if author exists
     const existingAuthor = await redis.get(`author:${oldSlug}`);
     if (!existingAuthor) {
       return {
@@ -23,7 +22,6 @@ export async function updateAuthor(oldSlug: string, formData: FormData) {
       };
     }
 
-    // If slug changed, check if new slug is available
     if (oldSlug !== slug) {
       const slugExists = await redis.get(`author:${slug}`);
       if (slugExists) {
@@ -34,7 +32,7 @@ export async function updateAuthor(oldSlug: string, formData: FormData) {
       }
     }
 
-    // Get existing author data
+
     const authorData =
       typeof existingAuthor === "string"
         ? JSON.parse(existingAuthor)
@@ -47,7 +45,6 @@ export async function updateAuthor(oldSlug: string, formData: FormData) {
       updatedAt: new Date().toISOString(),
     };
 
-    // If slug changed, delete old entry and create new one
     if (oldSlug !== slug) {
       await redis.del(`author:${oldSlug}`);
       await redis.zrem("authors:list", oldSlug);
@@ -57,7 +54,6 @@ export async function updateAuthor(oldSlug: string, formData: FormData) {
         member: slug,
       });
     } else {
-      // Just update the existing entry
       await redis.set(`author:${slug}`, updatedAuthor);
     }
 

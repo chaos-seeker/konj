@@ -6,7 +6,6 @@ import { revalidatePath } from "next/cache";
 
 export async function approveComment(commentId: string) {
   try {
-    // Get comment
     const commentStr = await redis.get(`comment:${commentId}`);
     if (!commentStr) {
       return {
@@ -25,7 +24,6 @@ export async function approveComment(commentId: string) {
       } as const;
     }
 
-    // Update comment status
     const updatedComment = {
       ...comment,
       status: "approved" as const,
@@ -34,11 +32,9 @@ export async function approveComment(commentId: string) {
 
     await redis.set(`comment:${commentId}`, JSON.stringify(updatedComment));
 
-    // Remove from pending lists
     await redis.zrem(`book:${comment.bookSlug}:comments:pending`, commentId);
     await redis.zrem("comments:pending", commentId);
 
-    // Add to approved lists
     await redis.zadd(`book:${comment.bookSlug}:comments:approved`, {
       score: Date.now(),
       member: commentId,
@@ -48,7 +44,6 @@ export async function approveComment(commentId: string) {
       member: commentId,
     });
 
-    // Update book's comments array
     const bookResult = await getBook(comment.bookSlug);
     if (bookResult.success && bookResult.data) {
       const book = bookResult.data;

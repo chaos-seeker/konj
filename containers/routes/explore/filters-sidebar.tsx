@@ -79,7 +79,6 @@ export function FiltersSidebar({
 
   return (
     <aside className="flex flex-col gap-6 h-full">
-      {/* Search Text Display */}
       {searchText && (
         <div className="rounded-xl border bg-white border-slate-200 p-4 shrink-0">
           <div className="flex items-center justify-between gap-2">
@@ -93,7 +92,6 @@ export function FiltersSidebar({
           </div>
         </div>
       )}
-      {/* Categories */}
       <div className="rounded-xl border bg-white border-slate-200 p-4 flex flex-col">
         <h3 className="font-bold mb-3">دسته‌بندی‌ها</h3>
         {isLoadingCategories ? (
@@ -118,7 +116,6 @@ export function FiltersSidebar({
         )}
       </div>
 
-      {/* Publishers */}
       <div className="rounded-xl border bg-white border-slate-200 p-4 flex flex-col">
         <h3 className="font-bold mb-3">ناشرین</h3>
         {isLoadingPublishers ? (
@@ -143,7 +140,6 @@ export function FiltersSidebar({
         )}
       </div>
 
-      {/* Translators */}
       <div className="rounded-xl border bg-white border-slate-200 p-4 flex flex-col">
         <h3 className="font-bold mb-3">مترجمین</h3>
         {isLoadingTranslators ? (
@@ -168,7 +164,6 @@ export function FiltersSidebar({
         )}
       </div>
 
-      {/* Authors */}
       <div className="rounded-xl border bg-white border-slate-200 p-4 flex flex-col">
         <h3 className="font-bold mb-3">نویسندگان</h3>
         {isLoadingAuthors ? (

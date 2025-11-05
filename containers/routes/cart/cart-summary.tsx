@@ -75,7 +75,6 @@ export function CartSummary() {
       }
 
       toast.success(result.message || "سفارش با موفقیت ثبت شد");
-      // Clear cart after successful order
       cart.reducers.clearCart();
     } catch {
       toast.error("خطا در ثبت سفارش");

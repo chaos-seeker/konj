@@ -20,7 +20,6 @@ export type TOrder = {
 
 export async function getOrders() {
   try {
-    // Get all order IDs from the sorted set
     const orderIds = await redis.zrange("orders:list", 0, -1);
 
     if (!orderIds || orderIds.length === 0) {
@@ -30,7 +29,6 @@ export async function getOrders() {
       } as const;
     }
 
-    // Fetch all order data
     const orders = await Promise.all(
       orderIds.map(async (orderId) => {
         const orderStr = await redis.get(`order:${orderId}`);
@@ -42,7 +40,6 @@ export async function getOrders() {
 
     const validOrders = orders.filter((o): o is TOrder => o !== null);
 
-    // Sort by creation date (newest first)
     validOrders.sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()

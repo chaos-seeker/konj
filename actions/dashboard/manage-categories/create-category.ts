@@ -14,7 +14,7 @@ export async function createCategory(formData: FormData) {
       };
     }
 
-    // Check if slug already exists
+
     const existingCategory = await redis.get(`category:${slug}`);
 
     if (existingCategory) {
@@ -33,10 +33,10 @@ export async function createCategory(formData: FormData) {
       updatedAt: new Date().toISOString(),
     };
 
-    // Store category by slug
+
     await redis.set(`category:${slug}`, category);
 
-    // Add to categories list (sorted set by timestamp)
+
     await redis.zadd("categories:list", {
       score: Date.now(),
       member: slug,

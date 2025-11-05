@@ -20,7 +20,6 @@ export async function getAuthors(searchText?: string) {
 
     let authors = allAuthors.filter((auth): auth is TAuthor => auth !== null);
 
-    // Search by text
     if (searchText && searchText.trim()) {
       const searchLower = searchText.toLowerCase().trim();
       authors = authors.filter((auth) =>

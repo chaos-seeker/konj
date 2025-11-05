@@ -30,13 +30,12 @@ export async function register(data: {
       } as const;
     }
 
-    // Create user
     const userId = randomUUID();
     const userData = {
       id: userId,
       fullName,
       username,
-      password, // In production, hash this password!
+      password,
       createdAt: new Date().toISOString(),
     };
 

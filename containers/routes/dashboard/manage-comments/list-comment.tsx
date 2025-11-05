@@ -104,7 +104,6 @@ export function ListComment() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Pending Comments */}
       <div className="rounded-xl border bg-white p-4">
         <h2 className="text-lg font-bold mb-4">نظرات در انتظار تایید</h2>
         {isLoadingPending ? (
@@ -200,7 +199,6 @@ export function ListComment() {
         )}
       </div>
 
-      {/* Approved Comments */}
       <div className="rounded-xl border bg-white p-4">
         <h2 className="text-lg font-bold mb-4">نظرات تایید شده</h2>
         {isLoadingApproved ? (

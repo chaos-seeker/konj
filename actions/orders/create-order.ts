@@ -28,7 +28,6 @@ export async function createOrder(data: CreateOrderData) {
       } as const;
     }
 
-    // Verify token
     const userTokenData = await redis.get(`token:${token}`);
     if (!userTokenData) {
       return {
@@ -49,16 +48,13 @@ export async function createOrder(data: CreateOrderData) {
       createdAt: new Date().toISOString(),
     };
 
-    // Store the order
     await redis.set(`order:${orderId}`, JSON.stringify(orderData));
 
-    // Add to orders list sorted by date
     await redis.zadd("orders:list", {
       score: Date.now(),
       member: orderId,
     });
 
-    // Clear the cart (we'll need to handle this on the client side)
     revalidatePath("/cart");
 
     return {

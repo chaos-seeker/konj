@@ -14,7 +14,7 @@ export async function updateTranslator(oldSlug: string, formData: FormData) {
       };
     }
 
-    // Check if translator exists
+
     const existingTranslator = await redis.get(`translator:${oldSlug}`);
     if (!existingTranslator) {
       return {
@@ -23,7 +23,7 @@ export async function updateTranslator(oldSlug: string, formData: FormData) {
       };
     }
 
-    // If slug changed, check if new slug is available
+
     if (oldSlug !== slug) {
       const slugExists = await redis.get(`translator:${slug}`);
       if (slugExists) {
@@ -34,7 +34,7 @@ export async function updateTranslator(oldSlug: string, formData: FormData) {
       }
     }
 
-    // Get existing translator data
+
     const translatorData =
       typeof existingTranslator === "string"
         ? JSON.parse(existingTranslator)
@@ -47,7 +47,7 @@ export async function updateTranslator(oldSlug: string, formData: FormData) {
       updatedAt: new Date().toISOString(),
     };
 
-    // If slug changed, delete old entry and create new one
+
     if (oldSlug !== slug) {
       await redis.del(`translator:${oldSlug}`);
       await redis.zrem("translators:list", oldSlug);
@@ -57,7 +57,7 @@ export async function updateTranslator(oldSlug: string, formData: FormData) {
         member: slug,
       });
     } else {
-      // Just update the existing entry
+
       await redis.set(`translator:${slug}`, updatedTranslator);
     }
 

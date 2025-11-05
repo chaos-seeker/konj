@@ -20,7 +20,6 @@ export async function addComment(data: {
       } as const;
     }
 
-    // Verify token
     const tokenDataStr = await redis.get(`token:${token}`);
     if (!tokenDataStr) {
       return {
@@ -31,7 +30,6 @@ export async function addComment(data: {
 
     const tokenData = typeof tokenDataStr === "string" ? JSON.parse(tokenDataStr) : tokenDataStr;
 
-    // Create comment
     const commentId = randomUUID();
     const comment = {
       id: commentId,
@@ -43,16 +41,13 @@ export async function addComment(data: {
       createdAt: new Date().toISOString(),
     };
 
-    // Store comment
     await redis.set(`comment:${commentId}`, JSON.stringify(comment));
     
-    // Add to book's comments list (pending)
     await redis.zadd(`book:${bookSlug}:comments:pending`, {
       score: Date.now(),
       member: commentId,
     });
 
-    // Add to all pending comments list for dashboard
     await redis.zadd("comments:pending", {
       score: Date.now(),
       member: commentId,

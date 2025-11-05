@@ -17,7 +17,7 @@ export async function updatePublisher(
       };
     }
 
-    // Check if publisher exists
+
     const existingPublisher = await redis.get(`publisher:${oldSlug}`);
     if (!existingPublisher) {
       return {
@@ -26,7 +26,7 @@ export async function updatePublisher(
       };
     }
 
-    // If slug changed, check if new slug is available
+
     if (oldSlug !== slug) {
       const slugExists = await redis.get(`publisher:${slug}`);
       if (slugExists) {
@@ -37,7 +37,7 @@ export async function updatePublisher(
       }
     }
 
-    // Get existing publisher data
+
     const publisherData =
       typeof existingPublisher === "string"
         ? JSON.parse(existingPublisher)
@@ -50,7 +50,7 @@ export async function updatePublisher(
       updatedAt: new Date().toISOString(),
     };
 
-    // If slug changed, delete old entry and create new one
+
     if (oldSlug !== slug) {
       await redis.del(`publisher:${oldSlug}`);
       await redis.zrem("publishers:list", oldSlug);
@@ -60,7 +60,7 @@ export async function updatePublisher(
         member: slug,
       });
     } else {
-      // Just update the existing entry
+
       await redis.set(`publisher:${slug}`, updatedPublisher);
     }
 

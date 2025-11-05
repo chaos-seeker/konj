@@ -20,7 +20,6 @@ export async function getTranslators(searchText?: string) {
 
     let translators = allTranslators.filter((trans): trans is TTranslator => trans !== null);
 
-    // Search by text
     if (searchText && searchText.trim()) {
       const searchLower = searchText.toLowerCase().trim();
       translators = translators.filter((trans) =>

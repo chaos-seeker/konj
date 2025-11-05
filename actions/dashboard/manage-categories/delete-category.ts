@@ -4,7 +4,7 @@ import redis from "@/lib/upstash";
 
 export async function deleteCategory(slug: string) {
   try {
-    // Check if category exists
+
     const category = await redis.get(`category:${slug}`);
     if (!category) {
       return {
@@ -13,10 +13,10 @@ export async function deleteCategory(slug: string) {
       };
     }
 
-    // Delete category
+
     await redis.del(`category:${slug}`);
 
-    // Remove from categories list
+
     await redis.zrem("categories:list", slug);
 
     return {
