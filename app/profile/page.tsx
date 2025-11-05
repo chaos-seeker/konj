@@ -14,10 +14,8 @@ export default function ProfilePage() {
 
   if (!isAuthenticated) {
     return (
-      <ViewportAnimation>
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
+      <ViewportAnimation className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </ViewportAnimation>
     );
   }
@@ -26,10 +24,8 @@ export default function ProfilePage() {
     <ViewportAnimation>
       <div className="container">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <ViewportAnimation>
-            <div className="lg:col-span-1 lg:sticky lg:top-6 lg:self-start lg:order-2">
-              <ProfileSidebar />
-            </div>
+          <ViewportAnimation className="lg:col-span-1 lg:sticky lg:top-6 lg:self-start lg:order-2">
+            <ProfileSidebar />
           </ViewportAnimation>
           <ViewportAnimation className="lg:col-span-3 lg:order-1 w-full">
               <UserOrdersList fullName={fullName} />

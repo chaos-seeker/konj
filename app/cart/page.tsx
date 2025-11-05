@@ -14,17 +14,15 @@ export default function CartPage() {
 
   if (isEmpty) {
     return (
-      <ViewportAnimation>
-        <div className="container">
-          <div className="items-center flex flex-col gap-6 justify-center py-10">
-            <Image
-              src="/images/global/not-found.png"
-              alt="empty"
-              width={200}
-              height={200}
-            />
-            <p className="text-muted-foreground">سبد خرید خالی است!</p>
-          </div>
+      <ViewportAnimation className="container">
+        <div className="items-center flex flex-col gap-6 justify-center py-10">
+          <Image
+            src="/images/global/not-found.png"
+            alt="empty"
+            width={200}
+            height={200}
+          />
+          <p className="text-muted-foreground">سبد خرید خالی است!</p>
         </div>
       </ViewportAnimation>
     );
@@ -34,15 +32,11 @@ export default function CartPage() {
     <ViewportAnimation>
       <div className="container">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <ViewportAnimation>
-            <div className="lg:col-span-2">
-              <CartItems />
-            </div>
+          <ViewportAnimation className="lg:col-span-2">
+            <CartItems />
           </ViewportAnimation>
-          <ViewportAnimation>
-            <div className="lg:col-span-1">
-              <CartSummary />
-            </div>
+          <ViewportAnimation className="lg:col-span-1">
+            <CartSummary />
           </ViewportAnimation>
         </div>
       </div>
