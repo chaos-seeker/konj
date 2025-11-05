@@ -39,13 +39,13 @@ export const ProductCart = (props: ProductCartProps) => {
           <p className="text-sm text-muted-foreground">{props.author}</p>
           <div className="flex mt-2 items-center justify-between gap-2">
             <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 fill-warning text-warning" />
+              <Star className="w-4 h-4 fill-warning text-warning flex-shrink-0" />
               <span className="text-xs pt-1 text-muted-foreground">
                 {props.rating.toFixed(1)}
               </span>
             </div>
             <div className="flex items-center gap-1">
-              <MessageCircle className="w-4 h-4 fill-primary text-primary" />
+              <MessageCircle className="w-4 h-4 fill-primary text-primary flex-shrink-0" />
               <span className="text-xs pt-1 text-muted-foreground">
                 {props.commments}
               </span>

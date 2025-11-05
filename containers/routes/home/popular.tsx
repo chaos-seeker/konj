@@ -74,7 +74,7 @@ export const Popular = () => {
             <span className="group-hover:text-primary transition-colors">
               مشاهده همه
             </span>
-            <ArrowLeftIcon className="size-4 group-hover:text-primary" />
+            <ArrowLeftIcon className="size-4 group-hover:text-primary flex-shrink-0" />
           </Link>
         </div>
         <div className="lg:hidden overflow-x-auto snap-x snap-mandatory">

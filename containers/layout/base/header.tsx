@@ -72,7 +72,7 @@ const User = () => {
 
 const Search = () => {
   return (
-    <div className="border focus-within:border-primary focus-visible:ring-ring/50 lg:p-2 max-w-[200px] sm:max-w-[300px] flex items-center gap-2 justify-between focus-visible:ring-[3px] rounded-md px-2 py-1 w-full">
+    <div className="border focus-within:border-primary focus-visible:ring-ring/50 lg:p-2 max-w-[200px] sm:max-w-[300px] flex items-center gap-2 justify-between focus-visible:ring-[3px] rounded-md px-2 py-1 w-full flex-shrink-0">
       <input
         type="text"
         placeholder="جستجو کنید ..."
