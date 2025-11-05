@@ -114,8 +114,8 @@ export async function updateBook(oldSlug: string, formData: FormData) {
       slug,
       image: image || bookData.image || undefined,
       price: parseFloat(price),
-      discount: discount ? parseFloat(discount) : undefined,
-      description: description || undefined,
+      discount: discount ? parseFloat(discount) : 0,
+      description: description || "",
       category:
         typeof category === "string" ? JSON.parse(category) : category,
       publisher:

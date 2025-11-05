@@ -13,17 +13,22 @@ export const Popular = async () => {
   return (
     <section>
       <div className="container flex flex-col gap-4">
-        <div className="flex items-center justify_between">
+        <div className="flex items-center justify-between">
           <h2 className="font-medium">پر فروش ترین کتاب ها</h2>
           <Link href="/books" className="flex items-center gap-2 group">
-            <span className="group-hover:text-primary transition-colors">مشاهده همه</span>
+            <span className="group-hover:text-primary transition-colors">
+              مشاهده همه
+            </span>
             <ArrowLeftIcon className="size-4 group-hover:text-primary shrink-0" />
           </Link>
         </div>
         <div className="lg:hidden overflow-x-auto snap-x snap-mandatory">
           <div className="flex gap-4">
             {sorted.map((item) => (
-              <div key={item.id} className="min-w-[200px] max-w-[200px] snap-start shrink-0">
+              <div
+                key={item.id}
+                className="min-w-[200px] max-w-[200px] snap-start shrink-0"
+              >
                 <ProductCart book={item} />
               </div>
             ))}

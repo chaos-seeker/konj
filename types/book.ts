@@ -7,10 +7,10 @@ export type TBook = {
   id: string;
   name: string;
   slug: string;
-  image?: string;
+  image: string;
   price: number;
-  discount?: number;
-  description?: string;
+  discount: number;
+  description: string;
   category: TCategory;
   publisher: TPublisher;
   authors: TAuthor[];
@@ -19,10 +19,9 @@ export type TBook = {
   publicationYear: number;
   createdAt: string;
   updatedAt: string;
-  soldCount?: number;
-  comments?: {
-    firstName: string;
-    lastName: string;
+  soldCount: number;
+  comments: {
+    fullName: string;
     text: string;
     rating: number;
   }[];

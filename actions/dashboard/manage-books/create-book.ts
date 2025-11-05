@@ -101,19 +101,16 @@ export async function createBook(formData: FormData) {
       id,
       name,
       slug,
-      image: image || undefined,
+      image: image || "",
       price: parseFloat(price),
-      discount: discount ? parseFloat(discount) : undefined,
-      description: description || undefined,
-      category: typeof category === "string" ? JSON.parse(category) : category,
+      discount: discount ? parseFloat(discount) : 0,
+      description: description || "",
+      category:
+        typeof category === "string" ? JSON.parse(category) : category,
       publisher:
         typeof publisher === "string" ? JSON.parse(publisher) : publisher,
-      authors: authors.map((a) =>
-        typeof a === "string" ? JSON.parse(a) : a
-      ) as unknown as TAuthor[],
-      translators: translators.map((t) =>
-        typeof t === "string" ? JSON.parse(t) : t
-      ) as unknown as TTranslator[],
+      authors: (authors.map((a) => (typeof a === "string" ? JSON.parse(a) : a)) as unknown) as TAuthor[],
+      translators: (translators.map((t) => (typeof t === "string" ? JSON.parse(t) : t)) as unknown) as TTranslator[],
       pages: parseInt(pages),
       publicationYear: parseInt(publicationYear),
       createdAt: new Date().toISOString(),

@@ -74,7 +74,7 @@ export function Header() {
 
 function Logo() {
   return (
-    <Link href="/">
+    <div>
       <Image
         src="/images/layout/logo.png"
         unoptimized
@@ -83,7 +83,7 @@ function Logo() {
         height={60}
         className="lg:w-[80px]"
       />
-    </Link>
+    </div>
   );
 }
 

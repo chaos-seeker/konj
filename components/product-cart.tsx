@@ -79,12 +79,12 @@ export const ProductCart = (props: ProductCartProps) => {
             </div>
           </div>
           <hr className="my-2" />
-          <div className="flex items-center px-3 justify-between gap-2">
-            <span className="text-sm font-bold text-primary">
-              {discountPrice.toLocaleString("fa-IR")} تومان
+          <div className="flex items-center px-5 justify-between gap-2">
+            <span className="font-bold text-primary">
+              {discountPrice.toLocaleString("fa-IR")}
             </span>
             {hasDiscount && (
-              <span className="text-smp text-gray-400 line-through">
+              <span className="text-gray-400 line-through">
                 {normalized.price.toLocaleString("fa-IR")}
               </span>
             )}
