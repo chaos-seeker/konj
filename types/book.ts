@@ -19,4 +19,11 @@ export type TBook = {
   publicationYear: number;
   createdAt: string;
   updatedAt: string;
+  soldCount?: number;
+  comments?: {
+    firstName: string;
+    lastName: string;
+    text: string;
+    rating: number;
+  }[];
 };

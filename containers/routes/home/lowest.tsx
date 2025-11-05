@@ -3,21 +3,24 @@ import Link from "next/link";
 import { ArrowLeftIcon } from "lucide-react";
 import { getBooks } from "@/actions/dashboard/manage-books/get-books";
 
-export const Newest = async () => {
+export const Lowest = async () => {
   const result = await getBooks();
   const books = result.success ? result.data : [];
+  const effectivePrice = (price: number, discount?: number) =>
+    discount ? price * (1 - discount / 100) : price;
   const sorted = books
     .slice()
     .sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        effectivePrice(a.price, a.discount) -
+        effectivePrice(b.price, b.discount)
     );
 
   return (
     <section>
       <div className="container flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <h2 className="font-medium">جدیدترین کتاب ها</h2>
+          <h2 className="font-medium">ارزان ترین کتاب ها</h2>
           <Link href="/books" className="flex items-center gap-2 group">
             <span className="group-hover:text-primary transition-colors">
               مشاهده همه

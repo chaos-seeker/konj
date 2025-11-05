@@ -2,6 +2,8 @@
 
 import redis from "@/lib/upstash";
 import type { TBook } from "@/types/book";
+import type { TAuthor } from "@/types/author";
+import type { TTranslator } from "@/types/translator";
 import { revalidatePath } from "next/cache";
 
 export async function createBook(formData: FormData) {
@@ -103,20 +105,21 @@ export async function createBook(formData: FormData) {
       price: parseFloat(price),
       discount: discount ? parseFloat(discount) : undefined,
       description: description || undefined,
-      category:
-        typeof category === "string" ? JSON.parse(category) : category,
+      category: typeof category === "string" ? JSON.parse(category) : category,
       publisher:
         typeof publisher === "string" ? JSON.parse(publisher) : publisher,
       authors: authors.map((a) =>
         typeof a === "string" ? JSON.parse(a) : a
-      ) as any[],
+      ) as unknown as TAuthor[],
       translators: translators.map((t) =>
         typeof t === "string" ? JSON.parse(t) : t
-      ) as any[],
+      ) as unknown as TTranslator[],
       pages: parseInt(pages),
       publicationYear: parseInt(publicationYear),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      soldCount: 0,
+      comments: [],
     };
 
     // Store book by slug
@@ -145,4 +148,3 @@ export async function createBook(formData: FormData) {
     };
   }
 }
-
