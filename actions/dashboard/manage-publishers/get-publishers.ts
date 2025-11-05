@@ -30,7 +30,6 @@ export async function getPublishers() {
       id: string;
       name: string;
       slug: string;
-      image: string;
       createdAt: string;
       updatedAt: string;
     }>;

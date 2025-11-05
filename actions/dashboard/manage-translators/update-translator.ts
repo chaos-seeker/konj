@@ -1,0 +1,75 @@
+"use server";
+
+import redis from "@/lib/upstash";
+
+export async function updateTranslator(oldSlug: string, formData: FormData) {
+  try {
+    const fullName = formData.get("fullName") as string;
+    const slug = formData.get("slug") as string;
+
+    if (!fullName || !slug) {
+      return {
+        success: false,
+        error: "تمام فیلدها الزامی هستند",
+      };
+    }
+
+    // Check if translator exists
+    const existingTranslator = await redis.get(`translator:${oldSlug}`);
+    if (!existingTranslator) {
+      return {
+        success: false,
+        error: "مترجم یافت نشد",
+      };
+    }
+
+    // If slug changed, check if new slug is available
+    if (oldSlug !== slug) {
+      const slugExists = await redis.get(`translator:${slug}`);
+      if (slugExists) {
+        return {
+          success: false,
+          error: "این اسلاگ قبلاً استفاده شده است",
+        };
+      }
+    }
+
+    // Get existing translator data
+    const translatorData =
+      typeof existingTranslator === "string"
+        ? JSON.parse(existingTranslator)
+        : existingTranslator;
+
+    const updatedTranslator = {
+      ...translatorData,
+      fullName,
+      slug,
+      updatedAt: new Date().toISOString(),
+    };
+
+    // If slug changed, delete old entry and create new one
+    if (oldSlug !== slug) {
+      await redis.del(`translator:${oldSlug}`);
+      await redis.zrem("translators:list", oldSlug);
+      await redis.set(`translator:${slug}`, updatedTranslator);
+      await redis.zadd("translators:list", {
+        score: Date.now(),
+        member: slug,
+      });
+    } else {
+      // Just update the existing entry
+      await redis.set(`translator:${slug}`, updatedTranslator);
+    }
+
+    return {
+      success: true,
+      message: "مترجم با موفقیت به‌روزرسانی شد",
+    };
+  } catch (error) {
+    console.error("Error updating translator:", error);
+    return {
+      success: false,
+      error: "خطا در به‌روزرسانی مترجم",
+    };
+  }
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -23,10 +23,9 @@ import {
 } from "@/ui/form";
 import { Input } from "@/ui/input";
 import toast from "react-hot-toast";
-import { createPublisher } from "@/actions/create-publisher";
-import { InputImage } from "@/components/input-image";
+import { updateCategory } from "@/actions/dashboard/manage-categories/update-category";
 
-const publisherSchema = z.object({
+const categorySchema = z.object({
   name: z
     .string()
     .min(1, "نام الزامی است")
@@ -35,65 +34,63 @@ const publisherSchema = z.object({
     .string()
     .min(1, "اسلاگ الزامی است")
     .regex(/^[a-z0-9-]+$/, "اسلاگ باید انگلیسی و بدون فاصله باشد"),
-  image: z
-    .instanceof(File, { message: "تصویر الزامی است" })
-    .refine(
-      (file) => file && file.size <= 5 * 1024 * 1024,
-      "حجم تصویر باید کمتر از 5 مگابایت باشد"
-    )
-    .refine(
-      (file) =>
-        file && ["image/jpeg", "image/png", "image/webp"].includes(file.type),
-      "فرمت تصویر باید jpg، png یا webp باشد"
-    ),
 });
 
-type PublisherFormValues = z.infer<typeof publisherSchema>;
+type CategoryFormValues = z.infer<typeof categorySchema>;
 
-interface ModalAddPublisherProps {
+interface ModalEditCategoryProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  category: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
 }
 
-export function ModalAddPublisher({
+export function ModalEditCategory({
   open,
   onOpenChange,
-}: ModalAddPublisherProps) {
+  category,
+}: ModalEditCategoryProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const queryClient = useQueryClient();
 
-  const form = useForm<PublisherFormValues>({
-    resolver: zodResolver(publisherSchema),
+  const form = useForm<CategoryFormValues>({
+    resolver: zodResolver(categorySchema),
     defaultValues: {
       name: "",
       slug: "",
     },
   });
 
-  const onSubmit = async (data: PublisherFormValues) => {
+  useEffect(() => {
+    if (category && open) {
+      form.reset({
+        name: category.name,
+        slug: category.slug,
+      });
+    }
+  }, [category, open, form]);
+
+  const onSubmit = async (data: CategoryFormValues) => {
+    if (!category) return;
     try {
       setIsSubmitting(true);
-
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("slug", data.slug);
-      formData.append("image", data.image);
-
-      const result = await createPublisher(formData);
-
+      const result = await updateCategory(category.slug, formData);
       if (!result.success) {
-        throw new Error(result.error || "خطا در افزودن ناشر");
+        throw new Error(result.error || "خطا در به‌روزرسانی دسته بندی");
       }
-
-      // Invalidate and refetch publishers query
-      await queryClient.invalidateQueries({ queryKey: ["publishers"] });
-
-      toast.success(result.message || "ناشر با موفقیت افزوده شد");
+      await queryClient.invalidateQueries({ queryKey: ["categories"] });
+      toast.success(result.message || "دسته بندی با موفقیت به‌روزرسانی شد");
       form.reset();
       onOpenChange(false);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "خطا در افزودن ناشر"
+        error instanceof Error ? error.message : "خطا در به‌روزرسانی دسته بندی"
       );
     } finally {
       setIsSubmitting(false);
@@ -104,32 +101,11 @@ export function ModalAddPublisher({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>افزودن ناشر</DialogTitle>
+          <DialogTitle>ویرایش دسته بندی</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="image"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>تصویر</FormLabel>
-                  <FormControl>
-                    <InputImage
-                      value={field.value}
-                      onChange={(file) => {
-                        field.onChange(file);
-                      }}
-                      aspectRatio={1}
-                      maxSize={5 * 1024 * 1024}
-                      required
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="name"
@@ -153,7 +129,6 @@ export function ModalAddPublisher({
                     <Input
                       {...field}
                       onChange={(e) => {
-                        // Convert to lowercase and replace spaces with hyphens
                         const value = e.target.value
                           .toLowerCase()
                           .replace(/\s+/g, "-")
@@ -172,7 +147,7 @@ export function ModalAddPublisher({
                 disabled={isSubmitting}
                 className="w-full h-11"
               >
-                {isSubmitting ? "در حال افزودن..." : "افزودن"}
+                {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
               </Button>
             </DialogFooter>
           </form>

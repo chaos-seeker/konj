@@ -5,11 +5,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ModalAddPublisher } from "@/containers/routes/dashboard/manage-publisher/modal-add-publisher";
+import { ModalAddPublisher } from "@/containers/routes/dashboard/manage-publishers/modal-add-publisher";
+import { ModalAddCategory } from "@/containers/routes/dashboard/manage-categories/modal-add-category";
+import { ModalAddAuthor } from "@/containers/routes/dashboard/manage-authors/modal-add-author";
+import { ModalAddTranslator } from "@/containers/routes/dashboard/manage-translators/modal-add-translator";
 
 export function Header() {
   const pathname = usePathname();
   const [isPublisherModalOpen, setIsPublisherModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isAuthorModalOpen, setIsAuthorModalOpen] = useState(false);
+  const [isTranslatorModalOpen, setIsTranslatorModalOpen] = useState(false);
 
   return (
     <header>
@@ -17,12 +23,22 @@ export function Header() {
         <div className="flex gap-4 w-full items-center justify-between">
           <Logo />
           {pathname.includes("/books") && <Button>افزودن کتاب</Button>}
-          {pathname.includes("/categories") && (
-            <Button>افزودن دسته بندی</Button>
+          {pathname.includes("/manage-categories") && (
+            <Button onClick={() => setIsCategoryModalOpen(true)}>
+              افزودن دسته بندی
+            </Button>
           )}
-          {pathname.includes("/authors") && <Button>افزودن نویسنده</Button>}
-          {pathname.includes("/translators") && <Button>افزودن مترجم</Button>}
-          {pathname.includes("/publishers") && (
+          {pathname.includes("/manage-authors") && (
+            <Button onClick={() => setIsAuthorModalOpen(true)}>
+              افزودن نویسنده
+            </Button>
+          )}
+          {pathname.includes("/manage-translators") && (
+            <Button onClick={() => setIsTranslatorModalOpen(true)}>
+              افزودن مترجم
+            </Button>
+          )}
+          {pathname.includes("/manage-publishers") && (
             <Button onClick={() => setIsPublisherModalOpen(true)}>
               افزودن ناشر
             </Button>
@@ -35,6 +51,18 @@ export function Header() {
       <ModalAddPublisher
         open={isPublisherModalOpen}
         onOpenChange={setIsPublisherModalOpen}
+      />
+      <ModalAddCategory
+        open={isCategoryModalOpen}
+        onOpenChange={setIsCategoryModalOpen}
+      />
+      <ModalAddAuthor
+        open={isAuthorModalOpen}
+        onOpenChange={setIsAuthorModalOpen}
+      />
+      <ModalAddTranslator
+        open={isTranslatorModalOpen}
+        onOpenChange={setIsTranslatorModalOpen}
       />
     </header>
   );
@@ -67,19 +95,19 @@ export const Tabs = () => {
     },
     {
       label: "مدیریت دسته بندی ها",
-      href: "/dashboard/categories",
+      href: "/dashboard/manage-categories",
     },
     {
       label: "مدیریت نویسندگان",
-      href: "/dashboard/authors",
+      href: "/dashboard/manage-authors",
     },
     {
       label: "مدیریت مترجمین",
-      href: "/dashboard/translators",
+      href: "/dashboard/manage-translators",
     },
     {
       label: "مدیریت ناشرین",
-      href: "/dashboard/publishers",
+      href: "/dashboard/manage-publishers",
     },
     {
       label: "مدیریت سفارش ها",

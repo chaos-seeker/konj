@@ -6,17 +6,12 @@ export async function createPublisher(formData: FormData) {
   try {
     const name = formData.get("name") as string;
     const slug = formData.get("slug") as string;
-    const image = formData.get("image") as File;
-    if (!name || !slug || !image) {
+    if (!name || !slug) {
       return {
         success: false,
         error: "تمام فیلدها الزامی هستند",
       };
     }
-    const bytes = await image.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const base64Image = buffer.toString("base64");
-    const imageDataUrl = `data:${image.type};base64,${base64Image}`;
     const existingPublisher = await redis.get(`publisher:${slug}`);
     if (existingPublisher) {
       return {
@@ -29,7 +24,6 @@ export async function createPublisher(formData: FormData) {
       id,
       name,
       slug,
-      image: imageDataUrl,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
