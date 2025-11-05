@@ -38,7 +38,7 @@ export const Category = () => {
         <div className="flex gap-4">
           {data.map((item) => (
             <Link
-              href={`/explore/category/${item.id}`}
+              href={`/explore`}
               key={item.id}
               className="flex bg-white border hover:border-primary transition-colors border-dashed py-3 rounded-lg border-2 items-center justify-center min-w-[140px] snap-start flex-shrink-0"
             >
