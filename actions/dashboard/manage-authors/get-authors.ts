@@ -29,13 +29,9 @@ export async function getAuthors() {
       })
     );
 
-    const validAuthors = authors.filter((a) => a !== null) as Array<{
-      id: string;
-      fullName: string;
-      slug: string;
-      createdAt: string;
-      updatedAt: string;
-    }>;
+    const validAuthors = authors.filter((a) => a !== null) as Array<
+      import("@/types/author").TAuthor
+    >;
 
     return {
       success: true,

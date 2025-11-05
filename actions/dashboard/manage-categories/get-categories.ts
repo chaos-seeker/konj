@@ -29,13 +29,9 @@ export async function getCategories() {
       })
     );
 
-    const validCategories = categories.filter((c) => c !== null) as Array<{
-      id: string;
-      name: string;
-      slug: string;
-      createdAt: string;
-      updatedAt: string;
-    }>;
+    const validCategories = categories.filter((c) => c !== null) as Array<
+      import("@/types/category").TCategory
+    >;
 
     return {
       success: true,
@@ -50,4 +46,3 @@ export async function getCategories() {
     };
   }
 }
-

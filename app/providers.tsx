@@ -2,16 +2,15 @@
 
 import { ProgressProvider } from "@bprogress/next/app";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useQueryState } from "nuqs";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { PropsWithChildren, Suspense, useEffect } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import { PropsWithChildren, Suspense } from "react";
+import { Toaster } from "react-hot-toast";
 
 const Bprogress = (props: PropsWithChildren) => {
   return (
     <ProgressProvider
       height="4px"
-      color="#7b60db"
+      color="#744d7e"
       options={{ showSpinner: false }}
       shallowRouting
     >

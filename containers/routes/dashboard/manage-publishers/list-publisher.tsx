@@ -17,14 +17,14 @@ import { Loader2, Edit, Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/ui/button";
 import { ModalEditPublisher } from "./modal-edit-publisher";
+import type { TPublisher } from "@/types/publisher";
 
 export function ListPublisher() {
   const queryClient = useQueryClient();
-  const [editingPublisher, setEditingPublisher] = useState<{
-    id: string;
-    name: string;
-    slug: string;
-  } | null>(null);
+  const [editingPublisher, setEditingPublisher] = useState<Pick<
+    TPublisher,
+    "id" | "name" | "slug"
+  > | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const fetchedData = useQuery({
@@ -56,11 +56,7 @@ export function ListPublisher() {
     }
   };
 
-  const handleEdit = (publisher: {
-    id: string;
-    name: string;
-    slug: string;
-  }) => {
+  const handleEdit = (publisher: TPublisher) => {
     setEditingPublisher(publisher);
     setIsEditModalOpen(true);
   };
@@ -96,7 +92,7 @@ export function ListPublisher() {
               <TableRow>
                 <TableHead>نام</TableHead>
                 <TableHead>اسلاگ</TableHead>
-                <TableHead>تاریخ ایجاد</TableHead>
+                <TableHead>تاریخ</TableHead>
                 <TableHead className="w-[100px]">عملیات</TableHead>
               </TableRow>
             </TableHeader>
@@ -112,7 +108,7 @@ export function ListPublisher() {
                     </code>
                   </TableCell>
                   <TableCell>
-                    {new Date(publisher.createdAt).toLocaleDateString("fa-IR")}
+                    {new Date(publisher.updatedAt).toLocaleDateString("fa-IR")}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">

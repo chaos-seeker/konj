@@ -29,13 +29,9 @@ export async function getTranslators() {
       })
     );
 
-    const validTranslators = translators.filter((t) => t !== null) as Array<{
-      id: string;
-      fullName: string;
-      slug: string;
-      createdAt: string;
-      updatedAt: string;
-    }>;
+    const validTranslators = translators.filter((t) => t !== null) as Array<
+      import("@/types/translator").TTranslator
+    >;
 
     return {
       success: true,

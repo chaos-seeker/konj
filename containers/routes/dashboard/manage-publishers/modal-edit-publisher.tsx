@@ -24,6 +24,7 @@ import {
 import { Input } from "@/ui/input";
 import toast from "react-hot-toast";
 import { updatePublisher } from "@/actions/dashboard/manage-publishers/update-publisher";
+import type { TPublisher } from "@/types/publisher";
 
 const publisherSchema = z.object({
   name: z
@@ -41,11 +42,7 @@ type PublisherFormValues = z.infer<typeof publisherSchema>;
 interface ModalEditPublisherProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  publisher: {
-    id: string;
-    name: string;
-    slug: string;
-  } | null;
+  publisher: Pick<TPublisher, "id" | "name" | "slug"> | null;
 }
 
 export function ModalEditPublisher({

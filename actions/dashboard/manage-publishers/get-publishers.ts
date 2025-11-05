@@ -26,13 +26,9 @@ export async function getPublishers() {
         return null;
       })
     );
-    const validPublishers = publishers.filter((p) => p !== null) as Array<{
-      id: string;
-      name: string;
-      slug: string;
-      createdAt: string;
-      updatedAt: string;
-    }>;
+    const validPublishers = publishers.filter((p) => p !== null) as Array<
+      import("@/types/publisher").TPublisher
+    >;
     return {
       success: true,
       data: validPublishers,

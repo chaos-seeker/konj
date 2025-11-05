@@ -17,14 +17,14 @@ import { Loader2, Edit, Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/ui/button";
 import { ModalEditAuthor } from "./modal-edit-author";
+import type { TAuthor } from "@/types/author";
 
 export function ListAuthor() {
   const queryClient = useQueryClient();
-  const [editingAuthor, setEditingAuthor] = useState<{
-    id: string;
-    fullName: string;
-    slug: string;
-  } | null>(null);
+  const [editingAuthor, setEditingAuthor] = useState<Pick<
+    TAuthor,
+    "id" | "fullName" | "slug"
+  > | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const fetchedData = useQuery({
@@ -58,11 +58,7 @@ export function ListAuthor() {
     }
   };
 
-  const handleEdit = (author: {
-    id: string;
-    fullName: string;
-    slug: string;
-  }) => {
+  const handleEdit = (author: TAuthor) => {
     setEditingAuthor(author);
     setIsEditModalOpen(true);
   };
@@ -98,7 +94,7 @@ export function ListAuthor() {
               <TableRow>
                 <TableHead>نام</TableHead>
                 <TableHead>اسلاگ</TableHead>
-                <TableHead>تاریخ ایجاد</TableHead>
+                <TableHead>تاریخ</TableHead>
                 <TableHead className="w-[100px]">عملیات</TableHead>
               </TableRow>
             </TableHeader>
@@ -114,7 +110,7 @@ export function ListAuthor() {
                     </code>
                   </TableCell>
                   <TableCell>
-                    {new Date(author.createdAt).toLocaleDateString("fa-IR")}
+                    {new Date(author.updatedAt).toLocaleDateString("fa-IR")}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">

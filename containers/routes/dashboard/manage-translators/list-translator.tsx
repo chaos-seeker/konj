@@ -17,14 +17,14 @@ import { Loader2, Edit, Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/ui/button";
 import { ModalEditTranslator } from "./modal-edit-translator";
+import type { TTranslator } from "@/types/translator";
 
 export function ListTranslator() {
   const queryClient = useQueryClient();
-  const [editingTranslator, setEditingTranslator] = useState<{
-    id: string;
-    fullName: string;
-    slug: string;
-  } | null>(null);
+  const [editingTranslator, setEditingTranslator] = useState<Pick<
+    TTranslator,
+    "id" | "fullName" | "slug"
+  > | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const fetchedData = useQuery({
@@ -56,11 +56,7 @@ export function ListTranslator() {
     }
   };
 
-  const handleEdit = (translator: {
-    id: string;
-    fullName: string;
-    slug: string;
-  }) => {
+  const handleEdit = (translator: TTranslator) => {
     setEditingTranslator(translator);
     setIsEditModalOpen(true);
   };
@@ -96,7 +92,7 @@ export function ListTranslator() {
               <TableRow>
                 <TableHead>نام</TableHead>
                 <TableHead>اسلاگ</TableHead>
-                <TableHead>تاریخ ایجاد</TableHead>
+                <TableHead>تاریخ</TableHead>
                 <TableHead className="w-[100px]">عملیات</TableHead>
               </TableRow>
             </TableHeader>
@@ -112,7 +108,7 @@ export function ListTranslator() {
                     </code>
                   </TableCell>
                   <TableCell>
-                    {new Date(translator.createdAt).toLocaleDateString("fa-IR")}
+                    {new Date(translator.updatedAt).toLocaleDateString("fa-IR")}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">

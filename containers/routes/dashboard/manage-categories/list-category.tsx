@@ -17,14 +17,14 @@ import { Loader2, Edit, Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/ui/button";
 import { ModalEditCategory } from "./modal-edit-category";
+import type { TCategory } from "@/types/category";
 
 export function ListCategory() {
   const queryClient = useQueryClient();
-  const [editingCategory, setEditingCategory] = useState<{
-    id: string;
-    name: string;
-    slug: string;
-  } | null>(null);
+  const [editingCategory, setEditingCategory] = useState<Pick<
+    TCategory,
+    "id" | "name" | "slug"
+  > | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const fetchedData = useQuery({
@@ -58,7 +58,7 @@ export function ListCategory() {
     }
   };
 
-  const handleEdit = (category: { id: string; name: string; slug: string }) => {
+  const handleEdit = (category: TCategory) => {
     setEditingCategory(category);
     setIsEditModalOpen(true);
   };
@@ -94,7 +94,7 @@ export function ListCategory() {
               <TableRow>
                 <TableHead>نام</TableHead>
                 <TableHead>اسلاگ</TableHead>
-                <TableHead>تاریخ ایجاد</TableHead>
+                <TableHead>تاریخ</TableHead>
                 <TableHead className="w-[100px]">عملیات</TableHead>
               </TableRow>
             </TableHeader>
@@ -108,7 +108,7 @@ export function ListCategory() {
                     </code>
                   </TableCell>
                   <TableCell>
-                    {new Date(category.createdAt).toLocaleDateString("fa-IR")}
+                    {new Date(category.updatedAt).toLocaleDateString("fa-IR")}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">

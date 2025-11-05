@@ -24,6 +24,7 @@ import {
 import { Input } from "@/ui/input";
 import toast from "react-hot-toast";
 import { updateAuthor } from "@/actions/dashboard/manage-authors/update-author";
+import type { TAuthor } from "@/types/author";
 
 const authorSchema = z.object({
   fullName: z
@@ -41,11 +42,7 @@ type AuthorFormValues = z.infer<typeof authorSchema>;
 interface ModalEditAuthorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  author: {
-    id: string;
-    fullName: string;
-    slug: string;
-  } | null;
+  author: Pick<TAuthor, "id" | "fullName" | "slug"> | null;
 }
 
 export function ModalEditAuthor({

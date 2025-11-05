@@ -24,6 +24,7 @@ import {
 import { Input } from "@/ui/input";
 import toast from "react-hot-toast";
 import { updateTranslator } from "@/actions/dashboard/manage-translators/update-translator";
+import type { TTranslator } from "@/types/translator";
 
 const translatorSchema = z.object({
   fullName: z
@@ -41,11 +42,7 @@ type TranslatorFormValues = z.infer<typeof translatorSchema>;
 interface ModalEditTranslatorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  translator: {
-    id: string;
-    fullName: string;
-    slug: string;
-  } | null;
+  translator: Pick<TTranslator, "id" | "fullName" | "slug"> | null;
 }
 
 export function ModalEditTranslator({

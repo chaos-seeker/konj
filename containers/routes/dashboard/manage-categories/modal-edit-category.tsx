@@ -24,6 +24,7 @@ import {
 import { Input } from "@/ui/input";
 import toast from "react-hot-toast";
 import { updateCategory } from "@/actions/dashboard/manage-categories/update-category";
+import type { TCategory } from "@/types/category";
 
 const categorySchema = z.object({
   name: z
@@ -41,11 +42,7 @@ type CategoryFormValues = z.infer<typeof categorySchema>;
 interface ModalEditCategoryProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  category: {
-    id: string;
-    name: string;
-    slug: string;
-  } | null;
+  category: Pick<TCategory, "id" | "name" | "slug"> | null;
 }
 
 export function ModalEditCategory({
