@@ -18,6 +18,14 @@ export function ModalWelcome() {
     setOpen(false);
   };
 
+  const handleDashboardClick = (e: React.MouseEvent, href: string) => {
+    e.preventDefault();
+    setOpen(false);
+    if (typeof window !== "undefined") {
+      window.location.href = href;
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
@@ -60,56 +68,66 @@ export function ModalWelcome() {
           </Link>
           <Link
             href="/dashboard/manage-books"
-            onClick={handleClose}
+            onClick={(e) => handleDashboardClick(e, "/dashboard/manage-books")}
             className="border px-3 py-2 text-center rounded-md transition-colors hover:bg-muted"
           >
             مدیریت کتاب‌ها
           </Link>
           <Link
             href="/dashboard/manage-categories"
-            onClick={handleClose}
+            onClick={(e) =>
+              handleDashboardClick(e, "/dashboard/manage-categories")
+            }
             className="border px-3 py-2 text-center rounded-md transition-colors hover:bg-muted"
           >
             مدیریت دسته‌بندی‌ها
           </Link>
           <Link
             href="/dashboard/manage-authors"
-            onClick={handleClose}
+            onClick={(e) =>
+              handleDashboardClick(e, "/dashboard/manage-authors")
+            }
             className="border px-3 py-2 text-center rounded-md transition-colors hover:bg-muted"
           >
             مدیریت نویسندگان
           </Link>
           <Link
             href="/dashboard/manage-translators"
-            onClick={handleClose}
+            onClick={(e) =>
+              handleDashboardClick(e, "/dashboard/manage-translators")
+            }
             className="border px-3 py-2 text-center rounded-md transition-colors hover:bg-muted"
           >
             مدیریت مترجمان
           </Link>
           <Link
             href="/dashboard/manage-publishers"
-            onClick={handleClose}
+            onClick={(e) =>
+              handleDashboardClick(e, "/dashboard/manage-publishers")
+            }
             className="border px-3 py-2 text-center rounded-md transition-colors hover:bg-muted"
           >
             مدیریت ناشران
           </Link>
           <Link
             href="/dashboard/manage-comments"
-            onClick={handleClose}
+            onClick={(e) =>
+              handleDashboardClick(e, "/dashboard/manage-comments")
+            }
             className="border px-3 py-2 text-center rounded-md transition-colors hover:bg-muted"
           >
             مدیریت نظرات
           </Link>
           <Link
             href="/dashboard/manage-orders"
-            onClick={handleClose}
+            onClick={(e) => handleDashboardClick(e, "/dashboard/manage-orders")}
             className="border px-3 py-2 text-center rounded-md transition-colors hover:bg-muted"
           >
             مدیریت سفارش‌ها
           </Link>
           <Link
             href="/dashboard/manage-users"
-            onClick={handleClose}
+            onClick={(e) => handleDashboardClick(e, "/dashboard/manage-users")}
             className="border px-3 py-2 text-center rounded-md transition-colors hover:bg-muted"
           >
             مدیریت کاربران
