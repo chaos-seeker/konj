@@ -1,0 +1,11 @@
+services:
+- type: web
+  name: konj
+  runtime: node
+  plan: starter
+  buildCommand: yarn; yarn build
+  startCommand: yarn start
+  autoDeploy: false
+  envVars:
+  - key: NODE_ENV
+    value: production

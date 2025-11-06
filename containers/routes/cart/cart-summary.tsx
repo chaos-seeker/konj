@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useKillua } from "killua";
 import { cartSlice } from "@/slices/cart";
 import { userSlice } from "@/slices/user";
@@ -13,6 +14,7 @@ import toast from "react-hot-toast";
 export function CartSummary() {
   const cart = useKillua(cartSlice);
   const user = useKillua(userSlice);
+  const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const items = cart.get() || [];
@@ -45,12 +47,7 @@ export function CartSummary() {
 
     const token = user.selectors.getToken();
     const fullName = user.selectors.getFullName();
-
-    if (!token || !fullName) {
-      toast.error("لطفاً دوباره وارد شوید");
-      setLoginOpen(true);
-      return;
-    }
+    const username = user.selectors.getUsername();
 
     try {
       setIsSubmitting(true);
@@ -62,10 +59,11 @@ export function CartSummary() {
       }));
 
       const result = await createOrder({
-        fullName,
+        fullName: fullName || "",
+        username: username || "",
         totalPrice: totalOriginalPrice,
         totalDiscount,
-        token,
+        token: token || "",
         items: orderItems,
       });
 
@@ -75,6 +73,8 @@ export function CartSummary() {
       }
 
       toast.success(result.message || "سفارش با موفقیت ثبت شد");
+      // Revalidate client-side cache so profile orders update immediately
+      queryClient.invalidateQueries({ queryKey: ["user-orders"] });
       cart.reducers.clearCart();
     } catch {
       toast.error("خطا در ثبت سفارش");

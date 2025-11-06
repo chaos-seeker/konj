@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 
 export interface CreateOrderData {
   fullName: string;
+  username: string;
   totalPrice: number;
   totalDiscount: number;
   token: string;
@@ -19,9 +20,9 @@ export interface CreateOrderData {
 
 export async function createOrder(data: CreateOrderData) {
   try {
-    const { fullName, totalPrice, totalDiscount, token, items } = data;
+    const { fullName, username, totalPrice, totalDiscount, token, items } = data;
 
-    if (!fullName || !token || !items || items.length === 0) {
+    if (!fullName || !username || !token || !items || items.length === 0) {
       return {
         success: false,
         error: "تمام فیلدهای الزامی را پر کنید",
@@ -40,6 +41,7 @@ export async function createOrder(data: CreateOrderData) {
     const orderData = {
       id: orderId,
       fullName,
+      username,
       totalPrice,
       totalDiscount,
       finalPrice: totalPrice - totalDiscount,
@@ -56,6 +58,7 @@ export async function createOrder(data: CreateOrderData) {
     });
 
     revalidatePath("/cart");
+    revalidatePath("/profile");
 
     return {
       success: true,

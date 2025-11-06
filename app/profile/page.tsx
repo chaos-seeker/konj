@@ -10,7 +10,7 @@ import { Loader2 } from "lucide-react";
 export default function ProfilePage() {
   const user = useKillua(userSlice);
   const isAuthenticated = user.selectors.isAuthenticated();
-  const fullName = user.selectors.getFullName() || "";
+  const username = user.selectors.getUsername() || "";
 
   if (!isAuthenticated) {
     return (
@@ -28,7 +28,7 @@ export default function ProfilePage() {
             <ProfileSidebar />
           </ViewportAnimation>
           <ViewportAnimation className="lg:col-span-3 w-full">
-            <UserOrdersList fullName={fullName} />
+            <UserOrdersList username={username} />
           </ViewportAnimation>
         </div>
       </div>

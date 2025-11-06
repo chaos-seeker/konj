@@ -136,18 +136,20 @@ export function Box({ book }: IBoxProps) {
             <div className="flex xl:py-4 justify-between items-center">
               <p>قیمت نهایی</p>
               <div className="flex items-center gap-2">
-                {book.discount && book.discount > 0 && (
+                {book.discount ? book.discount > 0 && (
                   <p className="text-xsp bg-error text-white px-2 py-1 rounded-lg w-fit h-5.5">
                     {book.discount}%
                   </p>
-                )}
+                ) : null}
                 <div>
                   <p className="text-smp">
                     {discountPrice.toLocaleString()} تومان
                   </p>
+                {book.discount ? (
                   <p className="text-sm text-muted-foreground line-through">
                     {book.price.toLocaleString()} تومان
                   </p>
+                ) : null}
                 </div>
               </div>
             </div>

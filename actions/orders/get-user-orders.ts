@@ -3,12 +3,12 @@
 import redis from "@/lib/upstash";
 import type { TOrder } from "./get-orders";
 
-export async function getUserOrders(fullName: string) {
+export async function getUserOrders(username: string) {
   try {
-    if (!fullName) {
+    if (!username) {
       return {
         success: false,
-        error: "نام کاربری یافت نشد",
+        error: "نام کاربری (username) یافت نشد",
         data: [] as TOrder[],
       } as const;
     }
@@ -34,7 +34,7 @@ export async function getUserOrders(fullName: string) {
     const validOrders = orders.filter((o): o is TOrder => o !== null);
 
     const userOrders = validOrders.filter(
-      (order) => order.fullName?.toLowerCase() === fullName.toLowerCase()
+      (order) => order.username?.toLowerCase() === username.toLowerCase()
     );
 
     userOrders.sort(

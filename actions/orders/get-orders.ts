@@ -5,6 +5,7 @@ import redis from "@/lib/upstash";
 export type TOrder = {
   id: string;
   fullName: string;
+  username: string;
   totalPrice: number;
   totalDiscount: number;
   finalPrice: number;
@@ -33,7 +34,8 @@ export async function getOrders() {
       orderIds.map(async (orderId) => {
         const orderStr = await redis.get(`order:${orderId}`);
         if (!orderStr) return null;
-        const order = typeof orderStr === "string" ? JSON.parse(orderStr) : orderStr;
+        const order =
+          typeof orderStr === "string" ? JSON.parse(orderStr) : orderStr;
         return order;
       })
     );
@@ -58,4 +60,3 @@ export async function getOrders() {
     } as const;
   }
 }
-

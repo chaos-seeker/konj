@@ -16,17 +16,17 @@ import {
 import { formatDate } from "@/utils/format-date";
 
 interface UserOrdersListProps {
-  fullName: string;
+  username: string;
 }
 
-export function UserOrdersList({ fullName }: UserOrdersListProps) {
+export function UserOrdersList({ username }: UserOrdersListProps) {
   const { data: orders = [], isLoading } = useQuery<TOrder[]>({
-    queryKey: ["user-orders", fullName],
+    queryKey: ["user-orders", username],
     queryFn: async () => {
-      const result = await getUserOrders(fullName);
+      const result = await getUserOrders(username);
       return result.success ? result.data : [];
     },
-    enabled: !!fullName,
+    enabled: !!username,
   });
 
   if (isLoading) {
@@ -66,21 +66,15 @@ export function UserOrdersList({ fullName }: UserOrdersListProps) {
           {orders.map((order) => (
             <TableRow key={order.id}>
               <TableCell>{formatDate(order.createdAt)}</TableCell>
-              <TableCell>
-                {order.totalPrice.toLocaleString()} تومان
-              </TableCell>
+              <TableCell>{order.totalPrice.toLocaleString()} تومان</TableCell>
               <TableCell>
                 {order.totalDiscount > 0 ? (
-                  <span>
-                    -{order.totalDiscount.toLocaleString()} تومان
-                  </span>
+                  <span>-{order.totalDiscount.toLocaleString()} تومان</span>
                 ) : (
                   <span className="text-muted-foreground">-</span>
                 )}
               </TableCell>
-              <TableCell>
-                {order.finalPrice.toLocaleString()} تومان
-              </TableCell>
+              <TableCell>{order.finalPrice.toLocaleString()} تومان</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -88,4 +82,3 @@ export function UserOrdersList({ fullName }: UserOrdersListProps) {
     </div>
   );
 }
-

@@ -155,20 +155,22 @@ export function CartItems() {
                 </div>
               </div>
               <div className="items-center gap-1 lg:flex hidden">
-                {book.discount && book.discount > 0 && (
+                {book.discount && book.discount > 0 ? (
                   <p className="text-xsp bg-error text-white px-2 py-1 rounded-lg w-fit h-5.5">
                     {book.discount}%
                   </p>
-                )}
+                ) : null}
                 <div className="text-center">
                   <p className="text-smp font-medium">
                     {discountPrice.toLocaleString()} تومان
                   </p>
-                  {book.discount && book.discount > 0 && (
-                    <p className="text-sm text-muted-foreground line-through">
-                      {book.price.toLocaleString()} تومان
-                    </p>
-                  )}
+                  {book.discount
+                    ? book.discount > 0 && (
+                        <p className="text-sm text-muted-foreground line-through">
+                          {book.price.toLocaleString()} تومان
+                        </p>
+                      )
+                    : null}
                 </div>
               </div>
             </div>
