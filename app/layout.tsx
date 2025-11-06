@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Vazirmatn } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import LayouBaset from "@/containers/layout/base";
 import { Providers } from "./providers";
 import LayouDashboard from "@/containers/layout/dashboard";
 import { headers } from "next/headers";
 
-const vazirmatn = Vazirmatn({
-  variable: "--font-vazirmatn",
-  subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+const iransans = localFont({
+  src: "../public/fonts/IRANSansXV.woff2",
+  variable: "--font-iransans",
+  weight: "100 900",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -27,7 +28,7 @@ export default async function RootLayout({
 
   return (
     <html lang="fs" dir="rtl">
-      <body className={vazirmatn.className}>
+      <body className={iransans.className}>
         <Providers>
           {isDashboard ? (
             <LayouDashboard>{children}</LayouDashboard>
