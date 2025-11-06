@@ -125,8 +125,8 @@ export async function updateBook(oldSlug: string, formData: FormData) {
     const upd = await supabase
       .from("books")
       .update({
-        name: name,
-        slug: slug,
+        name,
+        slug,
         image: image || null,
         price: Number(price),
         discount: discount ? Number(discount) : 0,

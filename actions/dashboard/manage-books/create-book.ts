@@ -111,9 +111,9 @@ export async function createBook(formData: FormData) {
     const insertBook = await supabase
       .from("books")
       .insert({
-        name: name,
-        slug: slug,
-        image: image,
+        name,
+        slug,
+        image,
         price: Number(price),
         discount: discount ? Number(discount) : 0,
         description: description || "",
@@ -136,18 +136,16 @@ export async function createBook(formData: FormData) {
     const bookId = insertBook.data.id as string;
 
     if (authRes.data.length > 0) {
-      type A = { id: string };
       await supabase.from("book_authors").insert(
-        (authRes.data as A[]).map((a) => ({
+        authRes.data.map((a) => ({
           book_id: bookId,
           author_id: a.id,
         }))
       );
     }
     if (transRes.data.length > 0) {
-      type T = { id: string };
       await supabase.from("book_translators").insert(
-        (transRes.data as T[]).map((t) => ({
+        transRes.data.map((t) => ({
           book_id: bookId,
           translator_id: t.id,
         }))

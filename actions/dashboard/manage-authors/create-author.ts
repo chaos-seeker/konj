@@ -31,7 +31,7 @@ export async function createAuthor(formData: FormData) {
       .from("authors")
       .insert({
         full_name: fullName,
-        slug: slug,
+        slug,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })

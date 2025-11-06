@@ -11,13 +11,13 @@ export async function addComment(data: {
   token: string;
 }) {
   try {
-    const bookSlug = data.bookSlug;
-    const fullName = data.fullName;
-    const text = data.text;
-    const rating = data.rating;
-    const token = data.token;
-
-    if (!bookSlug || !fullName || !text || !rating || !token) {
+    if (
+      !data.bookSlug ||
+      !data.fullName ||
+      !data.text ||
+      !data.rating ||
+      !data.token
+    ) {
       return {
         success: false,
         error: "تمام فیلدهای الزامی را پر کنید",
@@ -27,11 +27,11 @@ export async function addComment(data: {
     const id = randomUUID();
     const createdAt = new Date().toISOString();
     const res = await supabase.from("comments").insert({
-      id: id,
+      id,
       book_id: null,
-      full_name: fullName,
-      text: text,
-      rating: rating,
+      full_name: data.fullName,
+      text: data.text,
+      rating: data.rating,
       status: "pending",
       created_at: createdAt,
     });
@@ -44,10 +44,10 @@ export async function addComment(data: {
       message: "نظر شما با موفقیت ثبت شد و در انتظار تایید است",
       data: {
         id,
-        bookSlug,
-        fullName,
-        text,
-        rating,
+        bookSlug: data.bookSlug,
+        fullName: data.fullName,
+        text: data.text,
+        rating: data.rating,
         createdAt,
         status: "pending",
       },

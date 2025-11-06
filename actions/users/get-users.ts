@@ -1,6 +1,6 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 
 export type TUser = {
   id: string;
@@ -11,40 +11,36 @@ export type TUser = {
 
 export async function getUsers() {
   try {
-    const usernames = await redis.zrange("users:list", 0, -1);
+    const { data, error } = await supabase
+      .from("users")
+      .select("id, username, full_name, created_at")
+      .order("created_at", { ascending: false });
 
-    if (!usernames || usernames.length === 0) {
+    if (error) {
+      return {
+        success: false,
+        error: "خطا در دریافت کاربران",
+        data: [] as TUser[],
+      } as const;
+    }
+
+    if (!data || data.length === 0) {
       return {
         success: true,
         data: [] as TUser[],
       } as const;
     }
 
-    const users = await Promise.all(
-      usernames.map(async (username) => {
-        const userStr = await redis.get(`user:${username}`);
-        if (!userStr) return null;
-        const user =
-          typeof userStr === "string" ? JSON.parse(userStr) : userStr;
-        return {
-          id: user.id,
-          username: user.username,
-          fullName: user.fullName,
-          createdAt: user.createdAt,
-        };
-      })
-    );
-
-    const validUsers = users.filter((u): u is TUser => u !== null);
-
-    validUsers.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    const users: TUser[] = data.map((user) => ({
+      id: user.id,
+      username: user.username,
+      fullName: user.full_name,
+      createdAt: user.created_at,
+    }));
 
     return {
       success: true,
-      data: validUsers,
+      data: users,
     } as const;
   } catch {
     return {

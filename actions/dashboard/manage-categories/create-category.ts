@@ -30,8 +30,8 @@ export async function createCategory(formData: FormData) {
     const ins = await supabase
       .from("categories")
       .insert({
-        name: name,
-        slug: slug,
+        name,
+        slug,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })

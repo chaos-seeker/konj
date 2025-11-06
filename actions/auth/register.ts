@@ -9,18 +9,15 @@ export async function register(data: {
   password: string;
 }) {
   try {
-    let fullName = data.fullName;
-    let username = data.username;
-    let password = data.password;
-    if (!fullName || !username || !password) {
+    if (!data.fullName || !data.username || !data.password) {
       return {
         success: false,
         error: "تمام فیلدهای الزامی را پر کنید",
       } as const;
     }
-    username = username.toLowerCase().trim();
-    fullName = fullName.trim();
-    password = password.trim();
+    const username = data.username.toLowerCase().trim();
+    const fullName = data.fullName.trim();
+    const password = data.password.trim();
     const check = await supabase
       .from("users")
       .select("id")

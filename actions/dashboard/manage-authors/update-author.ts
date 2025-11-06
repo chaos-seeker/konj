@@ -48,7 +48,7 @@ export async function updateAuthor(oldSlug: string, formData: FormData) {
       .from("authors")
       .update({
         full_name: fullName,
-        slug: slug,
+        slug,
         updated_at: new Date().toISOString(),
       })
       .eq("id", existing.data.id);

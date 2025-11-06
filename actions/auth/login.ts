@@ -5,16 +5,14 @@ import { randomUUID } from "crypto";
 
 export async function login(data: { username: string; password: string }) {
   try {
-    let username = data.username;
-    let password = data.password;
-    if (!username || !password) {
+    if (!data.username || !data.password) {
       return {
         success: false,
         error: "نام کاربری و رمز عبور الزامی است",
       } as const;
     }
-    username = username.toLowerCase().trim();
-    password = password.trim();
+    const username = data.username.toLowerCase().trim();
+    const password = data.password.trim();
     const res = await supabase
       .from("users")
       .select("id, username, full_name, password")

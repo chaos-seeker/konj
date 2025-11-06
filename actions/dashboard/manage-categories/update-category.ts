@@ -46,8 +46,8 @@ export async function updateCategory(oldSlug: string, formData: FormData) {
     const upd = await supabase
       .from("categories")
       .update({
-        name: name,
-        slug: slug,
+        name,
+        slug,
         updated_at: new Date().toISOString(),
       })
       .eq("id", existing.data.id);

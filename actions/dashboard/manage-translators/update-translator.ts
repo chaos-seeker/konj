@@ -47,7 +47,7 @@ export async function updateTranslator(oldSlug: string, formData: FormData) {
       .from("translators")
       .update({
         full_name: fullName,
-        slug: slug,
+        slug,
         updated_at: new Date().toISOString(),
       })
       .eq("id", existing.data.id);

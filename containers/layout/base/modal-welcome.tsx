@@ -140,7 +140,7 @@ export function ModalWelcome() {
             <li>Next.js (App Router)</li>
             <li>TypeScript</li>
             <li>Tailwind CSS</li>
-            <li>Redis (Upstash)</li>
+            <li>Supabase</li>
             <li>@tanstack/react-query</li>
             <li>nuqs (مدیریت query parameters)</li>
             <li>killua (state management)</li>

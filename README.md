@@ -12,6 +12,8 @@
 
 - typescript
 
+- supabase
+
 - killua
 
 - react-hook-form
@@ -21,8 +23,6 @@
 - tanstack react-query
 
 - nuqs
-
-- redis (upstash)
 
 - shadcn/ui
 

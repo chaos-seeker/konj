@@ -11,28 +11,36 @@ create table if not exists users (
 create table if not exists categories (
   id uuid primary key default gen_random_uuid(),
   name text not null,
-  slug text unique not null
+  slug text unique not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
 -- Publishers
 create table if not exists publishers (
   id uuid primary key default gen_random_uuid(),
   name text not null,
-  slug text unique not null
+  slug text unique not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
 -- Authors
 create table if not exists authors (
   id uuid primary key default gen_random_uuid(),
   full_name text not null,
-  slug text unique not null
+  slug text unique not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
 -- Translators
 create table if not exists translators (
   id uuid primary key default gen_random_uuid(),
   full_name text not null,
-  slug text unique not null
+  slug text unique not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
 -- Books

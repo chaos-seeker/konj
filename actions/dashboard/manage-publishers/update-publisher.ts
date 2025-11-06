@@ -46,7 +46,7 @@ export async function updatePublisher(oldSlug: string, formData: FormData) {
 
     const upd = await supabase
       .from("publishers")
-      .update({ name: name, slug: slug, updated_at: new Date().toISOString() })
+      .update({ name, slug, updated_at: new Date().toISOString() })
       .eq("id", existing.data.id);
     if (upd.error) return { success: false, error: upd.error.message } as const;
 
