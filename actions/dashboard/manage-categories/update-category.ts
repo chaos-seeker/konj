@@ -1,6 +1,6 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 
 export async function updateCategory(oldSlug: string, formData: FormData) {
   try {
@@ -14,63 +14,50 @@ export async function updateCategory(oldSlug: string, formData: FormData) {
       };
     }
 
-
-    const existingCategory = await redis.get(`category:${oldSlug}`);
-    if (!existingCategory) {
+    const existing = await supabase
+      .from("categories")
+      .select("id")
+      .eq("slug", oldSlug)
+      .limit(1)
+      .single();
+    if (existing.error || !existing.data) {
       return {
         success: false,
         error: "دسته بندی یافت نشد",
       };
     }
 
-
     if (oldSlug !== slug) {
-      const slugExists = await redis.get(`category:${slug}`);
-      if (slugExists) {
+      const dup = await supabase
+        .from("categories")
+        .select("id")
+        .eq("slug", slug)
+        .limit(1)
+        .maybeSingle();
+      if (dup.error)
+        return { success: false, error: dup.error.message } as const;
+      if (dup.data)
         return {
           success: false,
           error: "این اسلاگ قبلاً استفاده شده است",
-        };
-      }
+        } as const;
     }
 
-
-    const categoryData =
-      typeof existingCategory === "string"
-        ? JSON.parse(existingCategory)
-        : existingCategory;
-
-    const updatedCategory = {
-      ...categoryData,
-      name,
-      slug,
-      updatedAt: new Date().toISOString(),
-    };
-
-
-    if (oldSlug !== slug) {
-      await redis.del(`category:${oldSlug}`);
-      await redis.zrem("categories:list", oldSlug);
-      await redis.set(`category:${slug}`, updatedCategory);
-      await redis.zadd("categories:list", {
-        score: Date.now(),
-        member: slug,
-      });
-    } else {
-
-      await redis.set(`category:${slug}`, updatedCategory);
-    }
+    const upd = await supabase
+      .from("categories")
+      .update({
+        name: name,
+        slug: slug,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", existing.data.id);
+    if (upd.error) return { success: false, error: upd.error.message } as const;
 
     return {
       success: true,
       message: "دسته بندی با موفقیت به‌روزرسانی شد",
     };
-  } catch (error) {
-    console.error("Error updating category:", error);
-    return {
-      success: false,
-      error: "خطا در به‌روزرسانی دسته بندی",
-    };
+  } catch {
+    return { success: false, error: "خطا در به‌روزرسانی دسته بندی" } as const;
   }
 }
-

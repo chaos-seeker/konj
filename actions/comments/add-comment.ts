@@ -1,6 +1,6 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 import { randomUUID } from "crypto";
 
 export async function addComment(data: {
@@ -11,7 +11,11 @@ export async function addComment(data: {
   token: string;
 }) {
   try {
-    const { bookSlug, fullName, text, rating, token } = data;
+    const bookSlug = data.bookSlug;
+    const fullName = data.fullName;
+    const text = data.text;
+    const rating = data.rating;
+    const token = data.token;
 
     if (!bookSlug || !fullName || !text || !rating || !token) {
       return {
@@ -20,47 +24,38 @@ export async function addComment(data: {
       } as const;
     }
 
-    const tokenDataStr = await redis.get(`token:${token}`);
-    if (!tokenDataStr) {
-      return {
-        success: false,
-        error: "لطفاً دوباره وارد شوید",
-      } as const;
+    const id = randomUUID();
+    const createdAt = new Date().toISOString();
+    const res = await supabase.from("comments").insert({
+      id: id,
+      book_id: null,
+      full_name: fullName,
+      text: text,
+      rating: rating,
+      status: "pending",
+      created_at: createdAt,
+    });
+    if (res.error) {
+      return { success: false, error: res.error.message } as const;
     }
-    const commentId = randomUUID();
-    const comment = {
-      id: commentId,
-      bookSlug,
-      fullName,
-      text,
-      rating,
-      status: "pending" as const,
-      createdAt: new Date().toISOString(),
-    };
-
-    await redis.set(`comment:${commentId}`, JSON.stringify(comment));
-    
-    await redis.zadd(`book:${bookSlug}:comments:pending`, {
-      score: Date.now(),
-      member: commentId,
-    });
-
-    await redis.zadd("comments:pending", {
-      score: Date.now(),
-      member: commentId,
-    });
 
     return {
       success: true,
       message: "نظر شما با موفقیت ثبت شد و در انتظار تایید است",
-      data: comment,
+      data: {
+        id,
+        bookSlug,
+        fullName,
+        text,
+        rating,
+        createdAt,
+        status: "pending",
+      },
     } as const;
-  } catch (error) {
-    console.error("Error adding comment:", error);
+  } catch {
     return {
       success: false,
       error: "خطا در ثبت نظر",
     } as const;
   }
 }
-

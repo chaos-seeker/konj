@@ -1,43 +1,48 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 import type { TComment } from "@/types/comment";
 
 export async function getBookComments(bookSlug: string) {
   try {
-    const approvedCommentIds = await redis.zrange(
-      `book:${bookSlug}:comments:approved`,
-      0,
-      -1
-    );
+    const bookRes = await supabase
+      .from("books")
+      .select("id")
+      .eq("slug", bookSlug)
+      .limit(1)
+      .single();
+    if (bookRes.error || !bookRes.data) {
+      return { success: true, data: [] as TComment[] } as const;
+    }
 
-    if (!approvedCommentIds || approvedCommentIds.length === 0) {
+    const res = await supabase
+      .from("comments")
+      .select("full_name, text, rating, created_at")
+      .eq("book_id", bookRes.data.id)
+      .eq("status", "approved")
+      .order("created_at", { ascending: false });
+    if (res.error) {
       return {
-        success: true,
+        success: false,
+        error: res.error.message,
         data: [] as TComment[],
       } as const;
     }
-
-    const comments = await Promise.all(
-      approvedCommentIds.map(async (commentId) => {
-        const commentStr = await redis.get(`comment:${commentId}`);
-        if (!commentStr) return null;
-        return typeof commentStr === "string"
-          ? JSON.parse(commentStr)
-          : commentStr;
-      })
-    );
-
-    const validComments = comments.filter(
-      (c): c is TComment => c !== null && c.status === "approved"
-    );
-
-    return {
-      success: true,
-      data: validComments,
-    } as const;
-  } catch (error) {
-    console.error("Error fetching book comments:", error);
+    type Row = Pick<TComment, "text" | "rating" | "createdAt"> & {
+      full_name: string;
+      created_at: string;
+    };
+    const mapped: TComment[] = ((res.data as Row[]) || []).map((c) => ({
+      id: "",
+      bookSlug: bookSlug,
+      fullName: c.full_name,
+      text: c.text,
+      rating: c.rating,
+      status: "approved" as const,
+      createdAt: c.created_at,
+    }));
+    return { success: true, data: mapped } as const;
+  } catch {
     return {
       success: false,
       error: "خطا در دریافت نظرات",
@@ -45,4 +50,3 @@ export async function getBookComments(bookSlug: string) {
     } as const;
   }
 }
-

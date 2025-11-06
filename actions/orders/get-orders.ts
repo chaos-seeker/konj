@@ -1,58 +1,36 @@
 "use server";
 
-import redis from "@/lib/upstash";
-
-export type TOrder = {
-  id: string;
-  fullName: string;
-  username: string;
-  totalPrice: number;
-  totalDiscount: number;
-  finalPrice: number;
-  items: Array<{
-    bookSlug: string;
-    bookName: string;
-    price: number;
-    discount: number;
-  }>;
-  status: string;
-  createdAt: string;
-};
+import { supabase } from "@/lib/supabase";
+import type { TOrder } from "@/types/order";
 
 export async function getOrders() {
   try {
-    const orderIds = await redis.zrange("orders:list", 0, -1);
+    const res = await supabase
+      .from("orders")
+      .select(
+        "id, full_name, username, total_price, total_discount, final_price, created_at"
+      )
+      .order("created_at", { ascending: false });
+    if (res.error) throw res.error;
+    type Row = Pick<TOrder, "id" | "username" | "createdAt"> & {
+      full_name: string;
+      total_price: number;
+      total_discount: number;
+      final_price: number;
+      created_at: string;
+    };
+    const mapped: TOrder[] = ((res.data as Row[]) || []).map((o) => ({
+      id: o.id,
+      fullName: o.full_name,
+      username: o.username,
+      totalPrice: o.total_price,
+      totalDiscount: o.total_discount,
+      finalPrice: o.final_price,
+      createdAt: o.created_at,
+    }));
 
-    if (!orderIds || orderIds.length === 0) {
-      return {
-        success: true,
-        data: [] as TOrder[],
-      } as const;
-    }
-
-    const orders = await Promise.all(
-      orderIds.map(async (orderId) => {
-        const orderStr = await redis.get(`order:${orderId}`);
-        if (!orderStr) return null;
-        const order =
-          typeof orderStr === "string" ? JSON.parse(orderStr) : orderStr;
-        return order;
-      })
-    );
-
-    const validOrders = orders.filter((o): o is TOrder => o !== null);
-
-    validOrders.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-
-    return {
-      success: true,
-      data: validOrders,
-    } as const;
-  } catch (error) {
-    console.error("Error fetching orders:", error);
+    return { success: true, data: mapped } as const;
+  } catch {
     return {
       success: false,
       error: "خطا در دریافت سفارش‌ها",

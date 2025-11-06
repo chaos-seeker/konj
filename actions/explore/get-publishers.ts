@@ -1,36 +1,44 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 import type { TPublisher } from "@/types/publisher";
 
 export async function getPublishers(searchText?: string) {
   try {
-    const allPublisherSlugs = await redis.zrange("publishers:list", 0, -1);
-    if (!allPublisherSlugs || allPublisherSlugs.length === 0) {
-      return { success: true, data: [] as TPublisher[] } as const;
-    }
-
-    const allPublishers = await Promise.all(
-      allPublisherSlugs.map(async (slug) => {
-        const pubStr = await redis.get(`publisher:${slug}`);
-        if (!pubStr) return null;
-        return typeof pubStr === "string" ? JSON.parse(pubStr) : pubStr;
-      })
-    );
-
-    let publishers = allPublishers.filter((pub): pub is TPublisher => pub !== null);
-
+    let query = supabase
+      .from("publishers")
+      .select("id, name, slug")
+      .order("name");
     if (searchText && searchText.trim()) {
-      const searchLower = searchText.toLowerCase().trim();
-      publishers = publishers.filter((pub) =>
-        pub.name?.toLowerCase().includes(searchLower)
-      );
+      const s = searchText.trim();
+      query = query.ilike("name", `%${s}%`);
     }
-
-    return { success: true, data: publishers } as const;
-  } catch (error) {
-    console.error("Error fetching publishers:", error);
-    return { success: false, error: "خطا در دریافت ناشرین", data: [] as TPublisher[] } as const;
+    const res = await query;
+    if (res.error) {
+      return {
+        success: false,
+        error: res.error.message,
+        data: [] as TPublisher[],
+      } as const;
+    }
+    type Row = Pick<TPublisher, "id" | "name" | "slug"> & {
+      created_at?: string;
+      updated_at?: string;
+    };
+    const rows = (res.data as Row[]) || [];
+    const data: TPublisher[] = rows.map((p) => ({
+      id: p.id,
+      name: p.name,
+      slug: p.slug,
+      createdAt: p.created_at || "",
+      updatedAt: p.updated_at || "",
+    }));
+    return { success: true, data } as const;
+  } catch {
+    return {
+      success: false,
+      error: "خطا در دریافت ناشرین",
+      data: [] as TPublisher[],
+    } as const;
   }
 }
-

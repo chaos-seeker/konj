@@ -1,11 +1,8 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 
-export async function updatePublisher(
-  oldSlug: string,
-  formData: FormData
-) {
+export async function updatePublisher(oldSlug: string, formData: FormData) {
   try {
     const name = formData.get("name") as string;
     const slug = formData.get("slug") as string;
@@ -14,66 +11,50 @@ export async function updatePublisher(
       return {
         success: false,
         error: "نام و اسلاگ الزامی هستند",
-      };
+      } as const;
     }
 
-
-    const existingPublisher = await redis.get(`publisher:${oldSlug}`);
-    if (!existingPublisher) {
+    const existing = await supabase
+      .from("publishers")
+      .select("id")
+      .eq("slug", oldSlug)
+      .limit(1)
+      .single();
+    if (existing.error || !existing.data) {
       return {
         success: false,
         error: "ناشر یافت نشد",
-      };
+      } as const;
     }
 
-
     if (oldSlug !== slug) {
-      const slugExists = await redis.get(`publisher:${slug}`);
-      if (slugExists) {
+      const dup = await supabase
+        .from("publishers")
+        .select("id")
+        .eq("slug", slug)
+        .limit(1)
+        .maybeSingle();
+      if (dup.error)
+        return { success: false, error: dup.error.message } as const;
+      if (dup.data) {
         return {
           success: false,
           error: "این اسلاگ قبلاً استفاده شده است",
-        };
+        } as const;
       }
     }
 
-
-    const publisherData =
-      typeof existingPublisher === "string"
-        ? JSON.parse(existingPublisher)
-        : existingPublisher;
-
-    const updatedPublisher = {
-      ...publisherData,
-      name,
-      slug,
-      updatedAt: new Date().toISOString(),
-    };
-
-
-    if (oldSlug !== slug) {
-      await redis.del(`publisher:${oldSlug}`);
-      await redis.zrem("publishers:list", oldSlug);
-      await redis.set(`publisher:${slug}`, updatedPublisher);
-      await redis.zadd("publishers:list", {
-        score: Date.now(),
-        member: slug,
-      });
-    } else {
-
-      await redis.set(`publisher:${slug}`, updatedPublisher);
-    }
+    const upd = await supabase
+      .from("publishers")
+      .update({ name: name, slug: slug, updated_at: new Date().toISOString() })
+      .eq("id", existing.data.id);
+    if (upd.error) return { success: false, error: upd.error.message } as const;
 
     return {
       success: true,
       message: "ناشر با موفقیت به‌روزرسانی شد",
-    };
-  } catch (error) {
-    console.error("Error updating publisher:", error);
-    return {
-      success: false,
-      error: "خطا در به‌روزرسانی ناشر",
-    };
+    } as const;
+  } catch {
+    return { success: false, error: "خطا در به‌روزرسانی ناشر" } as const;
   }
 }
-

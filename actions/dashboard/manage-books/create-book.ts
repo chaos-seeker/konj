@@ -1,9 +1,6 @@
 "use server";
 
-import redis from "@/lib/upstash";
-import type { TBook } from "@/types/book";
-import type { TAuthor } from "@/types/author";
-import type { TTranslator } from "@/types/translator";
+import { supabase } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 
 export async function createBook(formData: FormData) {
@@ -39,24 +36,42 @@ export async function createBook(formData: FormData) {
       };
     }
 
-    const existingBook = await redis.get(`book:${slug}`);
-    if (existingBook) {
+    const dup = await supabase
+      .from("books")
+      .select("id")
+      .eq("slug", slug)
+      .limit(1)
+      .maybeSingle();
+    if (dup.error) {
+      return { success: false, error: dup.error.message } as const;
+    }
+    if (dup.data) {
       return {
         success: false,
         error: "این اسلاگ قبلاً استفاده شده است",
-      };
+      } as const;
     }
 
-    const category = await redis.get(`category:${categorySlug}`);
-    if (!category) {
+    const catRes = await supabase
+      .from("categories")
+      .select("id")
+      .eq("slug", categorySlug)
+      .limit(1)
+      .single();
+    if (catRes.error || !catRes.data) {
       return {
         success: false,
         error: "دسته بندی یافت نشد",
       };
     }
 
-    const publisher = await redis.get(`publisher:${publisherSlug}`);
-    if (!publisher) {
+    const pubRes = await supabase
+      .from("publishers")
+      .select("id")
+      .eq("slug", publisherSlug)
+      .limit(1)
+      .single();
+    if (pubRes.error || !pubRes.data) {
       return {
         success: false,
         error: "ناشر یافت نشد",
@@ -64,13 +79,14 @@ export async function createBook(formData: FormData) {
     }
 
     const authorSlugArray = JSON.parse(authorSlugs) as string[];
-    const authors = await Promise.all(
-      authorSlugArray.map(async (authorSlug) => {
-        const author = await redis.get(`author:${authorSlug}`);
-        return author;
-      })
-    );
-    if (authors.some((a) => !a)) {
+    const authRes = await supabase
+      .from("authors")
+      .select("id, slug")
+      .in("slug", authorSlugArray);
+    if (authRes.error) {
+      return { success: false, error: authRes.error.message } as const;
+    }
+    if (!authRes.data || authRes.data.length !== authorSlugArray.length) {
       return {
         success: false,
         error: "یکی از نویسندگان یافت نشد",
@@ -78,48 +94,65 @@ export async function createBook(formData: FormData) {
     }
 
     const translatorSlugArray = JSON.parse(translatorSlugs) as string[];
-    const translators = await Promise.all(
-      translatorSlugArray.map(async (translatorSlug) => {
-        const translator = await redis.get(`translator:${translatorSlug}`);
-        return translator;
-      })
-    );
-    if (translators.some((t) => !t)) {
+    const transRes = await supabase
+      .from("translators")
+      .select("id, slug")
+      .in("slug", translatorSlugArray);
+    if (transRes.error) {
+      return { success: false, error: transRes.error.message } as const;
+    }
+    if (!transRes.data || transRes.data.length !== translatorSlugArray.length) {
       return {
         success: false,
         error: "یکی از مترجمین یافت نشد",
       };
     }
 
-    const id = `book_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    const book: TBook = {
-      id,
-      name,
-      slug,
-      image: image || "",
-      price: parseFloat(price),
-      discount: discount ? parseFloat(discount) : 0,
-      description: description || "",
-      category:
-        typeof category === "string" ? JSON.parse(category) : category,
-      publisher:
-        typeof publisher === "string" ? JSON.parse(publisher) : publisher,
-      authors: (authors.map((a) => (typeof a === "string" ? JSON.parse(a) : a)) as unknown) as TAuthor[],
-      translators: (translators.map((t) => (typeof t === "string" ? JSON.parse(t) : t)) as unknown) as TTranslator[],
-      pages: parseInt(pages),
-      publicationYear: parseInt(publicationYear),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      soldCount: 0,
-      comments: [],
-    };
+    const insertBook = await supabase
+      .from("books")
+      .insert({
+        name: name,
+        slug: slug,
+        image: image,
+        price: Number(price),
+        discount: discount ? Number(discount) : 0,
+        description: description || "",
+        category_id: catRes.data.id,
+        publisher_id: pubRes.data.id,
+        pages: Number(pages),
+        publication_year: Number(publicationYear),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        sold_count: 0,
+      })
+      .select("id")
+      .single();
+    if (insertBook.error || !insertBook.data) {
+      return {
+        success: false,
+        error: insertBook.error?.message || "",
+      } as const;
+    }
+    const bookId = insertBook.data.id as string;
 
-    await redis.set(`book:${slug}`, book);
-
-    await redis.zadd("books:list", {
-      score: Date.now(),
-      member: slug,
-    });
+    if (authRes.data.length > 0) {
+      type A = { id: string };
+      await supabase.from("book_authors").insert(
+        (authRes.data as A[]).map((a) => ({
+          book_id: bookId,
+          author_id: a.id,
+        }))
+      );
+    }
+    if (transRes.data.length > 0) {
+      type T = { id: string };
+      await supabase.from("book_translators").insert(
+        (transRes.data as T[]).map((t) => ({
+          book_id: bookId,
+          translator_id: t.id,
+        }))
+      );
+    }
 
     revalidatePath("/dashboard/manage-books");
     revalidatePath("/dashboard/manage-books/add");
@@ -127,10 +160,9 @@ export async function createBook(formData: FormData) {
     return {
       success: true,
       message: "کتاب با موفقیت افزوده شد",
-      id,
-    };
-  } catch (error) {
-    console.error("Error adding book:", error);
+      id: bookId,
+    } as const;
+  } catch {
     return {
       success: false,
       error: "خطا در افزودن کتاب",

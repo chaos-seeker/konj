@@ -1,51 +1,37 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 import type { TComment } from "@/types/comment";
-import { getBook } from "@/actions/dashboard/manage-books/get-book";
 
 export async function getPendingComments() {
   try {
-    const pendingCommentIds = await redis.zrange("comments:pending", 0, -1);
-
-    if (!pendingCommentIds || pendingCommentIds.length === 0) {
+    const res = await supabase
+      .from("comments")
+      .select("full_name, text, rating, created_at")
+      .eq("status", "pending")
+      .order("created_at", { ascending: false });
+    if (res.error) {
       return {
-        success: true,
+        success: false,
+        error: res.error.message,
         data: [] as TComment[],
       } as const;
     }
-
-    const comments = await Promise.all(
-      pendingCommentIds.map(async (commentId) => {
-        const commentStr = await redis.get(`comment:${commentId}`);
-        if (!commentStr) return null;
-        const comment =
-          typeof commentStr === "string" ? JSON.parse(commentStr) : commentStr;
-
-        const bookResult = await getBook(comment.bookSlug);
-        if (bookResult.success && bookResult.data) {
-          comment.bookName = bookResult.data.name;
-        }
-
-        return comment;
-      })
-    );
-
-    const validComments = comments.filter(
-      (c): c is TComment => c !== null && c.status === "pending"
-    );
-
-    validComments.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-
-    return {
-      success: true,
-      data: validComments,
-    } as const;
-  } catch (error) {
-    console.error("Error fetching pending comments:", error);
+    type Row = Pick<TComment, "text" | "rating" | "createdAt"> & {
+      full_name: string;
+      created_at: string;
+    };
+    const mapped: TComment[] = ((res.data as Row[]) || []).map((c) => ({
+      id: "",
+      bookSlug: "",
+      fullName: c.full_name,
+      text: c.text,
+      rating: c.rating,
+      status: "pending" as const,
+      createdAt: c.created_at,
+    }));
+    return { success: true, data: mapped } as const;
+  } catch {
     return {
       success: false,
       error: "خطا در دریافت نظرات",

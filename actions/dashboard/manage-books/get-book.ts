@@ -1,45 +1,109 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 import type { TBook } from "@/types/book";
+import type { TCategory } from "@/types/category";
+import type { TPublisher } from "@/types/publisher";
+import type { TAuthor } from "@/types/author";
+import type { TTranslator } from "@/types/translator";
 
 export async function getBook(slug: string) {
   try {
-    const n = decodeURIComponent(slug || "").trim();
-    const l = n.toLowerCase();
-
-    const readKey = async (s: string) => {
-      const data = await redis.get(`book:${s}`);
-      if (!data) return null;
-      return (typeof data === "string" ? JSON.parse(data) : data) as TBook;
+    const decoded = decodeURIComponent(slug || "").trim();
+    const res = await supabase
+      .from("books")
+      .select(
+        "id,name,slug,image,price,discount,description,pages,publication_year,created_at,updated_at,sold_count, categories:category_id(id,name,slug), publishers:publisher_id(id,name,slug), book_authors(author:authors(id,full_name,slug)), book_translators(translator:translators(id,full_name,slug))"
+      )
+      .eq("slug", decoded)
+      .limit(1)
+      .single();
+    if (res.error || !res.data) {
+      return { success: false, error: "کتاب یافت نشد" } as const;
+    }
+    type CategoryRow = Pick<TCategory, "id" | "name" | "slug">;
+    type PublisherRow = Pick<TPublisher, "id" | "name" | "slug">;
+    type AuthorRow = {
+      author: Pick<TAuthor, "id" | "slug"> & {
+        full_name: string;
+      };
     };
-
-    const direct = (await readKey(n)) || (l !== n ? await readKey(l) : null);
-    if (direct) {
-      return { success: true, data: direct } as const;
+    type TranslatorRow = {
+      translator: Pick<TTranslator, "id" | "slug"> & {
+        full_name: string;
+      };
+    };
+    type BookRow = {
+      id: string;
+      name: string;
+      slug: string;
+      image: string;
+      price: number;
+      discount: number;
+      description: string;
+      pages: number;
+      publication_year: number;
+      created_at: string;
+      updated_at: string;
+      sold_count: number;
+      categories: CategoryRow | null;
+      publishers: PublisherRow | null;
+      book_authors: AuthorRow[];
+      book_translators: TranslatorRow[];
+    };
+    const r = res.data as unknown as BookRow;
+    if (!r.categories || !r.publishers) {
+      return { success: false, error: "کتاب یافت نشد" } as const;
     }
-
-    const slugs =
-      (await redis.zrange<string[]>("books:list", 0, -1, { rev: true })) || [];
-    const matched = slugs.find((s) => {
-      const sn = String(s || "").trim();
-      return sn === n || sn.toLowerCase() === l;
-    });
-    if (matched) {
-      const variants = [matched, matched.toLowerCase()].filter(
-        (v, i, a) => a.indexOf(v) === i
-      );
-      for (const v of variants) {
-        const fromList = await readKey(v);
-        if (fromList) {
-          return { success: true, data: fromList } as const;
-        }
-      }
-    }
-
-    return { success: false, error: "کتاب یافت نشد" } as const;
-  } catch (error) {
-    console.error("Error fetching book:", error);
+    const data: TBook = {
+      id: r.id,
+      name: r.name,
+      slug: r.slug,
+      image: r.image,
+      price: Number(r.price),
+      discount: Number(r.discount || 0),
+      description: r.description,
+      category: {
+        id: r.categories.id,
+        name: r.categories.name,
+        slug: r.categories.slug,
+        createdAt: "",
+        updatedAt: "",
+      },
+      publisher: {
+        id: r.publishers.id,
+        name: r.publishers.name,
+        slug: r.publishers.slug,
+        createdAt: "",
+        updatedAt: "",
+      },
+      authors: Array.isArray(r.book_authors)
+        ? r.book_authors.map((x) => ({
+            id: x.author.id,
+            fullName: x.author.full_name,
+            slug: x.author.slug,
+            createdAt: "",
+            updatedAt: "",
+          }))
+        : [],
+      translators: Array.isArray(r.book_translators)
+        ? r.book_translators.map((x) => ({
+            id: x.translator.id,
+            fullName: x.translator.full_name,
+            slug: x.translator.slug,
+            createdAt: "",
+            updatedAt: "",
+          }))
+        : [],
+      pages: Number(r.pages),
+      publicationYear: Number(r.publication_year),
+      createdAt: r.created_at,
+      updatedAt: r.updated_at,
+      soldCount: Number(r.sold_count || 0),
+      comments: [],
+    };
+    return { success: true, data } as const;
+  } catch {
     return { success: false, error: "خطا در دریافت کتاب" } as const;
   }
 }

@@ -1,6 +1,6 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 
 export async function updateAuthor(oldSlug: string, formData: FormData) {
   try {
@@ -14,8 +14,13 @@ export async function updateAuthor(oldSlug: string, formData: FormData) {
       };
     }
 
-    const existingAuthor = await redis.get(`author:${oldSlug}`);
-    if (!existingAuthor) {
+    const existing = await supabase
+      .from("authors")
+      .select("id")
+      .eq("slug", oldSlug)
+      .limit(1)
+      .single();
+    if (existing.error || !existing.data) {
       return {
         success: false,
         error: "نویسنده یافت نشد",
@@ -23,8 +28,15 @@ export async function updateAuthor(oldSlug: string, formData: FormData) {
     }
 
     if (oldSlug !== slug) {
-      const slugExists = await redis.get(`author:${slug}`);
-      if (slugExists) {
+      const dup = await supabase
+        .from("authors")
+        .select("id")
+        .eq("slug", slug)
+        .limit(1)
+        .maybeSingle();
+      if (dup.error)
+        return { success: false, error: dup.error.message } as const;
+      if (dup.data) {
         return {
           success: false,
           error: "این اسلاگ قبلاً استفاده شده است",
@@ -32,40 +44,21 @@ export async function updateAuthor(oldSlug: string, formData: FormData) {
       }
     }
 
-
-    const authorData =
-      typeof existingAuthor === "string"
-        ? JSON.parse(existingAuthor)
-        : existingAuthor;
-
-    const updatedAuthor = {
-      ...authorData,
-      fullName,
-      slug,
-      updatedAt: new Date().toISOString(),
-    };
-
-    if (oldSlug !== slug) {
-      await redis.del(`author:${oldSlug}`);
-      await redis.zrem("authors:list", oldSlug);
-      await redis.set(`author:${slug}`, updatedAuthor);
-      await redis.zadd("authors:list", {
-        score: Date.now(),
-        member: slug,
-      });
-    } else {
-      await redis.set(`author:${slug}`, updatedAuthor);
-    }
+    const upd = await supabase
+      .from("authors")
+      .update({
+        full_name: fullName,
+        slug: slug,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", existing.data.id);
+    if (upd.error) return { success: false, error: upd.error.message } as const;
 
     return {
       success: true,
       message: "نویسنده با موفقیت به‌روزرسانی شد",
     };
-  } catch (error) {
-    console.error("Error updating author:", error);
-    return {
-      success: false,
-      error: "خطا در به‌روزرسانی نویسنده",
-    };
+  } catch {
+    return { success: false, error: "خطا در به‌روزرسانی نویسنده" } as const;
   }
 }

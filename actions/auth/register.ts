@@ -1,6 +1,6 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 import { randomUUID } from "crypto";
 
 export async function register(data: {
@@ -9,50 +9,54 @@ export async function register(data: {
   password: string;
 }) {
   try {
-    let { fullName, username, password } = data;
-
+    let fullName = data.fullName;
+    let username = data.username;
+    let password = data.password;
     if (!fullName || !username || !password) {
       return {
         success: false,
         error: "تمام فیلدهای الزامی را پر کنید",
       } as const;
     }
-
     username = username.toLowerCase().trim();
     fullName = fullName.trim();
     password = password.trim();
-
-    const existingUser = await redis.get(`user:${username}`);
-    if (existingUser) {
+    const check = await supabase
+      .from("users")
+      .select("id")
+      .eq("username", username)
+      .limit(1)
+      .maybeSingle();
+    if (check.error) {
+      return { success: false, error: check.error.message } as const;
+    }
+    if (check.data) {
       return {
         success: false,
         error: "این نام کاربری قبلاً استفاده شده است",
       } as const;
     }
-
     const userId = randomUUID();
-    const userData = {
+    const insert = await supabase.from("users").insert({
       id: userId,
-      fullName,
-      username,
-      password,
-      createdAt: new Date().toISOString(),
-    };
-
-    await redis.set(`user:${username}`, JSON.stringify(userData));
-    await redis.zadd("users:list", { score: Date.now(), member: username });
+      full_name: fullName,
+      username: username,
+      password: password,
+      created_at: new Date().toISOString(),
+    });
+    if (insert.error) {
+      return { success: false, error: insert.error.message } as const;
+    }
 
     return {
       success: true,
       message: "ثبت‌نام با موفقیت انجام شد",
       data: { username, fullName },
     } as const;
-  } catch (error) {
-    console.error("Error registering user:", error);
+  } catch {
     return {
       success: false,
       error: "خطا در ثبت‌نام",
     } as const;
   }
 }
-

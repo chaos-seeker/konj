@@ -51,20 +51,12 @@ export function CartSummary() {
 
     try {
       setIsSubmitting(true);
-      const orderItems = items.map((book: TBook) => ({
-        bookSlug: book.slug,
-        bookName: book.name,
-        price: book.price,
-        discount: book.discount || 0,
-      }));
-
       const result = await createOrder({
         fullName: fullName || "",
         username: username || "",
         totalPrice: totalOriginalPrice,
         totalDiscount,
         token: token || "",
-        items: orderItems,
       });
 
       if (!result.success) {

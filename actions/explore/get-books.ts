@@ -1,7 +1,11 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 import type { TBook } from "@/types/book";
+import type { TCategory } from "@/types/category";
+import type { TPublisher } from "@/types/publisher";
+import type { TAuthor } from "@/types/author";
+import type { TTranslator } from "@/types/translator";
 
 interface GetBooksParams {
   searchText?: string;
@@ -13,71 +17,131 @@ interface GetBooksParams {
 
 export async function getBooks(params: GetBooksParams = {}) {
   try {
-    const {
-      searchText,
-      categories = [],
-      publishers = [],
-      translators = [],
-      authors = [],
-    } = params;
+    const searchText = params.searchText;
+    const categories = params.categories || [];
+    const publishers = params.publishers || [];
+    const translators = params.translators || [];
+    const authors = params.authors || [];
 
-    const allBookSlugs = await redis.zrange("books:list", 0, -1);
-    if (!allBookSlugs || allBookSlugs.length === 0) {
-      return { success: true, data: [] as TBook[] } as const;
-    }
-
-    const allBooks = await Promise.all(
-      allBookSlugs.map(async (slug) => {
-        const bookStr = await redis.get(`book:${slug}`);
-        if (!bookStr) return null;
-        return typeof bookStr === "string" ? JSON.parse(bookStr) : bookStr;
-      })
-    );
-
-    let filteredBooks = allBooks.filter((book): book is TBook => book !== null);
+    let query = supabase
+      .from("books")
+      .select(
+        "id,name,slug,image,price,discount,description,pages,publication_year,created_at,updated_at,sold_count, categories:category_id(id,name,slug), publishers:publisher_id(id,name,slug), book_authors(author:authors(id,full_name,slug)), book_translators(translator:translators(id,full_name,slug))"
+      );
 
     if (searchText && searchText.trim()) {
-      const searchLower = searchText.toLowerCase().trim();
-      filteredBooks = filteredBooks.filter((book) => {
-        const nameMatch = book.name?.toLowerCase().includes(searchLower);
-        const descMatch = book.description?.toLowerCase().includes(searchLower);
-        const authorMatch = book.authors?.some((a) =>
-          a.fullName?.toLowerCase().includes(searchLower)
-        );
-        const translatorMatch = book.translators?.some((t) =>
-          t.fullName?.toLowerCase().includes(searchLower)
-        );
-        return nameMatch || descMatch || authorMatch || translatorMatch;
-      });
+      const s = searchText.trim();
+      query = query.or(`name.ilike.%${s}%,description.ilike.%${s}%`);
     }
-
     if (categories.length > 0) {
-      filteredBooks = filteredBooks.filter((book) =>
-        categories.includes(book.category?.slug || "")
-      );
+      query = query.in("categories.slug", categories);
+    }
+    if (publishers.length > 0) {
+      query = query.in("publishers.slug", publishers);
     }
 
-    if (publishers.length > 0) {
-      filteredBooks = filteredBooks.filter((book) =>
-        publishers.includes(book.publisher?.slug || "")
-      );
+    const res = await query;
+    if (res.error) {
+      return {
+        success: false,
+        error: res.error.message,
+        data: [] as TBook[],
+      } as const;
     }
+    type CategoryRow = Pick<TCategory, "id" | "name" | "slug">;
+    type PublisherRow = Pick<TPublisher, "id" | "name" | "slug">;
+    type AuthorRow = {
+      author: Pick<TAuthor, "id" | "slug"> & {
+        full_name: string;
+      };
+    };
+    type TranslatorRow = {
+      translator: Pick<TTranslator, "id" | "slug"> & {
+        full_name: string;
+      };
+    };
+    type BookRow = {
+      id: string;
+      name: string;
+      slug: string;
+      image: string;
+      price: number;
+      discount: number;
+      description: string;
+      pages: number;
+      publication_year: number;
+      created_at: string;
+      updated_at: string;
+      sold_count: number;
+      categories: CategoryRow | null;
+      publishers: PublisherRow | null;
+      book_authors: AuthorRow[];
+      book_translators: TranslatorRow[];
+    };
+    const rows = (res.data as unknown as BookRow[]) || [];
+    let mapped: TBook[] = rows
+      .filter((r) => r.categories && r.publishers)
+      .map((r) => ({
+        id: r.id,
+        name: r.name,
+        slug: r.slug,
+        image: r.image,
+        price: Number(r.price),
+        discount: Number(r.discount || 0),
+        description: r.description,
+        category: {
+          id: r.categories!.id,
+          name: r.categories!.name,
+          slug: r.categories!.slug,
+          createdAt: "",
+          updatedAt: "",
+        },
+        publisher: {
+          id: r.publishers!.id,
+          name: r.publishers!.name,
+          slug: r.publishers!.slug,
+          createdAt: "",
+          updatedAt: "",
+        },
+        authors: Array.isArray(r.book_authors)
+          ? r.book_authors.map((x) => ({
+              id: x.author.id,
+              fullName: x.author.full_name,
+              slug: x.author.slug,
+              createdAt: "",
+              updatedAt: "",
+            }))
+          : [],
+        translators: Array.isArray(r.book_translators)
+          ? r.book_translators.map((x) => ({
+              id: x.translator.id,
+              fullName: x.translator.full_name,
+              slug: x.translator.slug,
+              createdAt: "",
+              updatedAt: "",
+            }))
+          : [],
+        pages: Number(r.pages),
+        publicationYear: Number(r.publication_year),
+        createdAt: r.created_at,
+        updatedAt: r.updated_at,
+        soldCount: Number(r.sold_count || 0),
+        comments: [],
+      }));
 
     if (translators.length > 0) {
-      filteredBooks = filteredBooks.filter((book) =>
-        book.translators?.some((t) => translators.includes(t.slug))
+      mapped = mapped.filter((b) =>
+        b.translators.some((t) => translators.includes(t.slug))
       );
     }
-
     if (authors.length > 0) {
-      filteredBooks = filteredBooks.filter((book) =>
-        book.authors?.some((a) => authors.includes(a.slug))
+      mapped = mapped.filter((b) =>
+        b.authors.some((a) => authors.includes(a.slug))
       );
     }
 
-    return { success: true, data: filteredBooks } as const;
-  } catch (error) {
-    console.error("Error fetching books:", error);
+    return { success: true, data: mapped } as const;
+  } catch {
     return {
       success: false,
       error: "خطا در دریافت کتاب‌ها",

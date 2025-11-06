@@ -1,6 +1,6 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 
 export async function createAuthor(formData: FormData) {
   try {
@@ -14,41 +14,39 @@ export async function createAuthor(formData: FormData) {
       };
     }
 
-    const existingAuthor = await redis.get(`author:${slug}`);
-
-    if (existingAuthor) {
+    const dup = await supabase
+      .from("authors")
+      .select("id")
+      .eq("slug", slug)
+      .limit(1)
+      .maybeSingle();
+    if (dup.error) return { success: false, error: dup.error.message } as const;
+    if (dup.data)
       return {
         success: false,
         error: "این اسلاگ قبلاً استفاده شده است",
-      };
-    }
+      } as const;
 
-    const id = `aut_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    const author = {
-      id,
-      fullName,
-      slug,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    await redis.set(`author:${slug}`, author);
-
-    await redis.zadd("authors:list", {
-      score: Date.now(),
-      member: slug,
-    });
+    const ins = await supabase
+      .from("authors")
+      .insert({
+        full_name: fullName,
+        slug: slug,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .select("id")
+      .single();
+    if (ins.error || !ins.data)
+      return { success: false, error: ins.error?.message || "" } as const;
+    const id = ins.data.id as string;
 
     return {
       success: true,
       message: "نویسنده با موفقیت افزوده شد",
       id,
     };
-  } catch (error) {
-    console.error("Error adding author:", error);
-    return {
-      success: false,
-      error: "خطا در افزودن نویسنده",
-    };
+  } catch {
+    return { success: false, error: "خطا در افزودن نویسنده" } as const;
   }
 }

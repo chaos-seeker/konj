@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getUserOrders } from "@/actions/orders/get-user-orders";
-import type { TOrder } from "@/actions/orders/get-orders";
+import type { TOrder } from "@/types/order";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import {

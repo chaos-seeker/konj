@@ -1,7 +1,7 @@
 "use server";
 
-import redis from "@/lib/upstash";
-import type { TOrder } from "./get-orders";
+import { supabase } from "@/lib/supabase";
+import type { TOrder } from "@/types/order";
 
 export async function getUserOrders(username: string) {
   try {
@@ -12,42 +12,32 @@ export async function getUserOrders(username: string) {
         data: [] as TOrder[],
       } as const;
     }
-
-    const orderIds = await redis.zrange("orders:list", 0, -1);
-
-    if (!orderIds || orderIds.length === 0) {
-      return {
-        success: true,
-        data: [] as TOrder[],
-      } as const;
-    }
-
-    const orders = await Promise.all(
-      orderIds.map(async (orderId) => {
-        const orderStr = await redis.get(`order:${orderId}`);
-        if (!orderStr) return null;
-        const order = typeof orderStr === "string" ? JSON.parse(orderStr) : orderStr;
-        return order;
-      })
-    );
-
-    const validOrders = orders.filter((o): o is TOrder => o !== null);
-
-    const userOrders = validOrders.filter(
-      (order) => order.username?.toLowerCase() === username.toLowerCase()
-    );
-
-    userOrders.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-
-    return {
-      success: true,
-      data: userOrders,
-    } as const;
-  } catch (error) {
-    console.error("Error fetching user orders:", error);
+    const res = await supabase
+      .from("orders")
+      .select(
+        "id, full_name, username, total_price, total_discount, final_price, created_at"
+      )
+      .eq("username", username)
+      .order("created_at", { ascending: false });
+    if (res.error) throw res.error;
+    type Row = Pick<TOrder, "id" | "username" | "createdAt"> & {
+      full_name: string;
+      total_price: number;
+      total_discount: number;
+      final_price: number;
+      created_at: string;
+    };
+    const mapped: TOrder[] = ((res.data as Row[]) || []).map((o) => ({
+      id: o.id,
+      fullName: o.full_name,
+      username: o.username,
+      totalPrice: o.total_price,
+      totalDiscount: o.total_discount,
+      finalPrice: o.final_price,
+      createdAt: o.created_at,
+    }));
+    return { success: true, data: mapped } as const;
+  } catch {
     return {
       success: false,
       error: "خطا در دریافت سفارش‌های شما",
@@ -55,4 +45,3 @@ export async function getUserOrders(username: string) {
     } as const;
   }
 }
-

@@ -1,37 +1,40 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 import type { TCategory } from "@/types/category";
 
 export async function getCategories(searchText?: string) {
   try {
-    const allCategorySlugs = await redis.zrange("categories:list", 0, -1);
-    if (!allCategorySlugs || allCategorySlugs.length === 0) {
-      return { success: true, data: [] as TCategory[] } as const;
-    }
-
-    const allCategories = await Promise.all(
-      allCategorySlugs.map(async (slug) => {
-        const catStr = await redis.get(`category:${slug}`);
-        if (!catStr) return null;
-        return typeof catStr === "string" ? JSON.parse(catStr) : catStr;
-      })
-    );
-
-    let categories = allCategories.filter(
-      (cat): cat is TCategory => cat !== null
-    );
-
+    let query = supabase
+      .from("categories")
+      .select("id, name, slug")
+      .order("name");
     if (searchText && searchText.trim()) {
-      const searchLower = searchText.toLowerCase().trim();
-      categories = categories.filter((cat) =>
-        cat.name?.toLowerCase().includes(searchLower)
-      );
+      const s = searchText.trim();
+      query = query.ilike("name", `%${s}%`);
     }
-
-    return { success: true, data: categories } as const;
-  } catch (error) {
-    console.error("Error fetching categories:", error);
+    const res = await query;
+    if (res.error) {
+      return {
+        success: false,
+        error: res.error.message,
+        data: [] as TCategory[],
+      } as const;
+    }
+    type Row = Pick<TCategory, "id" | "name" | "slug"> & {
+      created_at?: string;
+      updated_at?: string;
+    };
+    const rows = (res.data as Row[]) || [];
+    const data: TCategory[] = rows.map((c) => ({
+      id: c.id,
+      name: c.name,
+      slug: c.slug,
+      createdAt: c.created_at || "",
+      updatedAt: c.updated_at || "",
+    }));
+    return { success: true, data } as const;
+  } catch {
     return {
       success: false,
       error: "خطا در دریافت دسته‌بندی‌ها",

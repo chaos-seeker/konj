@@ -1,6 +1,6 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 
 export async function createCategory(formData: FormData) {
   try {
@@ -14,45 +14,39 @@ export async function createCategory(formData: FormData) {
       };
     }
 
-
-    const existingCategory = await redis.get(`category:${slug}`);
-
-    if (existingCategory) {
+    const dup = await supabase
+      .from("categories")
+      .select("id")
+      .eq("slug", slug)
+      .limit(1)
+      .maybeSingle();
+    if (dup.error) return { success: false, error: dup.error.message } as const;
+    if (dup.data)
       return {
         success: false,
         error: "این اسلاگ قبلاً استفاده شده است",
-      };
-    }
+      } as const;
 
-    const id = `cat_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    const category = {
-      id,
-      name,
-      slug,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-
-    await redis.set(`category:${slug}`, category);
-
-
-    await redis.zadd("categories:list", {
-      score: Date.now(),
-      member: slug,
-    });
+    const ins = await supabase
+      .from("categories")
+      .insert({
+        name: name,
+        slug: slug,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .select("id")
+      .single();
+    if (ins.error || !ins.data)
+      return { success: false, error: ins.error?.message || "" } as const;
+    const id = ins.data.id as string;
 
     return {
       success: true,
       message: "دسته بندی با موفقیت افزوده شد",
       id,
     };
-  } catch (error) {
-    console.error("Error adding category:", error);
-    return {
-      success: false,
-      error: "خطا در افزودن دسته بندی",
-    };
+  } catch {
+    return { success: false, error: "خطا در افزودن دسته بندی" } as const;
   }
 }
-

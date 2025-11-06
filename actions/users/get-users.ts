@@ -24,7 +24,8 @@ export async function getUsers() {
       usernames.map(async (username) => {
         const userStr = await redis.get(`user:${username}`);
         if (!userStr) return null;
-        const user = typeof userStr === "string" ? JSON.parse(userStr) : userStr;
+        const user =
+          typeof userStr === "string" ? JSON.parse(userStr) : userStr;
         return {
           id: user.id,
           username: user.username,
@@ -45,8 +46,7 @@ export async function getUsers() {
       success: true,
       data: validUsers,
     } as const;
-  } catch (error) {
-    console.error("Error fetching users:", error);
+  } catch {
     return {
       success: false,
       error: "خطا در دریافت کاربران",
@@ -54,4 +54,3 @@ export async function getUsers() {
     } as const;
   }
 }
-

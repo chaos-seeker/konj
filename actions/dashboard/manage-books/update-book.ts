@@ -1,8 +1,9 @@
 "use server";
 
-import redis from "@/lib/upstash";
-import type { TBook } from "@/types/book";
+import { supabase } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
+import type { TAuthor } from "@/types/author";
+import type { TTranslator } from "@/types/translator";
 
 export async function updateBook(oldSlug: string, formData: FormData) {
   try {
@@ -36,8 +37,13 @@ export async function updateBook(oldSlug: string, formData: FormData) {
       };
     }
 
-    const existingBook = await redis.get(`book:${oldSlug}`);
-    if (!existingBook) {
+    const existing = await supabase
+      .from("books")
+      .select("id")
+      .eq("slug", oldSlug)
+      .limit(1)
+      .single();
+    if (existing.error || !existing.data) {
       return {
         success: false,
         error: "کتاب یافت نشد",
@@ -45,25 +51,41 @@ export async function updateBook(oldSlug: string, formData: FormData) {
     }
 
     if (oldSlug !== slug) {
-      const slugExists = await redis.get(`book:${slug}`);
-      if (slugExists) {
+      const dup = await supabase
+        .from("books")
+        .select("id")
+        .eq("slug", slug)
+        .limit(1)
+        .maybeSingle();
+      if (dup.error)
+        return { success: false, error: dup.error.message } as const;
+      if (dup.data)
         return {
           success: false,
           error: "این اسلاگ قبلاً استفاده شده است",
-        };
-      }
+        } as const;
     }
 
-    const category = await redis.get(`category:${categorySlug}`);
-    if (!category) {
+    const catRes = await supabase
+      .from("categories")
+      .select("id")
+      .eq("slug", categorySlug)
+      .limit(1)
+      .single();
+    if (catRes.error || !catRes.data) {
       return {
         success: false,
         error: "دسته بندی یافت نشد",
       };
     }
 
-    const publisher = await redis.get(`publisher:${publisherSlug}`);
-    if (!publisher) {
+    const pubRes = await supabase
+      .from("publishers")
+      .select("id")
+      .eq("slug", publisherSlug)
+      .limit(1)
+      .single();
+    if (pubRes.error || !pubRes.data) {
       return {
         success: false,
         error: "ناشر یافت نشد",
@@ -71,13 +93,14 @@ export async function updateBook(oldSlug: string, formData: FormData) {
     }
 
     const authorSlugArray = JSON.parse(authorSlugs) as string[];
-    const authors = await Promise.all(
-      authorSlugArray.map(async (authorSlug) => {
-        const author = await redis.get(`author:${authorSlug}`);
-        return author;
-      })
-    );
-    if (authors.some((a) => !a)) {
+    const authRes = await supabase
+      .from("authors")
+      .select("id, slug")
+      .in("slug", authorSlugArray);
+    if (authRes.error) {
+      return { success: false, error: authRes.error.message } as const;
+    }
+    if (!authRes.data || authRes.data.length !== authorSlugArray.length) {
       return {
         success: false,
         error: "یکی از نویسندگان یافت نشد",
@@ -85,55 +108,58 @@ export async function updateBook(oldSlug: string, formData: FormData) {
     }
 
     const translatorSlugArray = JSON.parse(translatorSlugs) as string[];
-    const translators = await Promise.all(
-      translatorSlugArray.map(async (translatorSlug) => {
-        const translator = await redis.get(`translator:${translatorSlug}`);
-        return translator;
-      })
-    );
-    if (translators.some((t) => !t)) {
+    const transRes = await supabase
+      .from("translators")
+      .select("id, slug")
+      .in("slug", translatorSlugArray);
+    if (transRes.error) {
+      return { success: false, error: transRes.error.message } as const;
+    }
+    if (!transRes.data || transRes.data.length !== translatorSlugArray.length) {
       return {
         success: false,
         error: "یکی از مترجمین یافت نشد",
       };
     }
-
-    const bookData =
-      typeof existingBook === "string" ? JSON.parse(existingBook) : existingBook;
-
-    const updatedBook: TBook = {
-      ...bookData,
-      name,
-      slug,
-      image: image || bookData.image || undefined,
-      price: parseFloat(price),
-      discount: discount ? parseFloat(discount) : 0,
-      description: description || "",
-      category:
-        typeof category === "string" ? JSON.parse(category) : category,
-      publisher:
-        typeof publisher === "string" ? JSON.parse(publisher) : publisher,
-      authors: authors.map((a) =>
-        typeof a === "string" ? JSON.parse(a) : a
-      ) as any[],
-      translators: translators.map((t) =>
-        typeof t === "string" ? JSON.parse(t) : t
-      ) as any[],
-      pages: parseInt(pages),
-      publicationYear: parseInt(publicationYear),
-      updatedAt: new Date().toISOString(),
-    };
-
-    if (oldSlug !== slug) {
-      await redis.del(`book:${oldSlug}`);
-      await redis.zrem("books:list", oldSlug);
-      await redis.set(`book:${slug}`, updatedBook);
-      await redis.zadd("books:list", {
-        score: Date.now(),
-        member: slug,
-      });
-    } else {
-      await redis.set(`book:${slug}`, updatedBook);
+    const bookId = existing.data.id as string;
+    const upd = await supabase
+      .from("books")
+      .update({
+        name: name,
+        slug: slug,
+        image: image || null,
+        price: Number(price),
+        discount: discount ? Number(discount) : 0,
+        description: description || "",
+        category_id: catRes.data.id,
+        publisher_id: pubRes.data.id,
+        pages: Number(pages),
+        publication_year: Number(publicationYear),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", bookId);
+    if (upd.error) {
+      return { success: false, error: upd.error.message } as const;
+    }
+    await supabase.from("book_authors").delete().eq("book_id", bookId);
+    await supabase.from("book_translators").delete().eq("book_id", bookId);
+    type AuthorRow = Pick<TAuthor, "id" | "slug">;
+    type TranslatorRow = Pick<TTranslator, "id" | "slug">;
+    if (authRes.data.length > 0) {
+      await supabase.from("book_authors").insert(
+        (authRes.data as AuthorRow[]).map((a) => ({
+          book_id: bookId,
+          author_id: a.id,
+        }))
+      );
+    }
+    if (transRes.data.length > 0) {
+      await supabase.from("book_translators").insert(
+        (transRes.data as TranslatorRow[]).map((t) => ({
+          book_id: bookId,
+          translator_id: t.id,
+        }))
+      );
     }
 
     revalidatePath("/dashboard/manage-books");
@@ -146,12 +172,7 @@ export async function updateBook(oldSlug: string, formData: FormData) {
       success: true,
       message: "کتاب با موفقیت به‌روزرسانی شد",
     };
-  } catch (error) {
-    console.error("Error updating book:", error);
-    return {
-      success: false,
-      error: "خطا در به‌روزرسانی کتاب",
-    };
+  } catch {
+    return { success: false, error: "خطا در به‌روزرسانی کتاب" } as const;
   }
 }
-

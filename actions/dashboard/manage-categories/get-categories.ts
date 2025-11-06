@@ -1,48 +1,33 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
+import type { TCategory } from "@/types/category";
 
 export async function getCategories() {
   try {
-    const slugs =
-      (await redis.zrange<string[]>("categories:list", 0, -1, {
-        rev: true,
-      })) || [];
-
-    if (!slugs || slugs.length === 0) {
-      return {
-        success: true,
-        data: [],
-      };
-    }
-
-    const categories = await Promise.all(
-      slugs.map(async (slug) => {
-        const categoryData = await redis.get(`category:${slug}`);
-        if (categoryData) {
-          if (typeof categoryData === "string") {
-            return JSON.parse(categoryData);
-          }
-          return categoryData;
-        }
-        return null;
-      })
-    );
-
-    const validCategories = categories.filter((c) => c !== null) as Array<
-      import("@/types/category").TCategory
-    >;
-
-    return {
-      success: true,
-      data: validCategories,
+    const res = await supabase
+      .from("categories")
+      .select("id, name, slug, created_at, updated_at")
+      .order("name");
+    if (res.error)
+      return { success: false, error: res.error.message, data: [] } as const;
+    type Row = Pick<TCategory, "id" | "name" | "slug"> & {
+      created_at: string;
+      updated_at: string;
     };
-  } catch (error) {
-    console.error("Error fetching categories:", error);
+    const data = ((res.data as Row[]) || []).map((c) => ({
+      id: c.id,
+      name: c.name,
+      slug: c.slug,
+      createdAt: c.created_at,
+      updatedAt: c.updated_at,
+    }));
+    return { success: true, data } as const;
+  } catch {
     return {
       success: false,
       error: "خطا در دریافت دسته بندی‌ها",
       data: [],
-    };
+    } as const;
   }
 }

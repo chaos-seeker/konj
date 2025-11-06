@@ -1,92 +1,56 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 import { randomUUID } from "crypto";
 
 export async function login(data: { username: string; password: string }) {
   try {
-    let { username, password } = data;
-
+    let username = data.username;
+    let password = data.password;
     if (!username || !password) {
       return {
         success: false,
         error: "نام کاربری و رمز عبور الزامی است",
       } as const;
     }
-
     username = username.toLowerCase().trim();
     password = password.trim();
-
-    console.log("Attempting login for username:", username);
-    const userDataStr = await redis.get(`user:${username}`);
-    console.log("User data from Redis:", userDataStr ? "Found" : "Not found");
-
-    if (!userDataStr) {
+    const res = await supabase
+      .from("users")
+      .select("id, username, full_name, password")
+      .eq("username", username)
+      .limit(1)
+      .single();
+    if (res.error || !res.data) {
       return {
         success: false,
         error: "نام کاربری یا رمز عبور اشتباه است",
       } as const;
     }
-
-    let userData;
-    try {
-      userData =
-        typeof userDataStr === "string" ? JSON.parse(userDataStr) : userDataStr;
-    } catch (parseError) {
-      console.error(
-        "Error parsing user data:",
-        parseError,
-        "Data:",
-        userDataStr
-      );
-      return {
-        success: false,
-        error: "خطا در خواندن اطلاعات کاربر",
-      } as const;
-    }
-
-    console.log("Parsed user data:", {
-      username: userData?.username,
-      hasPassword: !!userData?.password,
-    });
-    console.log(
-      "Comparing passwords - stored:",
-      userData?.password,
-      "provided:",
-      password
-    );
-
-    if (!userData || userData.password !== password) {
-      console.log("Password mismatch or userData missing");
+    const user = res.data as {
+      id: string;
+      username: string;
+      full_name: string;
+      password: string;
+    };
+    if (user.password !== password) {
       return {
         success: false,
         error: "نام کاربری یا رمز عبور اشتباه است",
       } as const;
     }
-
-    console.log("Login successful for user:", username);
     const token = randomUUID();
-    await redis.set(
-      `token:${token}`,
-      JSON.stringify({
-        userId: userData.id,
-        username: userData.username,
-        fullName: userData.fullName,
-        createdAt: new Date().toISOString(),
-      })
-    );
 
     return {
       success: true,
       message: "ورود با موفقیت انجام شد",
       data: {
         token,
-        username: userData.username,
-        fullName: userData.fullName,
+        username: user.username,
+        fullName: user.full_name,
       },
     } as const;
   } catch (error) {
-    console.error("Error logging in:", error);
     const errorMessage = error instanceof Error ? error.message : "خطا در ورود";
     return {
       success: false,

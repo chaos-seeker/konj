@@ -1,6 +1,6 @@
 "use server";
 
-import redis from "@/lib/upstash";
+import { supabase } from "@/lib/supabase";
 import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 
@@ -10,53 +10,32 @@ export interface CreateOrderData {
   totalPrice: number;
   totalDiscount: number;
   token: string;
-  items: Array<{
-    bookSlug: string;
-    bookName: string;
-    price: number;
-    discount: number;
-  }>;
 }
 
 export async function createOrder(data: CreateOrderData) {
   try {
-    const { fullName, username, totalPrice, totalDiscount, token, items } = data;
-
-    if (!fullName || !username || !token || !items || items.length === 0) {
+    if (!data.fullName || !data.username || !data.token) {
       return {
         success: false,
         error: "تمام فیلدهای الزامی را پر کنید",
       } as const;
     }
-
-    const userTokenData = await redis.get(`token:${token}`);
-    if (!userTokenData) {
-      return {
-        success: false,
-        error: "کاربر احراز هویت نشده است. لطفاً دوباره وارد شوید.",
-      } as const;
-    }
-
     const orderId = randomUUID();
-    const orderData = {
+    const createdAt = new Date().toISOString();
+    const finalPrice = data.totalPrice - data.totalDiscount;
+    const insertOrderRes = await supabase.from("orders").insert({
       id: orderId,
-      fullName,
-      username,
-      totalPrice,
-      totalDiscount,
-      finalPrice: totalPrice - totalDiscount,
-      items,
+      full_name: data.fullName,
+      username: data.username,
+      total_price: data.totalPrice,
+      total_discount: data.totalDiscount,
+      final_price: finalPrice,
       status: "pending",
-      createdAt: new Date().toISOString(),
-    };
-
-    await redis.set(`order:${orderId}`, JSON.stringify(orderData));
-
-    await redis.zadd("orders:list", {
-      score: Date.now(),
-      member: orderId,
+      created_at: createdAt,
     });
-
+    if (insertOrderRes.error) {
+      return { success: false, error: insertOrderRes.error.message } as const;
+    }
     revalidatePath("/cart");
     revalidatePath("/profile");
 
@@ -65,12 +44,10 @@ export async function createOrder(data: CreateOrderData) {
       message: "سفارش با موفقیت ثبت شد",
       data: { orderId },
     } as const;
-  } catch (error) {
-    console.error("Error creating order:", error);
+  } catch {
     return {
       success: false,
       error: "خطا در ثبت سفارش",
     } as const;
   }
 }
-
