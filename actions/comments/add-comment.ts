@@ -24,11 +24,26 @@ export async function addComment(data: {
       } as const;
     }
 
+    // Get book_id from bookSlug
+    const bookRes = await supabase
+      .from("books")
+      .select("id")
+      .eq("slug", data.bookSlug)
+      .limit(1)
+      .single();
+
+    if (bookRes.error || !bookRes.data) {
+      return {
+        success: false,
+        error: "کتاب یافت نشد",
+      } as const;
+    }
+
     const id = randomUUID();
     const createdAt = new Date().toISOString();
     const res = await supabase.from("comments").insert({
       id,
-      book_id: null,
+      book_id: bookRes.data.id,
       full_name: data.fullName,
       text: data.text,
       rating: data.rating,

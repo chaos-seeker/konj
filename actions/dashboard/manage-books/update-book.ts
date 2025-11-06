@@ -122,6 +122,9 @@ export async function updateBook(oldSlug: string, formData: FormData) {
       };
     }
     const bookId = existing.data.id as string;
+    const authorIds = authRes.data.map((a) => a.id);
+    const translatorIds = transRes.data.map((t) => t.id);
+
     const upd = await supabase
       .from("books")
       .update({
@@ -133,6 +136,8 @@ export async function updateBook(oldSlug: string, formData: FormData) {
         description: description || "",
         category_id: catRes.data.id,
         publisher_id: pubRes.data.id,
+        author_ids: JSON.stringify(authorIds),
+        translator_ids: JSON.stringify(translatorIds),
         pages: Number(pages),
         publication_year: Number(publicationYear),
         updated_at: new Date().toISOString(),
@@ -140,26 +145,6 @@ export async function updateBook(oldSlug: string, formData: FormData) {
       .eq("id", bookId);
     if (upd.error) {
       return { success: false, error: upd.error.message } as const;
-    }
-    await supabase.from("book_authors").delete().eq("book_id", bookId);
-    await supabase.from("book_translators").delete().eq("book_id", bookId);
-    type AuthorRow = Pick<TAuthor, "id" | "slug">;
-    type TranslatorRow = Pick<TTranslator, "id" | "slug">;
-    if (authRes.data.length > 0) {
-      await supabase.from("book_authors").insert(
-        (authRes.data as AuthorRow[]).map((a) => ({
-          book_id: bookId,
-          author_id: a.id,
-        }))
-      );
-    }
-    if (transRes.data.length > 0) {
-      await supabase.from("book_translators").insert(
-        (transRes.data as TranslatorRow[]).map((t) => ({
-          book_id: bookId,
-          translator_id: t.id,
-        }))
-      );
     }
 
     revalidatePath("/dashboard/manage-books");

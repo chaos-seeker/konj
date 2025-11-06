@@ -5,6 +5,9 @@ import { revalidatePath } from "next/cache";
 
 export async function rejectComment(commentId: string) {
   try {
+    if (!commentId || commentId.trim() === "") {
+      return { success: false, error: "شناسه نظر معتبر نیست" } as const;
+    }
     const res = await supabase
       .from("comments")
       .update({ status: "rejected" })

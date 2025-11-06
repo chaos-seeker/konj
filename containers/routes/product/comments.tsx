@@ -72,17 +72,19 @@ export function Comments({ book }: CommentsProps) {
             )}
           </div>
           {comments.length > 2 && (
-            <button
-              onClick={() => setShowAll(!showAll)}
-              className="mt-4 flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
-            >
-              <span>{showAll ? "بستن" : "نمایش همه ی نظرات"}</span>
-              <ChevronDown
-                className={cn("size-4 transition-transform", {
-                  "rotate-180": showAll,
-                })}
-              />
-            </button>
+            <div className="flex justify-center">
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className="mt-4 flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
+              >
+                <span>{showAll ? "بستن" : "نمایش همه ی نظرات"}</span>
+                <ChevronDown
+                  className={cn("size-4 transition-transform", {
+                    "rotate-180": showAll,
+                  })}
+                />
+              </button>
+            </div>
           )}
         </div>
       </div>

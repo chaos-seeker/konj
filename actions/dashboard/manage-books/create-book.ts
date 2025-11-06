@@ -108,6 +108,9 @@ export async function createBook(formData: FormData) {
       };
     }
 
+    const authorIds = authRes.data.map((a) => a.id);
+    const translatorIds = transRes.data.map((t) => t.id);
+
     const insertBook = await supabase
       .from("books")
       .insert({
@@ -119,6 +122,8 @@ export async function createBook(formData: FormData) {
         description: description || "",
         category_id: catRes.data.id,
         publisher_id: pubRes.data.id,
+        author_ids: JSON.stringify(authorIds),
+        translator_ids: JSON.stringify(translatorIds),
         pages: Number(pages),
         publication_year: Number(publicationYear),
         created_at: new Date().toISOString(),
@@ -134,23 +139,6 @@ export async function createBook(formData: FormData) {
       } as const;
     }
     const bookId = insertBook.data.id as string;
-
-    if (authRes.data.length > 0) {
-      await supabase.from("book_authors").insert(
-        authRes.data.map((a) => ({
-          book_id: bookId,
-          author_id: a.id,
-        }))
-      );
-    }
-    if (transRes.data.length > 0) {
-      await supabase.from("book_translators").insert(
-        transRes.data.map((t) => ({
-          book_id: bookId,
-          translator_id: t.id,
-        }))
-      );
-    }
 
     revalidatePath("/dashboard/manage-books");
     revalidatePath("/dashboard/manage-books/add");

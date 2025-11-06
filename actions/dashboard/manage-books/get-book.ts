@@ -4,8 +4,6 @@ import { supabase } from "@/lib/supabase";
 import type { TBook } from "@/types/book";
 import type { TCategory } from "@/types/category";
 import type { TPublisher } from "@/types/publisher";
-import type { TAuthor } from "@/types/author";
-import type { TTranslator } from "@/types/translator";
 
 export async function getBook(slug: string) {
   try {
@@ -13,7 +11,7 @@ export async function getBook(slug: string) {
     const res = await supabase
       .from("books")
       .select(
-        "id,name,slug,image,price,discount,description,pages,publication_year,created_at,updated_at,sold_count, categories:category_id(id,name,slug), publishers:publisher_id(id,name,slug), book_authors(author:authors(id,full_name,slug)), book_translators(translator:translators(id,full_name,slug))"
+        "id,name,slug,image,price,discount,description,pages,publication_year,created_at,updated_at,sold_count,author_ids,translator_ids, categories:category_id(id,name,slug), publishers:publisher_id(id,name,slug)"
       )
       .eq("slug", decoded)
       .limit(1)
@@ -23,16 +21,6 @@ export async function getBook(slug: string) {
     }
     type CategoryRow = Pick<TCategory, "id" | "name" | "slug">;
     type PublisherRow = Pick<TPublisher, "id" | "name" | "slug">;
-    type AuthorRow = {
-      author: Pick<TAuthor, "id" | "slug"> & {
-        full_name: string;
-      };
-    };
-    type TranslatorRow = {
-      translator: Pick<TTranslator, "id" | "slug"> & {
-        full_name: string;
-      };
-    };
     type BookRow = {
       id: string;
       name: string;
@@ -46,15 +34,90 @@ export async function getBook(slug: string) {
       created_at: string;
       updated_at: string;
       sold_count: number;
+      author_ids: string[] | string;
+      translator_ids: string[] | string;
       categories: CategoryRow | null;
       publishers: PublisherRow | null;
-      book_authors: AuthorRow[];
-      book_translators: TranslatorRow[];
     };
     const r = res.data as unknown as BookRow;
     if (!r.categories || !r.publishers) {
       return { success: false, error: "کتاب یافت نشد" } as const;
     }
+
+    // Parse JSON strings to arrays
+    let authorIds: string[] = [];
+    let translatorIds: string[] = [];
+
+    try {
+      if (typeof r.author_ids === "string") {
+        authorIds = JSON.parse(r.author_ids);
+      } else if (Array.isArray(r.author_ids)) {
+        authorIds = r.author_ids;
+      }
+    } catch {
+      authorIds = [];
+    }
+
+    try {
+      if (typeof r.translator_ids === "string") {
+        translatorIds = JSON.parse(r.translator_ids);
+      } else if (Array.isArray(r.translator_ids)) {
+        translatorIds = r.translator_ids;
+      }
+    } catch {
+      translatorIds = [];
+    }
+
+    const authorsRes =
+      authorIds.length > 0
+        ? await supabase
+            .from("authors")
+            .select("id, full_name, slug")
+            .in("id", authorIds)
+        : { data: [], error: null };
+
+    const translatorsRes =
+      translatorIds.length > 0
+        ? await supabase
+            .from("translators")
+            .select("id, full_name, slug")
+            .in("id", translatorIds)
+        : { data: [], error: null };
+
+    const authors = (authorsRes.data || []).map((a) => ({
+      id: a.id,
+      fullName: a.full_name,
+      slug: a.slug,
+      createdAt: "",
+      updatedAt: "",
+    }));
+
+    const translators = (translatorsRes.data || []).map((t) => ({
+      id: t.id,
+      fullName: t.full_name,
+      slug: t.slug,
+      createdAt: "",
+      updatedAt: "",
+    }));
+
+    // Fetch approved comments for this book
+    const commentsRes = await supabase
+      .from("comments")
+      .select("id, full_name, text, rating, created_at")
+      .eq("book_id", r.id)
+      .eq("status", "approved")
+      .order("created_at", { ascending: false });
+
+    const comments = (commentsRes.data || []).map((c) => ({
+      id: c.id,
+      bookSlug: decoded,
+      fullName: c.full_name,
+      text: c.text,
+      rating: c.rating,
+      status: "approved" as const,
+      createdAt: c.created_at,
+    }));
+
     const data: TBook = {
       id: r.id,
       name: r.name,
@@ -77,30 +140,14 @@ export async function getBook(slug: string) {
         createdAt: "",
         updatedAt: "",
       },
-      authors: Array.isArray(r.book_authors)
-        ? r.book_authors.map((x) => ({
-            id: x.author.id,
-            fullName: x.author.full_name,
-            slug: x.author.slug,
-            createdAt: "",
-            updatedAt: "",
-          }))
-        : [],
-      translators: Array.isArray(r.book_translators)
-        ? r.book_translators.map((x) => ({
-            id: x.translator.id,
-            fullName: x.translator.full_name,
-            slug: x.translator.slug,
-            createdAt: "",
-            updatedAt: "",
-          }))
-        : [],
+      authors,
+      translators,
       pages: Number(r.pages),
       publicationYear: Number(r.publication_year),
       createdAt: r.created_at,
       updatedAt: r.updated_at,
       soldCount: Number(r.sold_count || 0),
-      comments: [],
+      comments,
     };
     return { success: true, data } as const;
   } catch {

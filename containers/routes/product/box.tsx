@@ -50,14 +50,14 @@ export function Box({ book }: IBoxProps) {
             </div>
           </div>
           <div className="xl:w-full">
-            <div className="flex justify-between gap-3 pb-4 border-b">
+            <div className="flex justify-between gap-3 py-4 lg:pt-0 border-b">
               <h1 className="font-medium truncate xl:pt-3">{book.name}</h1>
               <div className="flex items-center gap-1">
                 <StarIcon className="w-4 h-4 text-warning fill-warning" />
                 <p className="text-sm pt-1">{rating}</p>
               </div>
             </div>
-            <div className="flex flex-col  gap-1 border-b pb-4">
+            <div className="flex flex-col  gap-1 border-b py-4">
               <p className="text-smp text-muted-foreground">
                 نویسنده:
                 {book.authors && book.authors.length > 0 ? (
@@ -133,7 +133,7 @@ export function Box({ book }: IBoxProps) {
                 تعداد صفحات: {book.pages}
               </p>
             </div>
-            <div className="flex xl:py-4 justify-between items-center">
+            <div className="flex py-4 justify-between items-center">
               <p>قیمت نهایی</p>
               <div className="flex items-center gap-2">
                 {book.discount ? book.discount > 0 && (

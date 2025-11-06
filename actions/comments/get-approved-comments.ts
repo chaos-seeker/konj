@@ -7,7 +7,7 @@ export async function getApprovedComments() {
   try {
     const res = await supabase
       .from("comments")
-      .select("full_name, text, rating, created_at, book_id")
+      .select("id, book_id, full_name, text, rating, created_at")
       .eq("status", "approved")
       .order("created_at", { ascending: false });
     if (res.error) {
@@ -18,12 +18,13 @@ export async function getApprovedComments() {
       } as const;
     }
     type Row = Pick<TComment, "text" | "rating" | "createdAt"> & {
+      id: string;
+      book_id: string | null;
       full_name: string;
       created_at: string;
-      book_id: string | null;
     };
     const mapped: TComment[] = ((res.data as Row[]) || []).map((c) => ({
-      id: "",
+      id: c.id,
       bookSlug: "",
       fullName: c.full_name,
       text: c.text,

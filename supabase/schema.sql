@@ -1,4 +1,4 @@
--- Users
+-- Users table
 create table if not exists users (
   id uuid primary key default gen_random_uuid(),
   username text unique not null,
@@ -7,7 +7,7 @@ create table if not exists users (
   created_at timestamptz not null default now()
 );
 
--- Categories
+-- Categories table
 create table if not exists categories (
   id uuid primary key default gen_random_uuid(),
   name text not null,
@@ -16,7 +16,7 @@ create table if not exists categories (
   updated_at timestamptz not null default now()
 );
 
--- Publishers
+-- Publishers table
 create table if not exists publishers (
   id uuid primary key default gen_random_uuid(),
   name text not null,
@@ -25,7 +25,7 @@ create table if not exists publishers (
   updated_at timestamptz not null default now()
 );
 
--- Authors
+-- Authors table
 create table if not exists authors (
   id uuid primary key default gen_random_uuid(),
   full_name text not null,
@@ -34,7 +34,7 @@ create table if not exists authors (
   updated_at timestamptz not null default now()
 );
 
--- Translators
+-- Translators table
 create table if not exists translators (
   id uuid primary key default gen_random_uuid(),
   full_name text not null,
@@ -43,7 +43,7 @@ create table if not exists translators (
   updated_at timestamptz not null default now()
 );
 
--- Books
+-- Books table
 create table if not exists books (
   id uuid primary key default gen_random_uuid(),
   name text not null,
@@ -54,6 +54,8 @@ create table if not exists books (
   description text not null,
   category_id uuid references categories(id) on delete set null,
   publisher_id uuid references publishers(id) on delete set null,
+  author_ids jsonb not null default '[]'::jsonb,
+  translator_ids jsonb not null default '[]'::jsonb,
   pages integer not null,
   publication_year integer not null,
   created_at timestamptz not null default now(),
@@ -61,32 +63,18 @@ create table if not exists books (
   sold_count integer not null default 0
 );
 
--- Book relations
-create table if not exists book_authors (
-  book_id uuid references books(id) on delete cascade,
-  author_id uuid references authors(id) on delete cascade,
-  primary key (book_id, author_id)
-);
-
--- Book translators
-create table if not exists book_translators (
-  book_id uuid references books(id) on delete cascade,
-  translator_id uuid references translators(id) on delete cascade,
-  primary key (book_id, translator_id)
-);
-
--- Comments
+-- Comments table
 create table if not exists comments (
   id uuid primary key default gen_random_uuid(),
   book_id uuid references books(id) on delete cascade,
   full_name text not null,
   text text not null,
   rating integer not null check (rating between 1 and 5),
-  status text not null default 'pending',
+  status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
   created_at timestamptz not null default now()
 );
 
--- Orders
+-- Orders table
 create table if not exists orders (
   id uuid primary key,
   full_name text not null,
@@ -94,7 +82,6 @@ create table if not exists orders (
   total_price numeric not null,
   total_discount numeric not null,
   final_price numeric not null,
+  status text not null default 'pending' check (status in ('pending', 'completed', 'cancelled')),
   created_at timestamptz not null
 );
-
-
