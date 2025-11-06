@@ -66,7 +66,9 @@ export function Box({ book }: IBoxProps) {
                       <span key={a.slug}>
                         {" "}
                         <Link
-                          href={`/explore?authors=${encodeURIComponent(a.slug)}`}
+                          href={`/explore?authors=${encodeURIComponent(
+                            a.slug
+                          )}`}
                           className="text-primary hover:underline"
                         >
                           {a.fullName}
@@ -87,7 +89,9 @@ export function Box({ book }: IBoxProps) {
                       <span key={t.slug}>
                         {" "}
                         <Link
-                          href={`/explore?translators=${encodeURIComponent(t.slug)}`}
+                          href={`/explore?translators=${encodeURIComponent(
+                            t.slug
+                          )}`}
                           className="text-primary hover:underline"
                         >
                           {t.fullName}
@@ -104,7 +108,9 @@ export function Box({ book }: IBoxProps) {
                 ناشر:{" "}
                 {book.publisher && book.publisher.name ? (
                   <Link
-                    href={`/explore?publishers=${encodeURIComponent(book.publisher.slug)}`}
+                    href={`/explore?publishers=${encodeURIComponent(
+                      book.publisher.slug
+                    )}`}
                     className="text-primary hover:underline"
                   >
                     {book.publisher.name}
@@ -117,7 +123,9 @@ export function Box({ book }: IBoxProps) {
                 دسته بندی:{" "}
                 {book.category ? (
                   <Link
-                    href={`/explore?categories=${encodeURIComponent(book.category.slug)}`}
+                    href={`/explore?categories=${encodeURIComponent(
+                      book.category.slug
+                    )}`}
                     className="text-primary hover:underline"
                   >
                     {book.category.name}
@@ -136,20 +144,22 @@ export function Box({ book }: IBoxProps) {
             <div className="flex py-4 justify-between items-center">
               <p>قیمت نهایی</p>
               <div className="flex items-center gap-2">
-                {book.discount ? book.discount > 0 && (
-                  <p className="text-xsp bg-error text-white px-2 py-1 rounded-lg w-fit h-5.5">
-                    {book.discount}%
-                  </p>
-                ) : null}
+                {book.discount
+                  ? book.discount > 0 && (
+                      <p className="text-xsp bg-error text-white px-2 py-1 rounded-lg w-fit h-5.5">
+                        {book.discount}%
+                      </p>
+                    )
+                  : null}
                 <div>
                   <p className="text-smp">
                     {discountPrice.toLocaleString()} تومان
                   </p>
-                {book.discount ? (
-                  <p className="text-sm text-muted-foreground line-through">
-                    {book.price.toLocaleString()} تومان
-                  </p>
-                ) : null}
+                  {book.discount ? (
+                    <p className="text-sm text-muted-foreground line-through">
+                      {book.price.toLocaleString()} تومان
+                    </p>
+                  ) : null}
                 </div>
               </div>
             </div>

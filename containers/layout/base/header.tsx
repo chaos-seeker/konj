@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { SearchIcon, ShoppingBag, UserIcon } from "lucide-react";
 import { useKillua } from "killua";
 import { cartSlice } from "@/slices/cart";
@@ -15,7 +15,7 @@ import { ModalRegister } from "./modal-register";
 export function Header() {
   return (
     <header>
-      <div className="flex flex-col gap-4lg:flex-row bg-white py-4 border border-slate-200 rounded-b-xl container">
+      <div className="flex flex-col gap-4 lg:flex-row bg-white py-4 border border-slate-200 container">
         <div className="flex gap-4 w-full items-center justify-between">
           <div className="shrink-0">
             <Logo />
@@ -27,7 +27,82 @@ export function Header() {
           </div>
         </div>
       </div>
+      <div className="container bg-white py-4 border-b border-slate-200 rounded-b-xl">
+        <Tabs />
+      </div>
     </header>
+  );
+}
+
+function Tabs() {
+  const pathname = usePathname();
+  const activeTabRef = useRef<HTMLAnchorElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const data = [
+    {
+      label: "صفحه اصلی",
+      href: "/",
+    },
+    {
+      label: "آرشیو",
+      href: "/explore",
+    },
+    {
+      label: "سبد خرید",
+      href: "/cart",
+    },
+    {
+      label: "پروفایل",
+      href: "/profile",
+    },
+    {
+      label: "داشبورد",
+      href: "/dashboard/manage-books",
+    },
+  ];
+
+  useEffect(() => {
+    if (activeTabRef.current && containerRef.current) {
+      const container = containerRef.current;
+      const activeTab = activeTabRef.current;
+      const containerRect = container.getBoundingClientRect();
+      if (window.innerWidth < 1024) {
+        const tabRect = activeTab.getBoundingClientRect();
+        const scrollLeft =
+          activeTab.offsetLeft - containerRect.width / 2 + tabRect.width / 2;
+        container.scrollTo({
+          left: scrollLeft,
+          behavior: "smooth",
+        });
+      }
+    }
+  }, [pathname]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="flex gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth lg:justify-center lg:overflow-x-visible lg:px-0"
+    >
+      {data.map((item) => {
+        const isActive =
+          item.href === "/"
+            ? pathname === "/"
+            : pathname === item.href || pathname.startsWith(item.href + "/");
+        return (
+          <Link
+            ref={isActive ? activeTabRef : null}
+            href={item.href}
+            key={item.href}
+            className="snap-start shrink-0"
+          >
+            <Button variant={isActive ? "default" : "ghost"} className="px-2">
+              {item.label}
+            </Button>
+          </Link>
+        );
+      })}
+    </div>
   );
 }
 

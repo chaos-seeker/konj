@@ -5,7 +5,7 @@ import { userSlice } from "@/slices/user";
 import { ProfileSidebar } from "@/containers/routes/profile/profile-sidebar";
 import { UserOrdersList } from "@/containers/routes/profile/user-orders-list";
 import { ViewportAnimation } from "@/components/viewport-animation";
-import { Loader2 } from "lucide-react";
+import Image from "next/image";
 
 export default function ProfilePage() {
   const user = useKillua(userSlice);
@@ -14,8 +14,14 @@ export default function ProfilePage() {
 
   if (!isAuthenticated) {
     return (
-      <ViewportAnimation className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <ViewportAnimation className="items-center flex flex-col gap-6 justify-center py-10">
+        <Image
+          src="/images/global/not-found.png"
+          alt="empty"
+          width={200}
+          height={200}
+        />
+        <p className="text-muted-foreground">ابتدا وارد حساب کاربری شوید</p>
       </ViewportAnimation>
     );
   }
