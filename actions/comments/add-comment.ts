@@ -27,9 +27,6 @@ export async function addComment(data: {
         error: "لطفاً دوباره وارد شوید",
       } as const;
     }
-
-    const tokenData = typeof tokenDataStr === "string" ? JSON.parse(tokenDataStr) : tokenDataStr;
-
     const commentId = randomUUID();
     const comment = {
       id: commentId,
