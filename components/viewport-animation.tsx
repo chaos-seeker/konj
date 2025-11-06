@@ -17,8 +17,7 @@ export const ViewportAnimation = (props: ViewportAnimationProps) => {
     <motion.div
       key={`${pathname}-${id}`}
       initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
       className={props.className}
     >
