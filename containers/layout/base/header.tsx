@@ -1,33 +1,47 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { Button } from "@/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { SearchIcon, ShoppingBag, UserIcon } from "lucide-react";
+import {
+  SearchIcon,
+  ShoppingBag,
+  UserIcon,
+  LayoutDashboard,
+} from "lucide-react";
 import { useKillua } from "killua";
 import { cartSlice } from "@/slices/cart";
 import { userSlice } from "@/slices/user";
 import { ModalLogin } from "./modal-login";
 import { ModalRegister } from "./modal-register";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/ui/tooltip";
 
 export function Header() {
   return (
-    <header>
-      <div className="flex flex-col gap-4 lg:flex-row bg-white py-4 border border-slate-200 container">
-        <div className="flex gap-4 w-full items-center justify-between">
-          <div className="shrink-0">
-            <Logo />
-          </div>
-          <Search />
-          <div className="flex items-center gap-2 shrink-0">
-            <Cart />
-            <User />
+    <TooltipProvider>
+      <header>
+        <div className="flex flex-col gap-4 lg:flex-row bg-white py-4 border border-slate-200 container">
+          <div className="flex gap-4 w-full items-center justify-between">
+            <div className="shrink-0">
+              <Logo />
+            </div>
+            <Search />
+            <div className="flex items-center gap-2 shrink-0">
+              <Dashboard />
+              <Cart />
+              <User />
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </TooltipProvider>
   );
 }
 
@@ -46,26 +60,55 @@ function Logo() {
   );
 }
 
+const Dashboard = () => {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant={"outline"}
+          size="icon"
+          className="hidden sm:flex hover:bg-primary lg:size-10 hover:text-white hover:border-primary"
+          asChild
+        >
+          <Link href="/dashboard/manage-books">
+            <LayoutDashboard className="size-4 lg:size-5" />
+          </Link>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>داشبورد</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+};
+
 const Cart = () => {
   const cart = useKillua(cartSlice);
   const count = cart.selectors.totalCount();
 
   return (
-    <Button
-      variant="outline"
-      size="icon"
-      className="hover:bg-primary lg:size-10 hover:text-white hover:border-primary relative"
-      asChild
-    >
-      <Link href="/cart">
-        <ShoppingBag className="size-4 lg:size-5" />
-        {count > 0 && (
-          <span className="absolute -top-1 border border-white -right-1.5 bg-primary text-white text-[8px] rounded-full px-1.5 py-0.5 text-caption">
-            {count}
-          </span>
-        )}
-      </Link>
-    </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant="outline"
+          size="icon"
+          className="hover:bg-primary lg:size-10 hover:text-white hover:border-primary relative"
+          asChild
+        >
+          <Link href="/cart">
+            <ShoppingBag className="size-4 lg:size-5" />
+            {count > 0 && (
+              <span className="absolute -top-1 border border-white -right-1.5 bg-primary text-white text-[8px] rounded-full px-1.5 py-0.5 text-caption">
+                {count}
+              </span>
+            )}
+          </Link>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>سبد خرید</p>
+      </TooltipContent>
+    </Tooltip>
   );
 };
 
@@ -77,29 +120,43 @@ const User = () => {
 
   if (isAuthenticated) {
     return (
-      <Button
-        variant="outline"
-        size="icon"
-        className="hover:bg-primary lg:size-10 hover:text-white hover:border-primary"
-        asChild
-      >
-        <Link href="/profile">
-          <UserIcon className="size-5 lg:size-6" />
-        </Link>
-      </Button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="hover:bg-primary lg:size-10 hover:text-white hover:border-primary"
+            asChild
+          >
+            <Link href="/profile">
+              <UserIcon className="size-5 lg:size-6" />
+            </Link>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>پروفایل</p>
+        </TooltipContent>
+      </Tooltip>
     );
   }
 
   return (
     <>
-      <Button
-        variant="outline"
-        size="icon"
-        className="hover:bg-primary lg:size-10 hover:text-white hover:border-primary"
-        onClick={() => setLoginOpen(true)}
-      >
-        <UserIcon className="size-5 lg:size-6" />
-      </Button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="hover:bg-primary lg:size-10 hover:text-white hover:border-primary"
+            onClick={() => setLoginOpen(true)}
+          >
+            <UserIcon className="size-5 lg:size-6" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>ورود / ثبت‌نام</p>
+        </TooltipContent>
+      </Tooltip>
       <ModalLogin
         open={loginOpen}
         onOpenChange={setLoginOpen}
