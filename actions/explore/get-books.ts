@@ -67,7 +67,6 @@ export async function getBooks(params: GetBooksParams = {}) {
     };
     const rows = (res.data as unknown as BookRow[]) || [];
 
-    // Collect all author and translator IDs
     const allAuthorIds = new Set<string>();
     const allTranslatorIds = new Set<string>();
     rows.forEach((r) => {
@@ -98,7 +97,6 @@ export async function getBooks(params: GetBooksParams = {}) {
       translatorIds.forEach((id) => allTranslatorIds.add(id));
     });
 
-    // Fetch all authors and translators in one query
     const authorsRes =
       allAuthorIds.size > 0
         ? await supabase
@@ -120,7 +118,6 @@ export async function getBooks(params: GetBooksParams = {}) {
       (translatorsRes.data || []).map((t) => [t.id, t])
     );
 
-    // Collect all book IDs and fetch comments
     const bookIds = rows.map((r) => r.id);
     const commentsRes =
       bookIds.length > 0
@@ -131,7 +128,6 @@ export async function getBooks(params: GetBooksParams = {}) {
             .eq("status", "approved")
         : { data: [], error: null };
 
-    // Create a map of book_id to comments
     type CommentRow = Pick<TComment, "id" | "text" | "rating"> & {
       book_id: string | null;
       full_name: string;

@@ -24,7 +24,6 @@ export async function addComment(data: {
       } as const;
     }
 
-    // Get book_id from bookSlug
     const bookRes = await supabase
       .from("books")
       .select("id")

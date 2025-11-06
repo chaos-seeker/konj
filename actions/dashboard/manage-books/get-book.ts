@@ -44,7 +44,6 @@ export async function getBook(slug: string) {
       return { success: false, error: "کتاب یافت نشد" } as const;
     }
 
-    // Parse JSON strings to arrays
     let authorIds: string[] = [];
     let translatorIds: string[] = [];
 
@@ -100,7 +99,6 @@ export async function getBook(slug: string) {
       updatedAt: "",
     }));
 
-    // Fetch approved comments for this book
     const commentsRes = await supabase
       .from("comments")
       .select("id, full_name, text, rating, created_at")
