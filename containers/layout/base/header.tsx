@@ -70,9 +70,11 @@ const Dashboard = () => {
           className="hover:bg-primary hover:border-primary hidden hover:text-white sm:flex lg:size-10"
           asChild
         >
-          <Link href="/dashboard/manage-books">
+          <button
+            onClick={() => (window.location.href = '/dashboard/manage-books')}
+          >
             <LayoutDashboard className="size-4 lg:size-5" />
-          </Link>
+          </button>
         </Button>
       </TooltipTrigger>
       <TooltipContent>

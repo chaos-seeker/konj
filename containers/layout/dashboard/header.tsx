@@ -75,14 +75,16 @@ export function Header() {
 function Logo() {
   return (
     <div>
-      <Image
-        src="/images/layout/logo.png"
-        unoptimized
-        alt="logo"
-        width={60}
-        height={60}
-        className="lg:w-[80px]"
-      />
+      <button onClick={() => (window.location.href = '/')}>
+        <Image
+          src="/images/layout/logo.png"
+          unoptimized
+          alt="logo"
+          width={60}
+          height={60}
+          className="lg:w-[80px]"
+        />
+      </button>
     </div>
   );
 }
