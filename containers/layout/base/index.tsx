@@ -6,7 +6,7 @@ export default function LayouBaset(props: PropsWithChildren) {
   return (
     <>
       <Header />
-      <main className="flex flex-col min-h-dvh">{props.children}</main>
+      <main>{props.children}</main>
       <Footer />
     </>
   );
