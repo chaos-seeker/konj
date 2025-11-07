@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import LayouBaset from "@/containers/layout/base";
+import LayouBase from "@/containers/layout/base";
 import { Providers } from "./providers";
 import LayouDashboard from "@/containers/layout/dashboard";
 import { headers } from "next/headers";
+import { PropsWithChildren } from "react";
 
 const iransans = localFont({
   src: "../public/fonts/IRANSansXV.woff2",
@@ -17,11 +18,7 @@ export const metadata: Metadata = {
   title: "konj",
 };
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default async function RootLayout(props: PropsWithChildren) {
   const headersList = await headers();
   const pathname = headersList.get("x-pathname")!;
   const isDashboard = pathname.includes("/dashboard");
@@ -31,9 +28,9 @@ export default async function RootLayout({
       <body className={iransans.className}>
         <Providers>
           {isDashboard ? (
-            <LayouDashboard>{children}</LayouDashboard>
+            <LayouDashboard>{props.children}</LayouDashboard>
           ) : (
-            <LayouBaset>{children}</LayouBaset>
+            <LayouBase>{props.children}</LayouBase>
           )}
         </Providers>
       </body>
