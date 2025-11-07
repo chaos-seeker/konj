@@ -1,18 +1,14 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { useQueryClient } from "@tanstack/react-query";
+import { createCategory } from '@/actions/dashboard/manage-categories/create-category';
+import { Button } from '@/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/ui/dialog";
-import { Button } from "@/ui/button";
+} from '@/ui/dialog';
 import {
   Form,
   FormControl,
@@ -20,20 +16,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/ui/form";
-import { Input } from "@/ui/input";
-import toast from "react-hot-toast";
-import { createCategory } from "@/actions/dashboard/manage-categories/create-category";
+} from '@/ui/form';
+import { Input } from '@/ui/input';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import * as z from 'zod';
 
 const categorySchema = z.object({
   name: z
     .string()
-    .min(1, "نام الزامی است")
-    .regex(/^[\u0600-\u06FF\s]+$/, "نام باید فارسی باشد"),
+    .min(1, 'نام الزامی است')
+    .regex(/^[\u0600-\u06FF\s]+$/, 'نام باید فارسی باشد'),
   slug: z
     .string()
-    .min(1, "اسلاگ الزامی است")
-    .regex(/^[a-z0-9-]+$/, "اسلاگ باید انگلیسی و بدون فاصله باشد"),
+    .min(1, 'اسلاگ الزامی است')
+    .regex(/^[a-z0-9-]+$/, 'اسلاگ باید انگلیسی و بدون فاصله باشد'),
 });
 
 type CategoryFormValues = z.infer<typeof categorySchema>;
@@ -53,8 +53,8 @@ export function ModalAddCategory({
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
-      name: "",
-      slug: "",
+      name: '',
+      slug: '',
     },
   });
 
@@ -63,24 +63,23 @@ export function ModalAddCategory({
       setIsSubmitting(true);
 
       const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("slug", data.slug);
+      formData.append('name', data.name);
+      formData.append('slug', data.slug);
 
       const result = await createCategory(formData);
 
       if (!result.success) {
-        throw new Error(result.error || "خطا در افزودن دسته بندی");
+        throw new Error(result.error || 'خطا در افزودن دسته بندی');
       }
 
+      await queryClient.invalidateQueries({ queryKey: ['categories'] });
 
-      await queryClient.invalidateQueries({ queryKey: ["categories"] });
-
-      toast.success(result.message || "دسته بندی با موفقیت افزوده شد");
+      toast.success(result.message || 'دسته بندی با موفقیت افزوده شد');
       form.reset();
       onOpenChange(false);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "خطا در افزودن دسته بندی"
+        error instanceof Error ? error.message : 'خطا در افزودن دسته بندی',
       );
     } finally {
       setIsSubmitting(false);
@@ -119,11 +118,10 @@ export function ModalAddCategory({
                     <Input
                       {...field}
                       onChange={(e) => {
-
                         const value = e.target.value
                           .toLowerCase()
-                          .replace(/\s+/g, "-")
-                          .replace(/[^a-z0-9-]/g, "");
+                          .replace(/\s+/g, '-')
+                          .replace(/[^a-z0-9-]/g, '');
                         field.onChange(value);
                       }}
                     />
@@ -136,9 +134,9 @@ export function ModalAddCategory({
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-11"
+                className="h-11 w-full"
               >
-                {isSubmitting ? "در حال افزودن..." : "افزودن"}
+                {isSubmitting ? 'در حال افزودن...' : 'افزودن'}
               </Button>
             </DialogFooter>
           </form>

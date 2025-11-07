@@ -1,10 +1,7 @@
-"use client";
+'use client';
 
-import { useQuery } from "@tanstack/react-query";
-import { getUsers } from "@/actions/users/get-users";
-import type { TUser } from "@/actions/users/get-users";
-import { Loader2 } from "lucide-react";
-import Image from "next/image";
+import type { TUser } from '@/actions/users/get-users';
+import { getUsers } from '@/actions/users/get-users';
 import {
   Table,
   TableBody,
@@ -12,12 +9,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/ui/table";
-import { formatDate } from "@/utils/format-date";
+} from '@/ui/table';
+import { formatDate } from '@/utils/format-date';
+import { useQuery } from '@tanstack/react-query';
+import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
 
 export function ListUser() {
   const { data: users = [], isLoading } = useQuery<TUser[]>({
-    queryKey: ["users"],
+    queryKey: ['users'],
     queryFn: async () => {
       const result = await getUsers();
       return result.success ? result.data : [];
@@ -27,14 +27,14 @@ export function ListUser() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   if (users.length === 0) {
     return (
-      <div className="items-center flex flex-col gap-6 justify-center py-10">
+      <div className="flex flex-col items-center justify-center gap-6 py-10">
         <Image
           src="/images/global/not-found.png"
           alt="empty"
@@ -49,7 +49,7 @@ export function ListUser() {
   return (
     <section>
       <div className="container">
-        <div className="rounded-xl border bg-white border-slate-200">
+        <div className="rounded-xl border border-slate-200 bg-white">
           <Table>
             <TableHeader>
               <TableRow>
@@ -62,7 +62,7 @@ export function ListUser() {
               {users.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>
-                    <code className="text-sm bg-muted px-2 py-1 rounded">
+                    <code className="bg-muted rounded px-2 py-1 text-sm">
                       {user.username}
                     </code>
                   </TableCell>

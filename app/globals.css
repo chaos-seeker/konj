@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -104,13 +104,13 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground  flex min-h-dvh flex-col overflow-x-hidden text-[--font-size-body-mobile] font-[--font-weight-body-mobile];
+    @apply bg-background text-foreground flex min-h-dvh flex-col overflow-x-hidden font-[--font-weight-body-mobile] text-[--font-size-body-mobile];
   }
   input {
     @apply outline-none;
   }
   main {
-    @apply h-full flex-1 py-6 flex flex-col gap-5;
+    @apply flex h-full flex-1 flex-col gap-5 py-6;
   }
   button {
     @apply cursor-pointer;
@@ -118,14 +118,5 @@
 }
 
 @utility container {
-  @apply mx-auto px-4 max-w-7xl;
-}
-
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+  @apply mx-auto max-w-7xl px-4;
 }

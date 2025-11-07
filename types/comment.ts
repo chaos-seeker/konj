@@ -5,8 +5,7 @@ export type TComment = {
   fullName: string;
   text: string;
   rating: number;
-  status: "pending" | "approved" | "rejected";
+  status: 'pending' | 'approved' | 'rejected';
   createdAt: string;
   updatedAt?: string;
 };
-

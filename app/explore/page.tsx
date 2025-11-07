@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Suspense } from "react";
-import { ExploreContent } from "@/containers/routes/explore/explore-content";
-import { ViewportAnimation } from "@/components/viewport-animation";
+import { ViewportAnimation } from '@/components/viewport-animation';
+import { ExploreContent } from '@/containers/routes/explore/explore-content';
+import { Suspense } from 'react';
 
 export default function ExplorePage() {
   return (
@@ -13,4 +13,3 @@ export default function ExplorePage() {
     </Suspense>
   );
 }
-

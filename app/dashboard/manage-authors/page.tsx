@@ -1,4 +1,4 @@
-import { ListAuthor } from "@/containers/routes/dashboard/manage-authors/list-author";
+import { ListAuthor } from '@/containers/routes/dashboard/manage-authors/list-author';
 
 export default function AuthorsPage() {
   return (

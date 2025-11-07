@@ -1,23 +1,23 @@
-"use server";
+'use server';
 
-import { supabase } from "@/lib/supabase";
-import { revalidatePath } from "next/cache";
+import { supabase } from '@/lib/supabase';
+import { revalidatePath } from 'next/cache';
 
 export async function rejectComment(commentId: string) {
   try {
-    if (!commentId || commentId.trim() === "") {
-      return { success: false, error: "شناسه نظر معتبر نیست" } as const;
+    if (!commentId || commentId.trim() === '') {
+      return { success: false, error: 'شناسه نظر معتبر نیست' } as const;
     }
     const res = await supabase
-      .from("comments")
-      .update({ status: "rejected" })
-      .eq("id", commentId);
+      .from('comments')
+      .update({ status: 'rejected' })
+      .eq('id', commentId);
     if (res.error) {
       return { success: false, error: res.error.message } as const;
     }
-    revalidatePath("/dashboard/manage-comments");
-    return { success: true, message: "نظر با موفقیت رد شد" } as const;
+    revalidatePath('/dashboard/manage-comments');
+    return { success: true, message: 'نظر با موفقیت رد شد' } as const;
   } catch {
-    return { success: false, error: "خطا در رد نظر" } as const;
+    return { success: false, error: 'خطا در رد نظر' } as const;
   }
 }

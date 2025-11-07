@@ -1,4 +1,4 @@
-import { EditBookForm } from "@/containers/routes/dashboard/manage-books/edit-book-form";
+import { EditBookForm } from '@/containers/routes/dashboard/manage-books/edit-book-form';
 
 export default async function EditBookPage({
   params,

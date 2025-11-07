@@ -1,4 +1,4 @@
-import { ListUser } from "@/containers/routes/dashboard/manage-users/list-user";
+import { ListUser } from '@/containers/routes/dashboard/manage-users/list-user';
 
 export default function UsersPage() {
   return (
@@ -7,4 +7,3 @@ export default function UsersPage() {
     </>
   );
 }
-

@@ -5,4 +5,3 @@ export type TTranslator = {
   createdAt: string;
   updatedAt: string;
 };
-

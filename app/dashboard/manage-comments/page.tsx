@@ -1,4 +1,4 @@
-import { ListComment } from "@/containers/routes/dashboard/manage-comments/list-comment";
+import { ListComment } from '@/containers/routes/dashboard/manage-comments/list-comment';
 
 export default function CommentsPage() {
   return (
@@ -9,4 +9,3 @@ export default function CommentsPage() {
     </>
   );
 }
-

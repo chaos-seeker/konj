@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState, useRef, useEffect, useId } from "react";
-import Image from "next/image";
-import { Upload, X } from "lucide-react";
-import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
-import { cn } from "@/utils/cn";
+import { Button } from '@/ui/button';
+import { Input } from '@/ui/input';
+import { cn } from '@/utils/cn';
+import { Upload, X } from 'lucide-react';
+import Image from 'next/image';
+import { useEffect, useId, useRef, useState } from 'react';
 
 interface InputImageProps {
   value?: File | null;
@@ -26,12 +26,12 @@ export function InputImage({
   preview: externalPreview,
   error: externalError,
   className,
-  accept = "image/jpeg,image/png,image/webp",
+  accept = 'image/jpeg,image/png,image/webp',
   maxSize = 5 * 1024 * 1024,
   id,
 }: InputImageProps) {
   const [preview, setPreview] = useState<string | null>(
-    externalPreview || null
+    externalPreview || null,
   );
   const [error, setError] = useState<string | null>(externalError || null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -55,7 +55,7 @@ export function InputImage({
       setPreview(null);
       setError(null);
       if (inputRef.current) {
-        inputRef.current.value = "";
+        inputRef.current.value = '';
       }
     }
   }, [value]);
@@ -68,11 +68,11 @@ export function InputImage({
     }
 
     setError(null);
-    onError?.("");
+    onError?.('');
 
-    const acceptedTypes = accept.split(",").map((t) => t.trim());
+    const acceptedTypes = accept.split(',').map((t) => t.trim());
     if (!acceptedTypes.includes(file.type)) {
-      const errorMsg = "فرمت تصویر باید jpg، png، webp یا svg باشد";
+      const errorMsg = 'فرمت تصویر باید jpg، png، webp یا svg باشد';
       setError(errorMsg);
       onError?.(errorMsg);
       return;
@@ -80,14 +80,14 @@ export function InputImage({
 
     if (file.size > maxSize) {
       const errorMsg = `حجم تصویر باید کمتر از ${Math.round(
-        maxSize / 1024 / 1024
+        maxSize / 1024 / 1024,
       )} مگابایت باشد`;
       setError(errorMsg);
       onError?.(errorMsg);
       return;
     }
 
-    const img = document.createElement("img");
+    const img = document.createElement('img');
     img.onload = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -98,7 +98,7 @@ export function InputImage({
       reader.readAsDataURL(file);
     };
     img.onerror = () => {
-      const errorMsg = "خطا در بارگذاری تصویر";
+      const errorMsg = 'خطا در بارگذاری تصویر';
       setError(errorMsg);
       onError?.(errorMsg);
     };
@@ -109,9 +109,9 @@ export function InputImage({
     setPreview(null);
     setError(null);
     onChange(null);
-    onError?.("");
+    onError?.('');
     if (inputRef.current) {
-      inputRef.current.value = "";
+      inputRef.current.value = '';
     }
   };
 
@@ -119,14 +119,14 @@ export function InputImage({
   const displayError = externalError || error;
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn('space-y-2', className)}>
       {displayPreview ? (
-        <div className="relative w-full border rounded-lg aspect-square max-w-[100px] mx-auto bg-white">
+        <div className="relative mx-auto aspect-square w-full max-w-[100px] rounded-lg border bg-white">
           <Image
             src={displayPreview}
             alt="Preview"
             fill
-            className="object-cover rounded-lg"
+            className="rounded-lg object-cover"
           />
           <Button
             type="button"
@@ -141,10 +141,10 @@ export function InputImage({
       ) : (
         <label
           htmlFor={inputId}
-          className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-lg cursor-pointer bg-white transition-colors"
+          className="border-border flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white transition-colors"
         >
-          <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">
+          <Upload className="text-muted-foreground mb-2 h-8 w-8" />
+          <span className="text-muted-foreground text-sm">
             کلیک کنید یا تصویر را بکشید
           </span>
         </label>
@@ -158,7 +158,7 @@ export function InputImage({
         onChange={handleImageChange}
       />
       {displayError && (
-        <p className="text-sm font-medium text-destructive">{displayError}</p>
+        <p className="text-destructive text-sm font-medium">{displayError}</p>
       )}
     </div>
   );

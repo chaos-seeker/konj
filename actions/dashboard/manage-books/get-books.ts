@@ -1,19 +1,19 @@
-"use server";
+'use server';
 
-import { supabase } from "@/lib/supabase";
-import type { TBook } from "@/types/book";
-import type { TCategory } from "@/types/category";
-import type { TPublisher } from "@/types/publisher";
-import type { TComment } from "@/types/comment";
+import { supabase } from '@/lib/supabase';
+import type { TBook } from '@/types/book';
+import type { TCategory } from '@/types/category';
+import type { TComment } from '@/types/comment';
+import type { TPublisher } from '@/types/publisher';
 
 export async function getBooks() {
   try {
     const res = await supabase
-      .from("books")
+      .from('books')
       .select(
-        "id,name,slug,image,price,discount,description,pages,publication_year,created_at,updated_at,sold_count,author_ids,translator_ids, categories:category_id(id,name,slug), publishers:publisher_id(id,name,slug)"
+        'id,name,slug,image,price,discount,description,pages,publication_year,created_at,updated_at,sold_count,author_ids,translator_ids, categories:category_id(id,name,slug), publishers:publisher_id(id,name,slug)',
       )
-      .order("created_at", { ascending: false });
+      .order('created_at', { ascending: false });
     if (res.error) {
       return {
         success: false,
@@ -21,8 +21,8 @@ export async function getBooks() {
         data: [] as TBook[],
       } as const;
     }
-    type CategoryRow = Pick<TCategory, "id" | "name" | "slug">;
-    type PublisherRow = Pick<TPublisher, "id" | "name" | "slug">;
+    type CategoryRow = Pick<TCategory, 'id' | 'name' | 'slug'>;
+    type PublisherRow = Pick<TPublisher, 'id' | 'name' | 'slug'>;
     type BookRow = {
       id: string;
       name: string;
@@ -50,7 +50,7 @@ export async function getBooks() {
       let translatorIds: string[] = [];
 
       try {
-        if (typeof r.author_ids === "string") {
+        if (typeof r.author_ids === 'string') {
           authorIds = JSON.parse(r.author_ids);
         } else if (Array.isArray(r.author_ids)) {
           authorIds = r.author_ids;
@@ -60,7 +60,7 @@ export async function getBooks() {
       }
 
       try {
-        if (typeof r.translator_ids === "string") {
+        if (typeof r.translator_ids === 'string') {
           translatorIds = JSON.parse(r.translator_ids);
         } else if (Array.isArray(r.translator_ids)) {
           translatorIds = r.translator_ids;
@@ -76,35 +76,35 @@ export async function getBooks() {
     const authorsRes =
       allAuthorIds.size > 0
         ? await supabase
-            .from("authors")
-            .select("id, full_name, slug")
-            .in("id", Array.from(allAuthorIds))
+            .from('authors')
+            .select('id, full_name, slug')
+            .in('id', Array.from(allAuthorIds))
         : { data: [], error: null };
 
     const translatorsRes =
       allTranslatorIds.size > 0
         ? await supabase
-            .from("translators")
-            .select("id, full_name, slug")
-            .in("id", Array.from(allTranslatorIds))
+            .from('translators')
+            .select('id, full_name, slug')
+            .in('id', Array.from(allTranslatorIds))
         : { data: [], error: null };
 
     const authorsMap = new Map((authorsRes.data || []).map((a) => [a.id, a]));
     const translatorsMap = new Map(
-      (translatorsRes.data || []).map((t) => [t.id, t])
+      (translatorsRes.data || []).map((t) => [t.id, t]),
     );
 
     const bookIds = data.map((r) => r.id);
     const commentsRes =
       bookIds.length > 0
         ? await supabase
-            .from("comments")
-            .select("id, book_id, full_name, text, rating, created_at")
-            .in("book_id", bookIds)
-            .eq("status", "approved")
+            .from('comments')
+            .select('id, book_id, full_name, text, rating, created_at')
+            .in('book_id', bookIds)
+            .eq('status', 'approved')
         : { data: [], error: null };
 
-    type CommentRow = Pick<TComment, "id" | "text" | "rating"> & {
+    type CommentRow = Pick<TComment, 'id' | 'text' | 'rating'> & {
       book_id: string | null;
       full_name: string;
       created_at: string;
@@ -126,7 +126,7 @@ export async function getBooks() {
         let translatorIds: string[] = [];
 
         try {
-          if (typeof r.author_ids === "string") {
+          if (typeof r.author_ids === 'string') {
             authorIds = JSON.parse(r.author_ids);
           } else if (Array.isArray(r.author_ids)) {
             authorIds = r.author_ids;
@@ -136,7 +136,7 @@ export async function getBooks() {
         }
 
         try {
-          if (typeof r.translator_ids === "string") {
+          if (typeof r.translator_ids === 'string') {
             translatorIds = JSON.parse(r.translator_ids);
           } else if (Array.isArray(r.translator_ids)) {
             translatorIds = r.translator_ids;
@@ -152,8 +152,8 @@ export async function getBooks() {
             id: a.id,
             fullName: a.full_name,
             slug: a.slug,
-            createdAt: "",
-            updatedAt: "",
+            createdAt: '',
+            updatedAt: '',
           }));
 
         const translators = translatorIds
@@ -163,8 +163,8 @@ export async function getBooks() {
             id: t.id,
             fullName: t.full_name,
             slug: t.slug,
-            createdAt: "",
-            updatedAt: "",
+            createdAt: '',
+            updatedAt: '',
           }));
 
         return {
@@ -179,15 +179,15 @@ export async function getBooks() {
             id: r.categories!.id,
             name: r.categories!.name,
             slug: r.categories!.slug,
-            createdAt: "",
-            updatedAt: "",
+            createdAt: '',
+            updatedAt: '',
           },
           publisher: {
             id: r.publishers!.id,
             name: r.publishers!.name,
             slug: r.publishers!.slug,
-            createdAt: "",
-            updatedAt: "",
+            createdAt: '',
+            updatedAt: '',
           },
           authors,
           translators,
@@ -202,7 +202,7 @@ export async function getBooks() {
             fullName: c.full_name,
             text: c.text,
             rating: c.rating,
-            status: "approved" as const,
+            status: 'approved' as const,
             createdAt: c.created_at,
           })),
         };
@@ -212,7 +212,7 @@ export async function getBooks() {
   } catch {
     return {
       success: false,
-      error: "خطا در دریافت کتاب‌ها",
+      error: 'خطا در دریافت کتاب‌ها',
       data: [] as TBook[],
     } as const;
   }

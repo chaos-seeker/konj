@@ -1,7 +1,7 @@
-"use server";
+'use server';
 
-import { supabase } from "@/lib/supabase";
-import { randomUUID } from "crypto";
+import { supabase } from '@/lib/supabase';
+import { randomUUID } from 'crypto';
 
 export async function register(data: {
   fullName: string;
@@ -12,16 +12,16 @@ export async function register(data: {
     if (!data.fullName || !data.username || !data.password) {
       return {
         success: false,
-        error: "تمام فیلدهای الزامی را پر کنید",
+        error: 'تمام فیلدهای الزامی را پر کنید',
       } as const;
     }
     const username = data.username.toLowerCase().trim();
     const fullName = data.fullName.trim();
     const password = data.password.trim();
     const check = await supabase
-      .from("users")
-      .select("id")
-      .eq("username", username)
+      .from('users')
+      .select('id')
+      .eq('username', username)
       .limit(1)
       .maybeSingle();
     if (check.error) {
@@ -30,15 +30,15 @@ export async function register(data: {
     if (check.data) {
       return {
         success: false,
-        error: "این نام کاربری قبلاً استفاده شده است",
+        error: 'این نام کاربری قبلاً استفاده شده است',
       } as const;
     }
     const userId = randomUUID();
-    const insert = await supabase.from("users").insert({
+    const insert = await supabase.from('users').insert({
       id: userId,
       full_name: fullName,
-      username: username,
-      password: password,
+      username,
+      password,
       created_at: new Date().toISOString(),
     });
     if (insert.error) {
@@ -47,13 +47,13 @@ export async function register(data: {
 
     return {
       success: true,
-      message: "ثبت‌نام با موفقیت انجام شد",
+      message: 'ثبت‌نام با موفقیت انجام شد',
       data: { username, fullName },
     } as const;
   } catch {
     return {
       success: false,
-      error: "خطا در ثبت‌نام",
+      error: 'خطا در ثبت‌نام',
     } as const;
   }
 }

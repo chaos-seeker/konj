@@ -1,7 +1,7 @@
-import type { TCategory } from "./category";
-import type { TPublisher } from "./publisher";
-import type { TAuthor } from "./author";
-import type { TTranslator } from "./translator";
+import type { TAuthor } from './author';
+import type { TCategory } from './category';
+import type { TPublisher } from './publisher';
+import type { TTranslator } from './translator';
 
 export type TBook = {
   id: string;

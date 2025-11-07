@@ -1,6 +1,9 @@
-"use client";
+'use client';
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { deleteBook } from '@/actions/dashboard/manage-books/delete-book';
+import { getBooks } from '@/actions/dashboard/manage-books/get-books';
+import type { TBook } from '@/types/book';
+import { Button } from '@/ui/button';
 import {
   Table,
   TableBody,
@@ -8,22 +11,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/ui/table";
-import { getBooks } from "@/actions/dashboard/manage-books/get-books";
-import { deleteBook } from "@/actions/dashboard/manage-books/delete-book";
-import Image from "next/image";
-import { Loader2, Edit, Trash2 } from "lucide-react";
-import { toast } from "react-hot-toast";
-import { Button } from "@/ui/button";
-import Link from "next/link";
-import type { TBook } from "@/types/book";
-import { formatDate } from "@/utils/format-date";
+} from '@/ui/table';
+import { formatDate } from '@/utils/format-date';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Edit, Loader2, Trash2 } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { toast } from 'react-hot-toast';
 
 export function ListBook() {
   const queryClient = useQueryClient();
 
   const fetchedData = useQuery({
-    queryKey: ["books"],
+    queryKey: ['books'],
     queryFn: async () => {
       const result = await getBooks();
       if (!result.success) {
@@ -41,27 +41,27 @@ export function ListBook() {
     try {
       const result = await deleteBook(slug);
       if (!result.success) {
-        throw new Error(result.error || "خطا در حذف کتاب");
+        throw new Error(result.error || 'خطا در حذف کتاب');
       }
 
-      await queryClient.invalidateQueries({ queryKey: ["books"] });
-      toast.success(result.message || "کتاب با موفقیت حذف شد");
+      await queryClient.invalidateQueries({ queryKey: ['books'] });
+      toast.success(result.message || 'کتاب با موفقیت حذف شد');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "خطا در حذف کتاب");
+      toast.error(error instanceof Error ? error.message : 'خطا در حذف کتاب');
     }
   };
 
   if (fetchedData.isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   if (!fetchedData.data || fetchedData.data.length === 0) {
     return (
-      <div className="items-center flex flex-col gap-6 justify-center py-10">
+      <div className="flex flex-col items-center justify-center gap-6 py-10">
         <Image
           src="/images/global/not-found.png"
           alt="empty"
@@ -76,7 +76,7 @@ export function ListBook() {
   return (
     <section>
       <div className="container">
-        <div className="rounded-xl border bg-white border-slate-200">
+        <div className="rounded-xl border border-slate-200 bg-white">
           <Table>
             <TableHeader>
               <TableRow>
@@ -102,7 +102,7 @@ export function ListBook() {
                         className="rounded object-cover"
                       />
                     ) : (
-                      <div className="w-[50px] h-[50px] bg-muted rounded" />
+                      <div className="bg-muted h-[50px] w-[50px] rounded" />
                     )}
                   </TableCell>
                   <TableCell>{book.name}</TableCell>
@@ -111,14 +111,14 @@ export function ListBook() {
                   <TableCell>
                     {book.discount ? (
                       <div className="flex flex-col">
-                        <span className="line-through text-muted-foreground text-sm">
+                        <span className="text-muted-foreground text-sm line-through">
                           {book.price.toLocaleString()} تومان
                         </span>
                         <span>
                           {(
                             book.price *
                             (1 - book.discount / 100)
-                          ).toLocaleString()}{" "}
+                          ).toLocaleString()}{' '}
                           تومان ({book.discount}%)
                         </span>
                       </div>
@@ -133,7 +133,7 @@ export function ListBook() {
                         <Link
                           href={`/dashboard/manage-books/${book.slug}/edit`}
                         >
-                          <Edit className="h-4 w-4 text-info" />
+                          <Edit className="text-info h-4 w-4" />
                         </Link>
                       </Button>
                       <Button
@@ -141,7 +141,7 @@ export function ListBook() {
                         size="icon"
                         onClick={() => handleDelete(book.slug, book.name)}
                       >
-                        <Trash2 className="h-4 w-4 text-error" />
+                        <Trash2 className="text-error h-4 w-4" />
                       </Button>
                     </div>
                   </TableCell>

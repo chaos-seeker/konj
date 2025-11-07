@@ -1,18 +1,18 @@
-"use server";
+'use server';
 
-import { supabase } from "@/lib/supabase";
-import type { TOrder } from "@/types/order";
+import { supabase } from '@/lib/supabase';
+import type { TOrder } from '@/types/order';
 
 export async function getOrders() {
   try {
     const res = await supabase
-      .from("orders")
+      .from('orders')
       .select(
-        "id, full_name, username, total_price, total_discount, final_price, created_at"
+        'id, full_name, username, total_price, total_discount, final_price, created_at',
       )
-      .order("created_at", { ascending: false });
+      .order('created_at', { ascending: false });
     if (res.error) throw res.error;
-    type Row = Pick<TOrder, "id" | "username" | "createdAt"> & {
+    type Row = Pick<TOrder, 'id' | 'username' | 'createdAt'> & {
       full_name: string;
       total_price: number;
       total_discount: number;
@@ -33,7 +33,7 @@ export async function getOrders() {
   } catch {
     return {
       success: false,
-      error: "خطا در دریافت سفارش‌ها",
+      error: 'خطا در دریافت سفارش‌ها',
       data: [] as TOrder[],
     } as const;
   }

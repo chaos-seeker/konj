@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import type { TBook } from "@/types/book";
-import { StarIcon } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/ui/button";
-import { cartSlice } from "@/slices/cart";
-import { useKillua } from "killua";
-import toast from "react-hot-toast";
+import { cartSlice } from '@/slices/cart';
+import type { TBook } from '@/types/book';
+import { Button } from '@/ui/button';
+import { useKillua } from 'killua';
+import { StarIcon } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 interface IBoxProps {
   book: TBook;
@@ -28,19 +28,19 @@ export function Box({ book }: IBoxProps) {
   const handleAddToCart = () => {
     if (isInCart) {
       cart.reducers.removeFromCart(book.slug);
-      toast.success("از سبد خرید حذف شد");
+      toast.success('از سبد خرید حذف شد');
     } else {
       cart.reducers.addToCart(book);
-      toast.success("به سبد خرید اضافه شد");
+      toast.success('به سبد خرید اضافه شد');
     }
   };
 
   return (
     <section className="flex justify-center">
-      <div className=" p-4 bg-white flex flex-col gap-4 rounded-xl border w-full border-slate-200">
+      <div className="flex w-full flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4">
         <div className="xl:flex">
-          <div className="w-full xl:w-fit xl:pl-4 flex justify-center">
-            <div className="relative aspect-3/4 w-[200px] xl:w-[230px] overflow-hidden border bg-white">
+          <div className="flex w-full justify-center xl:w-fit xl:pl-4">
+            <div className="relative aspect-3/4 w-[200px] overflow-hidden border bg-white xl:w-[230px]">
               <Image
                 src={book.image}
                 alt={book.name}
@@ -50,30 +50,30 @@ export function Box({ book }: IBoxProps) {
             </div>
           </div>
           <div className="xl:w-full">
-            <div className="flex justify-between gap-3 py-4 lg:pt-0 border-b">
-              <h1 className="font-medium truncate xl:pt-3">{book.name}</h1>
+            <div className="flex justify-between gap-3 border-b py-4 lg:pt-0">
+              <h1 className="truncate font-medium xl:pt-3">{book.name}</h1>
               <div className="flex items-center gap-1">
-                <StarIcon className="w-4 h-4 text-warning fill-warning" />
-                <p className="text-sm pt-1">{rating}</p>
+                <StarIcon className="text-warning fill-warning h-4 w-4" />
+                <p className="pt-1 text-sm">{rating}</p>
               </div>
             </div>
-            <div className="flex flex-col  gap-1 border-b py-4">
+            <div className="flex flex-col gap-1 border-b py-4">
               <p className="text-smp text-muted-foreground">
                 نویسنده:
                 {book.authors && book.authors.length > 0 ? (
                   <>
                     {book.authors.map((a, idx) => (
                       <span key={a.slug}>
-                        {" "}
+                        {' '}
                         <Link
                           href={`/explore?authors=${encodeURIComponent(
-                            a.slug
+                            a.slug,
                           )}`}
                           className="text-primary hover:underline"
                         >
                           {a.fullName}
                         </Link>
-                        {idx < book.authors.length - 1 ? "،" : ""}
+                        {idx < book.authors.length - 1 ? '،' : ''}
                       </span>
                     ))}
                   </>
@@ -87,16 +87,16 @@ export function Box({ book }: IBoxProps) {
                   <>
                     {book.translators.map((t, idx) => (
                       <span key={t.slug}>
-                        {" "}
+                        {' '}
                         <Link
                           href={`/explore?translators=${encodeURIComponent(
-                            t.slug
+                            t.slug,
                           )}`}
                           className="text-primary hover:underline"
                         >
                           {t.fullName}
                         </Link>
-                        {idx < book.translators.length - 1 ? "،" : ""}
+                        {idx < book.translators.length - 1 ? '،' : ''}
                       </span>
                     ))}
                   </>
@@ -105,11 +105,11 @@ export function Box({ book }: IBoxProps) {
                 )}
               </p>
               <p className="text-smp text-muted-foreground">
-                ناشر:{" "}
+                ناشر:{' '}
                 {book.publisher && book.publisher.name ? (
                   <Link
                     href={`/explore?publishers=${encodeURIComponent(
-                      book.publisher.slug
+                      book.publisher.slug,
                     )}`}
                     className="text-primary hover:underline"
                   >
@@ -120,11 +120,11 @@ export function Box({ book }: IBoxProps) {
                 )}
               </p>
               <p className="text-smp text-muted-foreground">
-                دسته بندی:{" "}
+                دسته بندی:{' '}
                 {book.category ? (
                   <Link
                     href={`/explore?categories=${encodeURIComponent(
-                      book.category.slug
+                      book.category.slug,
                     )}`}
                     className="text-primary hover:underline"
                   >
@@ -141,12 +141,12 @@ export function Box({ book }: IBoxProps) {
                 تعداد صفحات: {book.pages}
               </p>
             </div>
-            <div className="flex py-4 justify-between items-center">
+            <div className="flex items-center justify-between py-4">
               <p>قیمت نهایی</p>
               <div className="flex items-center gap-2">
                 {book.discount
                   ? book.discount > 0 && (
-                      <p className="text-xsp bg-error text-white px-2 py-1 rounded-lg w-fit h-5.5">
+                      <p className="text-xsp bg-error h-5.5 w-fit rounded-lg px-2 py-1 text-white">
                         {book.discount}%
                       </p>
                     )
@@ -156,7 +156,7 @@ export function Box({ book }: IBoxProps) {
                     {discountPrice.toLocaleString()} تومان
                   </p>
                   {book.discount ? (
-                    <p className="text-sm text-muted-foreground line-through">
+                    <p className="text-muted-foreground text-sm line-through">
                       {book.price.toLocaleString()} تومان
                     </p>
                   ) : null}
@@ -164,12 +164,12 @@ export function Box({ book }: IBoxProps) {
               </div>
             </div>
             <Button
-              className={`w-full h-13 text-mdp text-white ${
-                isInCart ? "bg-error hover:bg-error/90" : ""
+              className={`text-mdp h-13 w-full text-white ${
+                isInCart ? 'bg-error hover:bg-error/90' : ''
               }`}
               onClick={handleAddToCart}
             >
-              <p>{isInCart ? "حذف از سبد خرید" : "افزودن به سبد خرید"}</p>
+              <p>{isInCart ? 'حذف از سبد خرید' : 'افزودن به سبد خرید'}</p>
             </Button>
           </div>
         </div>

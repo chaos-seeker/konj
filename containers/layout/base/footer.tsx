@@ -1,10 +1,10 @@
-import Link from "next/link";
-import Image from "next/image";
+import Image from 'next/image';
+import Link from 'next/link';
 
 export const Footer = () => {
   return (
-    <footer className='flex flex-col border border-slate-200 container items-center bg-white rounded-t-xl'>
-      <div className="py-4 flex items-center w-full justify-between">
+    <footer className="container flex flex-col items-center rounded-t-xl border border-slate-200 bg-white">
+      <div className="flex w-full items-center justify-between py-4">
         <Copyright />
         <Logo />
       </div>
@@ -27,7 +27,5 @@ function Logo() {
 }
 
 const Copyright = () => {
-  return (
-    <p className="text-caption">توسعه توسط حمید شاهسونی</p>
-  );
-}
+  return <p className="text-sm">توسعه توسط حمید شاهسونی</p>;
+};

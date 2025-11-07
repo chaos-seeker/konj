@@ -5,4 +5,3 @@ export type TAuthor = {
   createdAt: string;
   updatedAt: string;
 };
-

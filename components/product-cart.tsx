@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { MessageCircle, Star } from "lucide-react";
-import type { TBook } from "@/types/book";
+import type { TBook } from '@/types/book';
+import { MessageCircle, Star } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 type ProductCartNormalizedProps = {
   id: string | number;
@@ -21,15 +21,15 @@ type ProductCartProps = ProductCartNormalizedProps | { book: TBook };
 
 export const ProductCart = (props: ProductCartProps) => {
   const normalized: ProductCartNormalizedProps =
-    "book" in props
+    'book' in props
       ? {
           id: props.book.id,
           title: props.book.name,
           author:
             props.book.authors?.[0]?.fullName ||
             props.book.publisher?.name ||
-            "",
-          image: props.book.image || "/images/temp/product.png",
+            '',
+          image: props.book.image || '/images/temp/product.png',
           price: props.book.price,
           discount: props.book.discount || 0,
           slug: props.book.slug,
@@ -49,43 +49,43 @@ export const ProductCart = (props: ProductCartProps) => {
     normalized.discount !== undefined && normalized.discount > 0;
 
   return (
-    <Link href={`/product/${normalized.slug}`} className="block group">
-      <div className="relative bg-white rounded-lg overflow-hidden border hover:border-primary transition-colors">
-        <div className="relative bg-gray-20 w-full aspect-3/4 overflow-hidden">
+    <Link href={`/product/${normalized.slug}`} className="group block">
+      <div className="hover:border-primary relative overflow-hidden rounded-lg border bg-white transition-colors">
+        <div className="bg-gray-20 relative aspect-3/4 w-full overflow-hidden">
           <Image
             src={normalized.image}
             alt={normalized.title}
             fill
-            className="object-cover duration-300 p-3 rounded-[20px]"
+            className="rounded-[20px] object-cover p-3 duration-300"
           />
         </div>
         <div className="px-4 pt-4 pb-2 text-right">
-          <h3 className="font-medium text-smp truncate text-foreground leading-tight group-hover:text-primary transition-colors">
+          <h3 className="text-smp text-foreground group-hover:text-primary truncate leading-tight font-medium transition-colors">
             {normalized.title}
           </h3>
-          <p className="text-sm text-muted-foreground">{normalized.author}</p>
-          <div className="flex mt-2 items-center justify-between gap-2">
+          <p className="text-muted-foreground text-sm">{normalized.author}</p>
+          <div className="mt-2 flex items-center justify-between gap-2">
             <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 fill-warning text-warning shrink-0" />
-              <span className="text-xs pt-1 text-muted-foreground">
+              <Star className="fill-warning text-warning h-4 w-4 shrink-0" />
+              <span className="text-muted-foreground pt-1 text-xs">
                 {normalized.rating}
               </span>
             </div>
             <div className="flex items-center gap-1">
-              <MessageCircle className="w-4 h-4 fill-primary text-primary shrink-0" />
-              <span className="text-xs pt-1 text-muted-foreground">
+              <MessageCircle className="fill-primary text-primary h-4 w-4 shrink-0" />
+              <span className="text-muted-foreground pt-1 text-xs">
                 {normalized.commments}
               </span>
             </div>
           </div>
           <hr className="my-2" />
-          <div className="flex items-center px-5 justify-between gap-2">
-            <span className="font-bold text-primary">
-              {discountPrice.toLocaleString("fa-IR")}
+          <div className="flex items-center justify-between gap-2 px-5">
+            <span className="text-primary font-bold">
+              {discountPrice.toLocaleString('fa-IR')}
             </span>
             {hasDiscount && (
               <span className="text-gray-400 line-through">
-                {normalized.price.toLocaleString("fa-IR")}
+                {normalized.price.toLocaleString('fa-IR')}
               </span>
             )}
           </div>

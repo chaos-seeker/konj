@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useKillua } from "killua";
-import { cartSlice } from "@/slices/cart";
-import { CartItems } from "@/containers/routes/cart/cart-items";
-import { CartSummary } from "@/containers/routes/cart/cart-summary";
-import { ViewportAnimation } from "@/components/viewport-animation";
-import Image from "next/image";
+import { ViewportAnimation } from '@/components/viewport-animation';
+import { CartItems } from '@/containers/routes/cart/cart-items';
+import { CartSummary } from '@/containers/routes/cart/cart-summary';
+import { cartSlice } from '@/slices/cart';
+import { useKillua } from 'killua';
+import Image from 'next/image';
 
 export default function CartPage() {
   const cart = useKillua(cartSlice);
@@ -15,7 +15,7 @@ export default function CartPage() {
   if (isEmpty) {
     return (
       <ViewportAnimation className="container">
-        <div className="items-center flex flex-col gap-6 justify-center py-10">
+        <div className="flex flex-col items-center justify-center gap-6 py-10">
           <Image
             src="/images/global/not-found.png"
             alt="empty"
@@ -31,7 +31,7 @@ export default function CartPage() {
   return (
     <ViewportAnimation>
       <div className="container">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
           <ViewportAnimation className="lg:col-span-2">
             <CartItems />
           </ViewportAnimation>

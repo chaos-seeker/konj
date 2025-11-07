@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { useKillua } from "killua";
-import { userSlice } from "@/slices/user";
-import { ProfileSidebar } from "@/containers/routes/profile/profile-sidebar";
-import { UserOrdersList } from "@/containers/routes/profile/user-orders-list";
-import { ViewportAnimation } from "@/components/viewport-animation";
-import Image from "next/image";
+import { ViewportAnimation } from '@/components/viewport-animation';
+import { ProfileSidebar } from '@/containers/routes/profile/profile-sidebar';
+import { UserOrdersList } from '@/containers/routes/profile/user-orders-list';
+import { userSlice } from '@/slices/user';
+import { useKillua } from 'killua';
+import Image from 'next/image';
 
 export default function ProfilePage() {
   const user = useKillua(userSlice);
   const isAuthenticated = user.selectors.isAuthenticated();
-  const username = user.selectors.getUsername() || "";
+  const username = user.selectors.getUsername() || '';
 
   if (!isAuthenticated) {
     return (
-      <ViewportAnimation className="items-center flex flex-col gap-6 justify-center py-10">
+      <ViewportAnimation className="flex flex-col items-center justify-center gap-6 py-10">
         <Image
           src="/images/global/not-found.png"
           alt="empty"
@@ -29,11 +29,11 @@ export default function ProfilePage() {
   return (
     <ViewportAnimation>
       <div className="container">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <ViewportAnimation className="lg:col-span-1 lg:sticky lg:top-6 lg:self-start">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+          <ViewportAnimation className="lg:sticky lg:top-6 lg:col-span-1 lg:self-start">
             <ProfileSidebar />
           </ViewportAnimation>
-          <ViewportAnimation className="lg:col-span-3 w-full">
+          <ViewportAnimation className="w-full lg:col-span-3">
             <UserOrdersList username={username} />
           </ViewportAnimation>
         </div>

@@ -1,16 +1,16 @@
-"use server";
+'use server';
 
-import { supabase } from "@/lib/supabase";
-import type { TAuthor } from "@/types/author";
+import { supabase } from '@/lib/supabase';
+import type { TAuthor } from '@/types/author';
 
 export async function getAuthors(searchText?: string) {
   try {
-    let query = supabase.from("authors").select("id, full_name, slug");
+    let query = supabase.from('authors').select('id, full_name, slug');
     if (searchText && searchText.trim()) {
       const s = searchText.trim();
-      query = query.ilike("full_name", `%${s}%`);
+      query = query.ilike('full_name', `%${s}%`);
     }
-    const res = await query.order("full_name");
+    const res = await query.order('full_name');
     if (res.error) {
       return {
         success: false,
@@ -18,7 +18,7 @@ export async function getAuthors(searchText?: string) {
         data: [] as TAuthor[],
       } as const;
     }
-    type Row = Pick<TAuthor, "id" | "slug"> & {
+    type Row = Pick<TAuthor, 'id' | 'slug'> & {
       full_name: string;
       created_at?: string;
       updated_at?: string;
@@ -28,14 +28,14 @@ export async function getAuthors(searchText?: string) {
       id: a.id,
       fullName: a.full_name,
       slug: a.slug,
-      createdAt: a.created_at || "",
-      updatedAt: a.updated_at || "",
+      createdAt: a.created_at || '',
+      updatedAt: a.updated_at || '',
     }));
     return { success: true, data } as const;
   } catch {
     return {
       success: false,
-      error: "خطا در دریافت نویسندگان",
+      error: 'خطا در دریافت نویسندگان',
       data: [] as TAuthor[],
     } as const;
   }

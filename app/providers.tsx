@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { ProgressProvider } from "@bprogress/next/app";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { PropsWithChildren, Suspense } from "react";
-import { Toaster } from "react-hot-toast";
+import { ProgressProvider } from '@bprogress/next/app';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { PropsWithChildren, Suspense } from 'react';
+import { Toaster } from 'react-hot-toast';
 
 const Bprogress = (props: PropsWithChildren) => {
   return (

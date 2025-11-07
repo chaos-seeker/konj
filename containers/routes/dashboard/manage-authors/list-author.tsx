@@ -1,7 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ModalEditAuthor } from './modal-edit-author';
+import { deleteAuthor } from '@/actions/dashboard/manage-authors/delete-author';
+import { getAuthors } from '@/actions/dashboard/manage-authors/get-authors';
+import type { TAuthor } from '@/types/author';
+import { Button } from '@/ui/button';
 import {
   Table,
   TableBody,
@@ -9,27 +12,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/ui/table";
-import { getAuthors } from "@/actions/dashboard/manage-authors/get-authors";
-import { deleteAuthor } from "@/actions/dashboard/manage-authors/delete-author";
-import Image from "next/image";
-import { Loader2, Edit, Trash2 } from "lucide-react";
-import { toast } from "react-hot-toast";
-import { Button } from "@/ui/button";
-import { ModalEditAuthor } from "./modal-edit-author";
-import type { TAuthor } from "@/types/author";
-import { formatDate } from "@/utils/format-date";
+} from '@/ui/table';
+import { formatDate } from '@/utils/format-date';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Edit, Loader2, Trash2 } from 'lucide-react';
+import Image from 'next/image';
+import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 export function ListAuthor() {
   const queryClient = useQueryClient();
   const [editingAuthor, setEditingAuthor] = useState<Pick<
     TAuthor,
-    "id" | "fullName" | "slug"
+    'id' | 'fullName' | 'slug'
   > | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const fetchedData = useQuery({
-    queryKey: ["authors"],
+    queryKey: ['authors'],
     queryFn: async () => {
       const result = await getAuthors();
       if (!result.success) {
@@ -47,14 +47,14 @@ export function ListAuthor() {
     try {
       const result = await deleteAuthor(slug);
       if (!result.success) {
-        throw new Error(result.error || "خطا در حذف نویسنده");
+        throw new Error(result.error || 'خطا در حذف نویسنده');
       }
 
-      await queryClient.invalidateQueries({ queryKey: ["authors"] });
-      toast.success(result.message || "نویسنده با موفقیت حذف شد");
+      await queryClient.invalidateQueries({ queryKey: ['authors'] });
+      toast.success(result.message || 'نویسنده با موفقیت حذف شد');
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "خطا در حذف نویسنده"
+        error instanceof Error ? error.message : 'خطا در حذف نویسنده',
       );
     }
   };
@@ -67,14 +67,14 @@ export function ListAuthor() {
   if (fetchedData.isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   if (!fetchedData.data || fetchedData.data.length === 0) {
     return (
-      <div className="items-center flex flex-col gap-6 justify-center py-10">
+      <div className="flex flex-col items-center justify-center gap-6 py-10">
         <Image
           src="/images/global/not-found.png"
           alt="empty"
@@ -89,7 +89,7 @@ export function ListAuthor() {
   return (
     <section>
       <div className="container">
-        <div className="rounded-xl border bg-white border-slate-200">
+        <div className="rounded-xl border border-slate-200 bg-white">
           <Table>
             <TableHeader>
               <TableRow>
@@ -106,7 +106,7 @@ export function ListAuthor() {
                     {author.fullName}
                   </TableCell>
                   <TableCell>
-                    <code className="text-sm bg-muted px-2 py-1 rounded">
+                    <code className="bg-muted rounded px-2 py-1 text-sm">
                       {author.slug}
                     </code>
                   </TableCell>
@@ -118,7 +118,7 @@ export function ListAuthor() {
                         size="icon"
                         onClick={() => handleEdit(author)}
                       >
-                        <Edit className="h-4 w-4 text-info" />
+                        <Edit className="text-info h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -127,7 +127,7 @@ export function ListAuthor() {
                           handleDelete(author.slug, author.fullName)
                         }
                       >
-                        <Trash2 className="h-4 w-4 text-error" />
+                        <Trash2 className="text-error h-4 w-4" />
                       </Button>
                     </div>
                   </TableCell>

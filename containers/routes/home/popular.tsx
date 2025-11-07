@@ -1,8 +1,8 @@
-import { ProductCart } from "@/components/product-cart";
-import Link from "next/link";
-import Image from "next/image";
-import { ArrowLeftIcon } from "lucide-react";
-import { getBooks } from "@/actions/dashboard/manage-books/get-books";
+import { getBooks } from '@/actions/dashboard/manage-books/get-books';
+import { ProductCart } from '@/components/product-cart';
+import { ArrowLeftIcon } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export const Popular = async () => {
   const result = await getBooks();
@@ -16,15 +16,15 @@ export const Popular = async () => {
       <div className="container flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h2 className="font-medium">پر فروش ترین کتاب ها</h2>
-          <Link href="/explore" className="flex items-center gap-2 group">
+          <Link href="/explore" className="group flex items-center gap-2">
             <span className="group-hover:text-primary transition-colors">
               مشاهده همه
             </span>
-            <ArrowLeftIcon className="size-4 group-hover:text-primary shrink-0" />
+            <ArrowLeftIcon className="group-hover:text-primary size-4 shrink-0" />
           </Link>
         </div>
         {sorted.length === 0 ? (
-          <div className="items-center flex flex-col gap-6 justify-center py-10">
+          <div className="flex flex-col items-center justify-center gap-6 py-10">
             <Image
               src="/images/global/not-found.png"
               alt="empty"
@@ -35,19 +35,19 @@ export const Popular = async () => {
           </div>
         ) : (
           <>
-            <div className="lg:hidden overflow-x-auto snap-x snap-mandatory">
+            <div className="snap-x snap-mandatory overflow-x-auto lg:hidden">
               <div className="flex gap-4">
                 {sorted.map((item) => (
                   <div
                     key={item.id}
-                    className="min-w-[200px] max-w-[200px] snap-start shrink-0"
+                    className="max-w-[200px] min-w-[200px] shrink-0 snap-start"
                   >
                     <ProductCart book={item} />
                   </div>
                 ))}
               </div>
             </div>
-            <div className="hidden lg:grid grid-cols-6 gap-4">
+            <div className="hidden grid-cols-6 gap-4 lg:grid">
               {sorted.slice(0, 6).map((item) => (
                 <ProductCart key={item.id} book={item} />
               ))}

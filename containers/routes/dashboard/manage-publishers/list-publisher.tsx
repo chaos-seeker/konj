@@ -1,7 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ModalEditPublisher } from './modal-edit-publisher';
+import { deletePublisher } from '@/actions/dashboard/manage-publishers/delete-publisher';
+import { getPublishers } from '@/actions/dashboard/manage-publishers/get-publishers';
+import type { TPublisher } from '@/types/publisher';
+import { Button } from '@/ui/button';
 import {
   Table,
   TableBody,
@@ -9,27 +12,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/ui/table";
-import { getPublishers } from "@/actions/dashboard/manage-publishers/get-publishers";
-import { deletePublisher } from "@/actions/dashboard/manage-publishers/delete-publisher";
-import Image from "next/image";
-import { Loader2, Edit, Trash2 } from "lucide-react";
-import { toast } from "react-hot-toast";
-import { Button } from "@/ui/button";
-import { ModalEditPublisher } from "./modal-edit-publisher";
-import type { TPublisher } from "@/types/publisher";
-import { formatDate } from "@/utils/format-date";
+} from '@/ui/table';
+import { formatDate } from '@/utils/format-date';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Edit, Loader2, Trash2 } from 'lucide-react';
+import Image from 'next/image';
+import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 export function ListPublisher() {
   const queryClient = useQueryClient();
   const [editingPublisher, setEditingPublisher] = useState<Pick<
     TPublisher,
-    "id" | "name" | "slug"
+    'id' | 'name' | 'slug'
   > | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const fetchedData = useQuery({
-    queryKey: ["publishers"],
+    queryKey: ['publishers'],
     queryFn: async () => {
       const result = await getPublishers();
       if (!result.success) {
@@ -47,13 +47,13 @@ export function ListPublisher() {
     try {
       const result = await deletePublisher(slug);
       if (!result.success) {
-        throw new Error(result.error || "خطا در حذف ناشر");
+        throw new Error(result.error || 'خطا در حذف ناشر');
       }
 
-      await queryClient.invalidateQueries({ queryKey: ["publishers"] });
-      toast.success(result.message || "ناشر با موفقیت حذف شد");
+      await queryClient.invalidateQueries({ queryKey: ['publishers'] });
+      toast.success(result.message || 'ناشر با موفقیت حذف شد');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "خطا در حذف ناشر");
+      toast.error(error instanceof Error ? error.message : 'خطا در حذف ناشر');
     }
   };
 
@@ -65,14 +65,14 @@ export function ListPublisher() {
   if (fetchedData.isLoading) {
     return (
       <div className="flex items-center justify-center py-6">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   if (!fetchedData.data || fetchedData.data.length === 0) {
     return (
-      <div className="items-center flex flex-col gap-6 justify-center py-10">
+      <div className="flex flex-col items-center justify-center gap-6 py-10">
         <Image
           src="/images/global/not-found.png"
           alt="empty"
@@ -87,7 +87,7 @@ export function ListPublisher() {
   return (
     <section>
       <div className="container">
-        <div className="rounded-xl border bg-white border-slate-200">
+        <div className="rounded-xl border border-slate-200 bg-white">
           <Table>
             <TableHeader>
               <TableRow>
@@ -104,7 +104,7 @@ export function ListPublisher() {
                     {publisher.name}
                   </TableCell>
                   <TableCell>
-                    <code className="text-sm bg-muted px-2 py-1 rounded">
+                    <code className="bg-muted rounded px-2 py-1 text-sm">
                       {publisher.slug}
                     </code>
                   </TableCell>
@@ -116,7 +116,7 @@ export function ListPublisher() {
                         size="icon"
                         onClick={() => handleEdit(publisher)}
                       >
-                        <Edit className="h-4 w-4 text-info" />
+                        <Edit className="text-info h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -125,7 +125,7 @@ export function ListPublisher() {
                           handleDelete(publisher.slug, publisher.name)
                         }
                       >
-                        <Trash2 className="h-4 w-4 text-error" />
+                        <Trash2 className="text-error h-4 w-4" />
                       </Button>
                     </div>
                   </TableCell>

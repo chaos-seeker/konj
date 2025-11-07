@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { ReactNode, useId } from "react";
-import { usePathname } from "next/navigation";
+import { motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
+import { ReactNode, useId } from 'react';
 
 interface ViewportAnimationProps {
   children: ReactNode;
@@ -18,7 +18,7 @@ export const ViewportAnimation = (props: ViewportAnimationProps) => {
       key={`${pathname}-${id}`}
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
       className={props.className}
     >
       {props.children}

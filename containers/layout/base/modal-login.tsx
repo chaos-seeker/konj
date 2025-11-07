@@ -1,17 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useKillua } from "killua";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/ui/dialog";
-import { Button } from "@/ui/button";
+import { login } from '@/actions/auth/login';
+import { userSlice } from '@/slices/user';
+import { Button } from '@/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/ui/dialog';
 import {
   Form,
   FormControl,
@@ -19,15 +11,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/ui/form";
-import { Input } from "@/ui/input";
-import toast from "react-hot-toast";
-import { userSlice } from "@/slices/user";
-import { login } from "@/actions/auth/login";
+} from '@/ui/form';
+import { Input } from '@/ui/input';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useKillua } from 'killua';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { z } from 'zod';
 
 const loginSchema = z.object({
-  username: z.string().min(1, "نام کاربری الزامی است"),
-  password: z.string().min(1, "رمز عبور الزامی است"),
+  username: z.string().min(1, 'نام کاربری الزامی است'),
+  password: z.string().min(1, 'رمز عبور الزامی است'),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -48,8 +43,8 @@ export function ModalLogin({
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    mode: "onChange",
-    defaultValues: { username: "", password: "" },
+    mode: 'onChange',
+    defaultValues: { username: '', password: '' },
   });
 
   const onSubmit = async (values: LoginFormValues) => {
@@ -57,7 +52,7 @@ export function ModalLogin({
       setIsSubmitting(true);
       const result = await login(values);
       if (!result.success) {
-        toast.error(result.error || "خطا در ورود");
+        toast.error(result.error || 'خطا در ورود');
         return;
       }
 
@@ -67,15 +62,15 @@ export function ModalLogin({
           username: result.data.username,
           fullName: result.data.fullName,
         });
-        
+
         document.cookie = `auth-token=${result.data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
       }
 
-      toast.success(result.message || "ورود با موفقیت انجام شد");
+      toast.success(result.message || 'ورود با موفقیت انجام شد');
       form.reset();
       onOpenChange(false);
     } catch {
-      toast.error("خطا در ورود");
+      toast.error('خطا در ورود');
     } finally {
       setIsSubmitting(false);
     }
@@ -122,13 +117,13 @@ export function ModalLogin({
                 </FormItem>
               )}
             />
-            <div className="flex flex-col gap-2 mt-6">
+            <div className="mt-6 flex flex-col gap-2">
               <Button
                 type="submit"
                 disabled={!form.formState.isValid || isSubmitting}
-                className="w-full h-11"
+                className="h-11 w-full"
               >
-                {isSubmitting ? "در حال ورود..." : "ورود"}
+                {isSubmitting ? 'در حال ورود...' : 'ورود'}
               </Button>
               {onSwitchToRegister && (
                 <button
@@ -137,7 +132,7 @@ export function ModalLogin({
                     onOpenChange(false);
                     onSwitchToRegister();
                   }}
-                  className="text-sm text-primary pt-1 hover:underline"
+                  className="text-primary pt-1 text-sm hover:underline"
                 >
                   حساب کاربری ندارید؟ ثبت‌نام کنید
                 </button>

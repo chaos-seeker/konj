@@ -5,4 +5,3 @@ export type TPublisher = {
   createdAt: string;
   updatedAt: string;
 };
-

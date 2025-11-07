@@ -1,6 +1,6 @@
-import { Footer } from "./footer";
-import { Header } from "./header";
-import { PropsWithChildren } from "react";
+import { Footer } from './footer';
+import { Header } from './header';
+import { PropsWithChildren } from 'react';
 
 export default function LayouBase(props: PropsWithChildren) {
   return (

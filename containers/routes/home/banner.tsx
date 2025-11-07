@@ -1,5 +1,5 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
 interface BannerProps {
   image: string;
@@ -9,19 +9,19 @@ interface BannerProps {
 export const Banner = (props: BannerProps) => {
   return (
     <div className="container">
-      <div className="relative w-full aspect-16/14 md:aspect-21/7 overflow-hidden rounded-lg">
+      <div className="relative aspect-16/14 w-full overflow-hidden rounded-lg md:aspect-21/7">
         <Link href="/explore">
           <Image
             src={props.imageMobile}
             alt="banner"
             fill
-            className="object-cover md:hidden w-full overflow-hidden rounded-lg"
+            className="w-full overflow-hidden rounded-lg object-cover md:hidden"
           />
           <Image
             src={props.image}
             alt="banner"
             fill
-            className="object-cover hidden md:block"
+            className="hidden object-cover md:block"
           />
         </Link>
       </div>

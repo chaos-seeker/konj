@@ -1,4 +1,4 @@
-import { ListOrder } from "@/containers/routes/dashboard/manage-orders/list-order";
+import { ListOrder } from '@/containers/routes/dashboard/manage-orders/list-order';
 
 export default function OrdersPage() {
   return (
@@ -7,4 +7,3 @@ export default function OrdersPage() {
     </>
   );
 }
-

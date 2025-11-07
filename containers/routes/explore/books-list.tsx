@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useQuery } from "@tanstack/react-query";
-import { getBooks } from "@/actions/explore/get-books";
-import type { TBook } from "@/types/book";
-import { ProductCart } from "@/components/product-cart";
-import { Loader2 } from "lucide-react";
-import Image from "next/image";
+import { getBooks } from '@/actions/explore/get-books';
+import { ProductCart } from '@/components/product-cart';
+import type { TBook } from '@/types/book';
+import { useQuery } from '@tanstack/react-query';
+import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
 
 interface BooksListProps {
   searchText?: string;
@@ -23,7 +23,14 @@ export function BooksList({
   authors,
 }: BooksListProps) {
   const { data: books = [], isLoading } = useQuery<TBook[]>({
-    queryKey: ["explore-books", searchText, categories, publishers, translators, authors],
+    queryKey: [
+      'explore-books',
+      searchText,
+      categories,
+      publishers,
+      translators,
+      authors,
+    ],
     queryFn: async () => {
       const result = await getBooks({
         searchText,
@@ -39,14 +46,14 @@ export function BooksList({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   if (books.length === 0) {
     return (
-      <div className="items-center flex flex-col gap-6 justify-center py-10">
+      <div className="flex flex-col items-center justify-center gap-6 py-10">
         <Image
           src="/images/global/not-found.png"
           alt="empty"
@@ -59,11 +66,10 @@ export function BooksList({
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
       {books.map((book) => (
         <ProductCart key={book.id} book={book} />
       ))}
     </div>
   );
 }
-

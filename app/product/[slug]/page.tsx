@@ -1,12 +1,12 @@
-import { getBook } from "@/actions/dashboard/manage-books/get-book";
-import { Box } from "@/containers/routes/product/box";
-import { Description } from "@/containers/routes/product/description";
-import { Comments } from "@/containers/routes/product/comments";
-import { AddNewComment } from "@/containers/routes/product/add-new-comment";
-import { RelatedByAuthor } from "@/containers/routes/product/related-by-author";
-import { RelatedByPublisher } from "@/containers/routes/product/related-by-publisher";
-import { ViewportAnimation } from "@/components/viewport-animation";
-import Image from "next/image";
+import { getBook } from '@/actions/dashboard/manage-books/get-book';
+import { ViewportAnimation } from '@/components/viewport-animation';
+import { AddNewComment } from '@/containers/routes/product/add-new-comment';
+import { Box } from '@/containers/routes/product/box';
+import { Comments } from '@/containers/routes/product/comments';
+import { Description } from '@/containers/routes/product/description';
+import { RelatedByAuthor } from '@/containers/routes/product/related-by-author';
+import { RelatedByPublisher } from '@/containers/routes/product/related-by-publisher';
+import Image from 'next/image';
 
 export default async function ProductPage({
   params,
@@ -17,7 +17,7 @@ export default async function ProductPage({
   const res = await getBook(slug);
   if (!res.success || !res.data)
     return (
-      <ViewportAnimation className="items-center flex flex-col gap-6 justify-center py-10">
+      <ViewportAnimation className="flex flex-col items-center justify-center gap-6 py-10">
         <Image
           src="/images/global/not-found.png"
           alt="empty"
@@ -29,7 +29,7 @@ export default async function ProductPage({
     );
   return (
     <>
-      <ViewportAnimation className="grid grid-cols-1 gap-6 container md:grid-cols-2">
+      <ViewportAnimation className="container grid grid-cols-1 gap-6 md:grid-cols-2">
         <ViewportAnimation className="flex flex-col gap-6">
           <ViewportAnimation>
             <Box book={res.data} />
@@ -37,7 +37,7 @@ export default async function ProductPage({
           <ViewportAnimation>
             <Description description={res.data.description} />
           </ViewportAnimation>
-          <div className="md:hidden flex flex-col gap-6">
+          <div className="flex flex-col gap-6 md:hidden">
             <ViewportAnimation>
               <Comments book={res.data} />
             </ViewportAnimation>
@@ -46,7 +46,7 @@ export default async function ProductPage({
             </ViewportAnimation>
           </div>
         </ViewportAnimation>
-        <ViewportAnimation className="hidden md:flex flex-col gap-6">
+        <ViewportAnimation className="hidden flex-col gap-6 md:flex">
           <ViewportAnimation>
             <Comments book={res.data} />
           </ViewportAnimation>

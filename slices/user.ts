@@ -1,4 +1,4 @@
-import { slice } from "killua";
+import { slice } from 'killua';
 
 export type UserState = {
   token: string | null;
@@ -7,7 +7,7 @@ export type UserState = {
 };
 
 export const userSlice = slice({
-  key: "user",
+  key: 'user',
   defaultClient: { token: null, username: null, fullName: null } as UserState,
   defaultServer: { token: null, username: null, fullName: null } as UserState,
   selectors: {

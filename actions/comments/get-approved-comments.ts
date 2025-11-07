@@ -1,15 +1,15 @@
-"use server";
+'use server';
 
-import { supabase } from "@/lib/supabase";
-import type { TComment } from "@/types/comment";
+import { supabase } from '@/lib/supabase';
+import type { TComment } from '@/types/comment';
 
 export async function getApprovedComments() {
   try {
     const res = await supabase
-      .from("comments")
-      .select("id, book_id, full_name, text, rating, created_at")
-      .eq("status", "approved")
-      .order("created_at", { ascending: false });
+      .from('comments')
+      .select('id, book_id, full_name, text, rating, created_at')
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false });
     if (res.error) {
       return {
         success: false,
@@ -17,7 +17,7 @@ export async function getApprovedComments() {
         data: [] as TComment[],
       } as const;
     }
-    type Row = Pick<TComment, "text" | "rating" | "createdAt"> & {
+    type Row = Pick<TComment, 'text' | 'rating' | 'createdAt'> & {
       id: string;
       book_id: string | null;
       full_name: string;
@@ -25,18 +25,18 @@ export async function getApprovedComments() {
     };
     const mapped: TComment[] = ((res.data as Row[]) || []).map((c) => ({
       id: c.id,
-      bookSlug: "",
+      bookSlug: '',
       fullName: c.full_name,
       text: c.text,
       rating: c.rating,
-      status: "approved" as const,
+      status: 'approved' as const,
       createdAt: c.created_at,
     }));
     return { success: true, data: mapped } as const;
   } catch {
     return {
       success: false,
-      error: "خطا در دریافت نظرات",
+      error: 'خطا در دریافت نظرات',
       data: [] as TComment[],
     } as const;
   }

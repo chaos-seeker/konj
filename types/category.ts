@@ -5,4 +5,3 @@ export type TCategory = {
   createdAt: string;
   updatedAt: string;
 };
-

@@ -1,7 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ModalEditCategory } from './modal-edit-category';
+import { deleteCategory } from '@/actions/dashboard/manage-categories/delete-category';
+import { getCategories } from '@/actions/dashboard/manage-categories/get-categories';
+import type { TCategory } from '@/types/category';
+import { Button } from '@/ui/button';
 import {
   Table,
   TableBody,
@@ -9,27 +12,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/ui/table";
-import { getCategories } from "@/actions/dashboard/manage-categories/get-categories";
-import { deleteCategory } from "@/actions/dashboard/manage-categories/delete-category";
-import Image from "next/image";
-import { Loader2, Edit, Trash2 } from "lucide-react";
-import { toast } from "react-hot-toast";
-import { Button } from "@/ui/button";
-import { ModalEditCategory } from "./modal-edit-category";
-import type { TCategory } from "@/types/category";
-import { formatDate } from "@/utils/format-date";
+} from '@/ui/table';
+import { formatDate } from '@/utils/format-date';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Edit, Loader2, Trash2 } from 'lucide-react';
+import Image from 'next/image';
+import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 export function ListCategory() {
   const queryClient = useQueryClient();
   const [editingCategory, setEditingCategory] = useState<Pick<
     TCategory,
-    "id" | "name" | "slug"
+    'id' | 'name' | 'slug'
   > | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const fetchedData = useQuery({
-    queryKey: ["categories"],
+    queryKey: ['categories'],
     queryFn: async () => {
       const result = await getCategories();
       if (!result.success) {
@@ -47,14 +47,14 @@ export function ListCategory() {
     try {
       const result = await deleteCategory(slug);
       if (!result.success) {
-        throw new Error(result.error || "خطا در حذف دسته بندی");
+        throw new Error(result.error || 'خطا در حذف دسته بندی');
       }
 
-      await queryClient.invalidateQueries({ queryKey: ["categories"] });
-      toast.success(result.message || "دسته بندی با موفقیت حذف شد");
+      await queryClient.invalidateQueries({ queryKey: ['categories'] });
+      toast.success(result.message || 'دسته بندی با موفقیت حذف شد');
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "خطا در حذف دسته بندی"
+        error instanceof Error ? error.message : 'خطا در حذف دسته بندی',
       );
     }
   };
@@ -67,14 +67,14 @@ export function ListCategory() {
   if (fetchedData.isLoading) {
     return (
       <div className="flex items-center justify-center py-6">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   if (!fetchedData.data || fetchedData.data.length === 0) {
     return (
-      <div className="items-center flex flex-col gap-6 justify-center py-10">
+      <div className="flex flex-col items-center justify-center gap-6 py-10">
         <Image
           src="/images/global/not-found.png"
           alt="empty"
@@ -89,7 +89,7 @@ export function ListCategory() {
   return (
     <section>
       <div className="container">
-        <div className="rounded-xl border bg-white border-slate-200">
+        <div className="rounded-xl border border-slate-200 bg-white">
           <Table>
             <TableHeader>
               <TableRow>
@@ -104,7 +104,7 @@ export function ListCategory() {
                 <TableRow key={category.id}>
                   <TableCell className="font-medium">{category.name}</TableCell>
                   <TableCell>
-                    <code className="text-sm bg-muted px-2 py-1 rounded">
+                    <code className="bg-muted rounded px-2 py-1 text-sm">
                       {category.slug}
                     </code>
                   </TableCell>
@@ -116,7 +116,7 @@ export function ListCategory() {
                         size="icon"
                         onClick={() => handleEdit(category)}
                       >
-                        <Edit className="h-4 w-4 text-info" />
+                        <Edit className="text-info h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -125,7 +125,7 @@ export function ListCategory() {
                           handleDelete(category.slug, category.name)
                         }
                       >
-                        <Trash2 className="h-4 w-4 text-error" />
+                        <Trash2 className="text-error h-4 w-4" />
                       </Button>
                     </div>
                   </TableCell>

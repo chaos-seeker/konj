@@ -1,33 +1,33 @@
-"use client";
+'use client';
 
-import { useQueryState, parseAsArrayOf, parseAsString } from "nuqs";
-import { FiltersSidebar } from "@/containers/routes/explore/filters-sidebar";
-import { BooksList } from "@/containers/routes/explore/books-list";
+import { BooksList } from '@/containers/routes/explore/books-list';
+import { FiltersSidebar } from '@/containers/routes/explore/filters-sidebar';
+import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
 
 export function ExploreContent() {
   const [searchText, setSearchText] = useQueryState(
-    "text",
-    parseAsString.withDefault("")
+    'text',
+    parseAsString.withDefault(''),
   );
 
   const [selectedCategories, setSelectedCategories] = useQueryState(
-    "categories",
-    parseAsArrayOf(parseAsString).withDefault([])
+    'categories',
+    parseAsArrayOf(parseAsString).withDefault([]),
   );
 
   const [selectedPublishers, setSelectedPublishers] = useQueryState(
-    "publishers",
-    parseAsArrayOf(parseAsString).withDefault([])
+    'publishers',
+    parseAsArrayOf(parseAsString).withDefault([]),
   );
 
   const [selectedTranslators, setSelectedTranslators] = useQueryState(
-    "translators",
-    parseAsArrayOf(parseAsString).withDefault([])
+    'translators',
+    parseAsArrayOf(parseAsString).withDefault([]),
   );
 
   const [selectedAuthors, setSelectedAuthors] = useQueryState(
-    "authors",
-    parseAsArrayOf(parseAsString).withDefault([])
+    'authors',
+    parseAsArrayOf(parseAsString).withDefault([]),
   );
 
   const handleCategoryToggle = (slug: string) => {
@@ -60,8 +60,8 @@ export function ExploreContent() {
 
   return (
     <div className="container flex-1">
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-1 lg:sticky lg:top-6 lg:self-start">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+        <div className="lg:sticky lg:top-6 lg:col-span-1 lg:self-start">
           <FiltersSidebar
             searchText={searchText || undefined}
             selectedCategories={selectedCategories}

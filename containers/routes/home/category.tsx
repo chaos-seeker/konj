@@ -1,46 +1,46 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
 export const Category = () => {
   const data = [
     {
       id: 1,
-      name: "کتاب صوتی",
-      image: "/images/routes/home/category-1.png",
+      name: 'کتاب صوتی',
+      image: '/images/routes/home/category-1.png',
     },
     {
       id: 2,
-      name: "کتاب متنی",
-      image: "/images/routes/home/category-2.png",
+      name: 'کتاب متنی',
+      image: '/images/routes/home/category-2.png',
     },
     {
       id: 3,
-      name: "کتاب تاریخی",
-      image: "/images/routes/home/category-3.png",
+      name: 'کتاب تاریخی',
+      image: '/images/routes/home/category-3.png',
     },
     {
       id: 4,
-      name: "کتاب روانشناسی",
-      image: "/images/routes/home/category-4.png",
+      name: 'کتاب روانشناسی',
+      image: '/images/routes/home/category-4.png',
     },
     {
       id: 5,
-      name: "کتاب رمان",
-      image: "/images/routes/home/category-5.png",
+      name: 'کتاب رمان',
+      image: '/images/routes/home/category-5.png',
     },
   ];
 
   return (
     <div className="container">
-      <div className="lg:hidden overflow-x-auto snap-x snap-mandatory scrollbar-hide">
+      <div className="snap-x snap-mandatory overflow-x-auto lg:hidden">
         <div className="flex gap-4">
           {data.map((item) => (
             <Link
               href={`/explore`}
               key={item.id}
-              className="flex bg-white border hover:border-primary transition-colors border-dashed py-3 rounded-lg border-2 items-center justify-center min-w-[140px] snap-start flex-shrink-0"
+              className="hover:border-primary flex min-w-[140px] flex-shrink-0 snap-start items-center justify-center rounded-lg border border-2 border-dashed bg-white py-3 transition-colors"
             >
               <Image
                 src={item.image}
@@ -49,17 +49,17 @@ export const Category = () => {
                 height={50}
                 className="pr-3"
               />
-              <p className="text-caption whitespace-nowrap px-4">{item.name}</p>
+              <p className="px-4 text-xs whitespace-nowrap">{item.name}</p>
             </Link>
           ))}
         </div>
       </div>
-      <div className="hidden lg:flex justify-between gap-4">
+      <div className="hidden justify-between gap-4 lg:flex">
         {data.map((item) => (
           <Link
             href={`/explore/category/${item.id}`}
             key={item.id}
-            className="flex bg-white border hover:border-primary transition-colors w-full border-dashed py-3 rounded-lg border-2 items-center justify-center"
+            className="hover:border-primary flex w-full items-center justify-center rounded-lg border border-2 border-dashed bg-white py-3 transition-colors"
           >
             <Image
               src={item.image}
@@ -68,9 +68,7 @@ export const Category = () => {
               height={50}
               className="pr-3"
             />
-            <p className="text-caption whitespace-nowrap w-full px-4">
-              {item.name}
-            </p>
+            <p className="w-full px-4 text-xs whitespace-nowrap">{item.name}</p>
           </Link>
         ))}
       </div>

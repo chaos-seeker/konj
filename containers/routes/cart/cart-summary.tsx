@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useKillua } from "killua";
-import { cartSlice } from "@/slices/cart";
-import { userSlice } from "@/slices/user";
-import type { TBook } from "@/types/book";
-import { Button } from "@/ui/button";
-import { createOrder } from "@/actions/orders/create-order";
-import { ModalLogin } from "@/containers/layout/base/modal-login";
-import toast from "react-hot-toast";
+import { createOrder } from '@/actions/orders/create-order';
+import { ModalLogin } from '@/containers/layout/base/modal-login';
+import { cartSlice } from '@/slices/cart';
+import { userSlice } from '@/slices/user';
+import type { TBook } from '@/types/book';
+import { Button } from '@/ui/button';
+import { useQueryClient } from '@tanstack/react-query';
+import { useKillua } from 'killua';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 export function CartSummary() {
   const cart = useKillua(cartSlice);
@@ -35,13 +35,13 @@ export function CartSummary() {
 
   const handleCompleteOrder = async () => {
     if (!isAuthenticated) {
-      toast.error("برای تکمیل سفارش باید ابتدا وارد شوید");
+      toast.error('برای تکمیل سفارش باید ابتدا وارد شوید');
       setLoginOpen(true);
       return;
     }
 
     if (items.length === 0) {
-      toast.error("سبد خرید خالی استًً");
+      toast.error('سبد خرید خالی استًً');
       return;
     }
 
@@ -52,24 +52,24 @@ export function CartSummary() {
     try {
       setIsSubmitting(true);
       const result = await createOrder({
-        fullName: fullName || "",
-        username: username || "",
+        fullName: fullName || '',
+        username: username || '',
         totalPrice: totalOriginalPrice,
         totalDiscount,
-        token: token || "",
+        token: token || '',
       });
 
       if (!result.success) {
-        toast.error(result.error || "خطا در ثبت سفارش");
+        toast.error(result.error || 'خطا در ثبت سفارش');
         return;
       }
 
-      toast.success(result.message || "سفارش با موفقیت ثبت شد");
+      toast.success(result.message || 'سفارش با موفقیت ثبت شد');
       // Revalidate client-side cache so profile orders update immediately
-      queryClient.invalidateQueries({ queryKey: ["user-orders"] });
+      queryClient.invalidateQueries({ queryKey: ['user-orders'] });
       cart.reducers.clearCart();
     } catch {
-      toast.error("خطا در ثبت سفارش");
+      toast.error('خطا در ثبت سفارش');
     } finally {
       setIsSubmitting(false);
     }
@@ -81,37 +81,37 @@ export function CartSummary() {
 
   return (
     <>
-      <section className="rounded-xl border bg-white border-slate-200 p-4">
-        <h2 className="text-lg font-bold mb-4">خلاصه سفارش</h2>
+      <section className="rounded-xl border border-slate-200 bg-white p-4">
+        <h2 className="mb-4 text-lg font-bold">خلاصه سفارش</h2>
         <div className="flex flex-col gap-3">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">قیمت کل:</span>
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground text-sm">قیمت کل:</span>
             <span className="text-sm font-medium">
               {totalOriginalPrice.toLocaleString()} تومان
             </span>
           </div>
           {totalDiscount > 0 && (
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">تخفیف:</span>
-              <span className="text-sm font-medium text-success">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground text-sm">تخفیف:</span>
+              <span className="text-success text-sm font-medium">
                 -{totalDiscount.toLocaleString()} تومان
               </span>
             </div>
           )}
-          <div className="border-t pt-3 mt-2">
-            <div className="flex justify-between items-center">
+          <div className="mt-2 border-t pt-3">
+            <div className="flex items-center justify-between">
               <span className="text-base font-bold">قیمت نهایی:</span>
-              <span className="text-lg font-bold text-primary">
+              <span className="text-primary text-lg font-bold">
                 {totalDiscountPrice.toLocaleString()} تومان
               </span>
             </div>
           </div>
           <Button
-            className="w-full h-12"
+            className="h-12 w-full"
             onClick={handleCompleteOrder}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "در حال ثبت سفارش..." : "تکمیل سفارش"}
+            {isSubmitting ? 'در حال ثبت سفارش...' : 'تکمیل سفارش'}
           </Button>
         </div>
       </section>

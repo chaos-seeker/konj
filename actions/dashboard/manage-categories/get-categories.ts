@@ -1,17 +1,17 @@
-"use server";
+'use server';
 
-import { supabase } from "@/lib/supabase";
-import type { TCategory } from "@/types/category";
+import { supabase } from '@/lib/supabase';
+import type { TCategory } from '@/types/category';
 
 export async function getCategories() {
   try {
     const res = await supabase
-      .from("categories")
-      .select("id, name, slug, created_at, updated_at")
-      .order("name");
+      .from('categories')
+      .select('id, name, slug, created_at, updated_at')
+      .order('name');
     if (res.error)
       return { success: false, error: res.error.message, data: [] } as const;
-    type Row = Pick<TCategory, "id" | "name" | "slug"> & {
+    type Row = Pick<TCategory, 'id' | 'name' | 'slug'> & {
       created_at: string;
       updated_at: string;
     };
@@ -26,7 +26,7 @@ export async function getCategories() {
   } catch {
     return {
       success: false,
-      error: "خطا در دریافت دسته بندی‌ها",
+      error: 'خطا در دریافت دسته بندی‌ها',
       data: [],
     } as const;
   }

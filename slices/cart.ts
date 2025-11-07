@@ -1,8 +1,8 @@
-import { slice } from "killua";
-import type { TBook } from "@/types/book";
+import type { TBook } from '@/types/book';
+import { slice } from 'killua';
 
 export const cartSlice = slice({
-  key: "cart",
+  key: 'cart',
   defaultClient: [] as TBook[],
   defaultServer: [] as TBook[],
   selectors: {
@@ -15,7 +15,7 @@ export const cartSlice = slice({
         (sum, b) =>
           sum +
           (b.discount ? Math.round(b.price * (1 - b.discount / 100)) : b.price),
-        0
+        0,
       ),
   },
   reducers: {

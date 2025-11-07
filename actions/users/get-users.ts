@@ -1,6 +1,6 @@
-"use server";
+'use server';
 
-import { supabase } from "@/lib/supabase";
+import { supabase } from '@/lib/supabase';
 
 export type TUser = {
   id: string;
@@ -12,14 +12,14 @@ export type TUser = {
 export async function getUsers() {
   try {
     const { data, error } = await supabase
-      .from("users")
-      .select("id, username, full_name, created_at")
-      .order("created_at", { ascending: false });
+      .from('users')
+      .select('id, username, full_name, created_at')
+      .order('created_at', { ascending: false });
 
     if (error) {
       return {
         success: false,
-        error: "خطا در دریافت کاربران",
+        error: 'خطا در دریافت کاربران',
         data: [] as TUser[],
       } as const;
     }
@@ -45,7 +45,7 @@ export async function getUsers() {
   } catch {
     return {
       success: false,
-      error: "خطا در دریافت کاربران",
+      error: 'خطا در دریافت کاربران',
       data: [] as TUser[],
     } as const;
   }

@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { useRouter } from "next/navigation";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getAuthors } from '@/actions/dashboard/manage-authors/get-authors';
+import { createBook } from '@/actions/dashboard/manage-books/create-book';
+import { getCategories } from '@/actions/dashboard/manage-categories/get-categories';
+import { getPublishers } from '@/actions/dashboard/manage-publishers/get-publishers';
+import { getTranslators } from '@/actions/dashboard/manage-translators/get-translators';
+import { InputImage } from '@/components/input-image';
+import { Button } from '@/ui/button';
 import {
   Form,
   FormControl,
@@ -13,42 +14,41 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/ui/form";
-import { Input } from "@/ui/input";
-import { Textarea } from "@/ui/textarea";
-import { Button } from "@/ui/button";
+} from '@/ui/form';
+import { Input } from '@/ui/input';
+import MultipleSelector from '@/ui/multiple-selector';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/ui/select";
-import { InputImage } from "@/components/input-image";
-import toast from "react-hot-toast";
-import { createBook } from "@/actions/dashboard/manage-books/create-book";
-import { getCategories } from "@/actions/dashboard/manage-categories/get-categories";
-import { getPublishers } from "@/actions/dashboard/manage-publishers/get-publishers";
-import { getAuthors } from "@/actions/dashboard/manage-authors/get-authors";
-import { getTranslators } from "@/actions/dashboard/manage-translators/get-translators";
-import MultipleSelector from "@/ui/multiple-selector";
+} from '@/ui/select';
+import { Textarea } from '@/ui/textarea';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import * as z from 'zod';
 
 const bookSchema = z.object({
-  name: z.string().min(1, "نام الزامی است"),
+  name: z.string().min(1, 'نام الزامی است'),
   slug: z
     .string()
-    .min(1, "اسلاگ الزامی است")
-    .regex(/^[a-z0-9-]+$/, "اسلاگ باید انگلیسی و بدون فاصله باشد"),
-  image: z.instanceof(File, { message: "تصویر الزامی است" }),
-  price: z.string().min(1, "قیمت الزامی است"),
+    .min(1, 'اسلاگ الزامی است')
+    .regex(/^[a-z0-9-]+$/, 'اسلاگ باید انگلیسی و بدون فاصله باشد'),
+  image: z.instanceof(File, { message: 'تصویر الزامی است' }),
+  price: z.string().min(1, 'قیمت الزامی است'),
   discount: z.string().optional(),
-  description: z.string().min(1, "توضیحات الزامی است"),
-  categorySlug: z.string().min(1, "دسته بندی الزامی است"),
-  publisherSlug: z.string().min(1, "ناشر الزامی است"),
-  authorSlugs: z.array(z.string()).min(1, "حداقل یک نویسنده الزامی است"),
-  translatorSlugs: z.array(z.string()).min(1, "حداقل یک مترجم الزامی است"),
-  pages: z.string().min(1, "تعداد صفحات الزامی است"),
-  publicationYear: z.string().min(1, "سال انتشار الزامی است"),
+  description: z.string().min(1, 'توضیحات الزامی است'),
+  categorySlug: z.string().min(1, 'دسته بندی الزامی است'),
+  publisherSlug: z.string().min(1, 'ناشر الزامی است'),
+  authorSlugs: z.array(z.string()).min(1, 'حداقل یک نویسنده الزامی است'),
+  translatorSlugs: z.array(z.string()).min(1, 'حداقل یک مترجم الزامی است'),
+  pages: z.string().min(1, 'تعداد صفحات الزامی است'),
+  publicationYear: z.string().min(1, 'سال انتشار الزامی است'),
 });
 
 type BookFormValues = z.infer<typeof bookSchema>;
@@ -60,26 +60,26 @@ export function AddBookForm() {
 
   const form = useForm<BookFormValues>({
     resolver: zodResolver(bookSchema),
-    mode: "onSubmit",
-    reValidateMode: "onChange",
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
     shouldFocusError: true,
     defaultValues: {
-      name: "",
-      slug: "",
-      price: "",
-      discount: "",
-      description: "",
-      categorySlug: "",
-      publisherSlug: "",
+      name: '',
+      slug: '',
+      price: '',
+      discount: '',
+      description: '',
+      categorySlug: '',
+      publisherSlug: '',
       authorSlugs: [],
       translatorSlugs: [],
-      pages: "",
-      publicationYear: "",
+      pages: '',
+      publicationYear: '',
     },
   });
 
   const { data: categories } = useQuery({
-    queryKey: ["categories"],
+    queryKey: ['categories'],
     queryFn: async () => {
       const result = await getCategories();
       return result.success ? result.data : [];
@@ -87,7 +87,7 @@ export function AddBookForm() {
   });
 
   const { data: publishers } = useQuery({
-    queryKey: ["publishers"],
+    queryKey: ['publishers'],
     queryFn: async () => {
       const result = await getPublishers();
       return result.success ? result.data : [];
@@ -95,7 +95,7 @@ export function AddBookForm() {
   });
 
   const { data: authors } = useQuery({
-    queryKey: ["authors"],
+    queryKey: ['authors'],
     queryFn: async () => {
       const result = await getAuthors();
       return result.success ? result.data : [];
@@ -103,7 +103,7 @@ export function AddBookForm() {
   });
 
   const { data: translators } = useQuery({
-    queryKey: ["translators"],
+    queryKey: ['translators'],
     queryFn: async () => {
       const result = await getTranslators();
       return result.success ? result.data : [];
@@ -115,21 +115,21 @@ export function AddBookForm() {
       setIsSubmitting(true);
 
       const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("slug", data.slug);
-      formData.append("price", data.price);
+      formData.append('name', data.name);
+      formData.append('slug', data.slug);
+      formData.append('price', data.price);
       if (data.discount) {
-        formData.append("discount", data.discount);
+        formData.append('discount', data.discount);
       }
       if (data.description) {
-        formData.append("description", data.description);
+        formData.append('description', data.description);
       }
-      formData.append("categorySlug", data.categorySlug);
-      formData.append("publisherSlug", data.publisherSlug);
-      formData.append("authorSlugs", JSON.stringify(data.authorSlugs));
-      formData.append("translatorSlugs", JSON.stringify(data.translatorSlugs));
-      formData.append("pages", data.pages);
-      formData.append("publicationYear", data.publicationYear);
+      formData.append('categorySlug', data.categorySlug);
+      formData.append('publisherSlug', data.publisherSlug);
+      formData.append('authorSlugs', JSON.stringify(data.authorSlugs));
+      formData.append('translatorSlugs', JSON.stringify(data.translatorSlugs));
+      formData.append('pages', data.pages);
+      formData.append('publicationYear', data.publicationYear);
 
       if (data.image) {
         const fileToBase64 = (file: File) =>
@@ -141,26 +141,26 @@ export function AddBookForm() {
           });
 
         const base64 = await fileToBase64(data.image);
-        formData.append("image", base64);
+        formData.append('image', base64);
         const result = await createBook(formData);
         if (!result.success) {
-          throw new Error(result.error || "خطا در افزودن کتاب");
+          throw new Error(result.error || 'خطا در افزودن کتاب');
         }
-        toast.success(result.message || "کتاب با موفقیت افزوده شد");
-        await queryClient.invalidateQueries({ queryKey: ["books"] });
-        router.push("/dashboard/manage-books");
+        toast.success(result.message || 'کتاب با موفقیت افزوده شد');
+        await queryClient.invalidateQueries({ queryKey: ['books'] });
+        router.push('/dashboard/manage-books');
       } else {
         const result = await createBook(formData);
         if (!result.success) {
-          throw new Error(result.error || "خطا در افزودن کتاب");
+          throw new Error(result.error || 'خطا در افزودن کتاب');
         }
-        toast.success(result.message || "کتاب با موفقیت افزوده شد");
-        await queryClient.invalidateQueries({ queryKey: ["books"] });
-        router.push("/dashboard/manage-books");
+        toast.success(result.message || 'کتاب با موفقیت افزوده شد');
+        await queryClient.invalidateQueries({ queryKey: ['books'] });
+        router.push('/dashboard/manage-books');
       }
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "خطا در افزودن کتاب"
+        error instanceof Error ? error.message : 'خطا در افزودن کتاب',
       );
     } finally {
       setIsSubmitting(false);
@@ -171,7 +171,7 @@ export function AddBookForm() {
     <section className="container">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
               name="name"
@@ -198,8 +198,8 @@ export function AddBookForm() {
                       onChange={(e) => {
                         const value = e.target.value
                           .toLowerCase()
-                          .replace(/\s+/g, "-")
-                          .replace(/[^a-z0-9-]/g, "");
+                          .replace(/\s+/g, '-')
+                          .replace(/[^a-z0-9-]/g, '');
                         field.onChange(value);
                       }}
                     />
@@ -224,7 +224,7 @@ export function AddBookForm() {
             )}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
               name="price"
@@ -268,7 +268,7 @@ export function AddBookForm() {
             )}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
               name="categorySlug"
@@ -326,7 +326,7 @@ export function AddBookForm() {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
               name="authorSlugs"
@@ -350,7 +350,7 @@ export function AddBookForm() {
                       }))}
                       placeholder="انتخاب نویسندگان"
                       emptyIndicator={
-                        <p className="text-center text-lg leading-10 text-gray-600 text-smp">
+                        <p className="text-smp text-center text-lg leading-10 text-gray-600">
                           نویسنده‌ای یافت نشد.
                         </p>
                       }
@@ -371,7 +371,7 @@ export function AddBookForm() {
                     <MultipleSelector
                       value={translators
                         ?.filter((translator) =>
-                          field.value?.includes(translator.slug)
+                          field.value?.includes(translator.slug),
                         )
                         .map((translator) => ({
                           value: translator.slug,
@@ -386,7 +386,7 @@ export function AddBookForm() {
                       }))}
                       placeholder="انتخاب مترجمین"
                       emptyIndicator={
-                        <p className="text-center text-lg leading-10 text-gray-600 text-smp">
+                        <p className="text-smp text-center text-lg leading-10 text-gray-600">
                           مترجمی یافت نشد.
                         </p>
                       }
@@ -398,7 +398,7 @@ export function AddBookForm() {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
               name="pages"
@@ -428,8 +428,8 @@ export function AddBookForm() {
             />
           </div>
 
-          <Button type="submit" disabled={isSubmitting} className="w-full h-13">
-            {isSubmitting ? "در حال افزودن..." : "افزودن کتاب"}
+          <Button type="submit" disabled={isSubmitting} className="h-13 w-full">
+            {isSubmitting ? 'در حال افزودن...' : 'افزودن کتاب'}
           </Button>
         </form>
       </Form>

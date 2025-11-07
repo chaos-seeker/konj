@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import type { TBook } from "@/types/book";
-import { Star } from "lucide-react";
-import { Button } from "@/ui/button";
-import { Textarea } from "@/ui/textarea";
-import { cn } from "@/utils/cn";
-import { useForm, useWatch } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/ui/form";
-import { useKillua } from "killua";
-import { userSlice } from "@/slices/user";
-import { ModalLogin } from "@/containers/layout/base/modal-login";
-import toast from "react-hot-toast";
-import { addComment } from "@/actions/comments/add-comment";
-import { useQueryClient } from "@tanstack/react-query";
+import { addComment } from '@/actions/comments/add-comment';
+import { ModalLogin } from '@/containers/layout/base/modal-login';
+import { userSlice } from '@/slices/user';
+import type { TBook } from '@/types/book';
+import { Button } from '@/ui/button';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/ui/form';
+import { Textarea } from '@/ui/textarea';
+import { cn } from '@/utils/cn';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
+import { useKillua } from 'killua';
+import { Star } from 'lucide-react';
+import { useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { z } from 'zod';
 
 interface AddNewCommentProps {
   book: TBook;
@@ -25,9 +25,9 @@ const commentSchema = z.object({
   text: z
     .string()
     .trim()
-    .min(1, "متن نظر الزامی است")
-    .max(500, "حداکثر ۵۰۰ کاراکتر"),
-  rating: z.number().min(1, "امتیاز را انتخاب کنید").max(5, "امتیاز نامعتبر"),
+    .min(1, 'متن نظر الزامی است')
+    .max(500, 'حداکثر ۵۰۰ کاراکتر'),
+  rating: z.number().min(1, 'امتیاز را انتخاب کنید').max(5, 'امتیاز نامعتبر'),
 });
 
 type CommentFormValues = z.infer<typeof commentSchema>;
@@ -40,18 +40,18 @@ export function AddNewComment({ book }: AddNewCommentProps) {
 
   const form = useForm<CommentFormValues>({
     resolver: zodResolver(commentSchema),
-    mode: "onChange",
-    defaultValues: { text: "", rating: 0 },
+    mode: 'onChange',
+    defaultValues: { text: '', rating: 0 },
   });
 
   const [hoveredStar, setHoveredStar] = useState<number | null>(null);
-  const textValue = useWatch({ control: form.control, name: "text" });
-  const ratingValue = useWatch({ control: form.control, name: "rating" });
+  const textValue = useWatch({ control: form.control, name: 'text' });
+  const ratingValue = useWatch({ control: form.control, name: 'rating' });
   const maxLength = 500;
 
   const onSubmit = async (values: CommentFormValues) => {
     if (!isAuthenticated) {
-      toast.error("باید برای نظر گذاشتن ابتدا وارد شوید!");
+      toast.error('باید برای نظر گذاشتن ابتدا وارد شوید!');
       setLoginOpen(true);
       return;
     }
@@ -60,7 +60,7 @@ export function AddNewComment({ book }: AddNewCommentProps) {
     const fullName = user.selectors.getFullName();
 
     if (!token || !fullName) {
-      toast.error("لطفاً دوباره وارد شوید");
+      toast.error('لطفاً دوباره وارد شوید');
       setLoginOpen(true);
       return;
     }
@@ -75,25 +75,25 @@ export function AddNewComment({ book }: AddNewCommentProps) {
       });
 
       if (!result.success) {
-        toast.error(result.error || "خطا در ثبت نظر");
+        toast.error(result.error || 'خطا در ثبت نظر');
         return;
       }
 
-      toast.success(result.message || "نظر شما با موفقیت ثبت شد");
-      form.reset({ text: "", rating: 0 });
+      toast.success(result.message || 'نظر شما با موفقیت ثبت شد');
+      form.reset({ text: '', rating: 0 });
       await queryClient.invalidateQueries({
-        queryKey: ["book-comments", book.slug],
+        queryKey: ['book-comments', book.slug],
       });
     } catch {
-      toast.error("خطا در ثبت نظر");
+      toast.error('خطا در ثبت نظر');
     }
   };
 
   return (
     <section>
       <div>
-        <div className="p-4 rounded-xl bg-white">
-          <h2 className="text-mdp font-bold mb-4">نظر شما درباره ی کتاب</h2>
+        <div className="rounded-xl bg-white p-4">
+          <h2 className="text-mdp mb-4 font-bold">نظر شما درباره ی کتاب</h2>
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -108,11 +108,11 @@ export function AddNewComment({ book }: AddNewCommentProps) {
                       <div className="relative">
                         <Textarea
                           {...field}
-                          className="w-full min-h-[120px] p-3 resize-none"
+                          className="min-h-[120px] w-full resize-none p-3"
                           maxLength={maxLength}
                         />
-                        <div className="absolute bottom-2 left-2 text-xs text-muted-foreground">
-                          {(textValue || "").length}/{maxLength}
+                        <div className="text-muted-foreground absolute bottom-2 left-2 text-xs">
+                          {(textValue || '').length}/{maxLength}
                         </div>
                       </div>
                     </FormControl>
@@ -138,23 +138,23 @@ export function AddNewComment({ book }: AddNewCommentProps) {
                                 type="button"
                                 onClick={() => {
                                   field.onChange(star);
-                                  form.trigger("rating");
+                                  form.trigger('rating');
                                 }}
                                 onMouseEnter={() => setHoveredStar(star)}
                                 onMouseLeave={() => setHoveredStar(null)}
                                 className="focus:outline-none"
                               >
                                 <Star
-                                  className={cn("size-5 transition-colors", {
-                                    "fill-warning text-warning": isActive,
-                                    "text-muted-foreground": !isActive,
+                                  className={cn('size-5 transition-colors', {
+                                    'fill-warning text-warning': isActive,
+                                    'text-muted-foreground': !isActive,
                                   })}
                                 />
                               </button>
                             );
                           })}
                         </div>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-muted-foreground text-sm">
                           امتیاز شما به این کتاب
                         </span>
                       </div>
@@ -168,9 +168,9 @@ export function AddNewComment({ book }: AddNewCommentProps) {
                 disabled={
                   !form.formState.isValid || form.formState.isSubmitting
                 }
-                className="w-full h-12 bg-primary text-primary-foreground"
+                className="bg-primary text-primary-foreground h-12 w-full"
               >
-                {form.formState.isSubmitting ? "در حال ثبت..." : "ثبت نظر"}
+                {form.formState.isSubmitting ? 'در حال ثبت...' : 'ثبت نظر'}
               </Button>
             </form>
           </Form>

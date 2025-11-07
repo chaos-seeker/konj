@@ -1,28 +1,28 @@
-"use server";
+'use server';
 
-import { supabase } from "@/lib/supabase";
-import { randomUUID } from "crypto";
+import { supabase } from '@/lib/supabase';
+import { randomUUID } from 'crypto';
 
 export async function login(data: { username: string; password: string }) {
   try {
     if (!data.username || !data.password) {
       return {
         success: false,
-        error: "نام کاربری و رمز عبور الزامی است",
+        error: 'نام کاربری و رمز عبور الزامی است',
       } as const;
     }
     const username = data.username.toLowerCase().trim();
     const password = data.password.trim();
     const res = await supabase
-      .from("users")
-      .select("id, username, full_name, password")
-      .eq("username", username)
+      .from('users')
+      .select('id, username, full_name, password')
+      .eq('username', username)
       .limit(1)
       .single();
     if (res.error || !res.data) {
       return {
         success: false,
-        error: "نام کاربری یا رمز عبور اشتباه است",
+        error: 'نام کاربری یا رمز عبور اشتباه است',
       } as const;
     }
     const user = res.data as {
@@ -34,14 +34,14 @@ export async function login(data: { username: string; password: string }) {
     if (user.password !== password) {
       return {
         success: false,
-        error: "نام کاربری یا رمز عبور اشتباه است",
+        error: 'نام کاربری یا رمز عبور اشتباه است',
       } as const;
     }
     const token = randomUUID();
 
     return {
       success: true,
-      message: "ورود با موفقیت انجام شد",
+      message: 'ورود با موفقیت انجام شد',
       data: {
         token,
         username: user.username,
@@ -49,7 +49,7 @@ export async function login(data: { username: string; password: string }) {
       },
     } as const;
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "خطا در ورود";
+    const errorMessage = error instanceof Error ? error.message : 'خطا در ورود';
     return {
       success: false,
       error: errorMessage,

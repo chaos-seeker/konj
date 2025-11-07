@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@/ui/button";
-import { ChevronDown } from "lucide-react";
-import { cn } from "@/utils/cn";
+import { Button } from '@/ui/button';
+import { cn } from '@/utils/cn';
+import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
 
 interface IDescriptionProps {
   description: string;
@@ -15,13 +15,13 @@ export function Description(props: IDescriptionProps) {
   return (
     <section>
       <div>
-        <div className="p-4 text-smp rounded-xl bg-white relative">
-          <h2 className="text-mdp font-bold mb-4">توضیحات</h2>
-          <p className={`${isExpanded ? "" : "line-clamp-4"} text-justify`}>
+        <div className="text-smp relative rounded-xl bg-white p-4">
+          <h2 className="text-mdp mb-4 font-bold">توضیحات</h2>
+          <p className={`${isExpanded ? '' : 'line-clamp-4'} text-justify`}>
             {props.description}
           </p>
           {!isExpanded && (
-            <div className="absolute bottom-12 left-0 right-0 h-16 bg-linear-to-t from-white to-transparent pointer-events-none" />
+            <div className="pointer-events-none absolute right-0 bottom-12 left-0 h-16 bg-linear-to-t from-white to-transparent" />
           )}
           <div className="mt-4 flex justify-center">
             <Button
@@ -29,10 +29,10 @@ export function Description(props: IDescriptionProps) {
               className="text-primary hover:text-primary/80"
               onClick={() => setIsExpanded(!isExpanded)}
             >
-              {isExpanded ? "بستن" : "مشاهده بیشتر"}
+              {isExpanded ? 'بستن' : 'مشاهده بیشتر'}
               <ChevronDown
-                className={cn("size-4 transition-transform", {
-                  "rotate-180": isExpanded,
+                className={cn('size-4 transition-transform', {
+                  'rotate-180': isExpanded,
                 })}
               />
             </Button>

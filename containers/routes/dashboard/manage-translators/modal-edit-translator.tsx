@@ -1,18 +1,15 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { useQueryClient } from "@tanstack/react-query";
+import { updateTranslator } from '@/actions/dashboard/manage-translators/update-translator';
+import type { TTranslator } from '@/types/translator';
+import { Button } from '@/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/ui/dialog";
-import { Button } from "@/ui/button";
+} from '@/ui/dialog';
 import {
   Form,
   FormControl,
@@ -20,21 +17,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/ui/form";
-import { Input } from "@/ui/input";
-import toast from "react-hot-toast";
-import { updateTranslator } from "@/actions/dashboard/manage-translators/update-translator";
-import type { TTranslator } from "@/types/translator";
+} from '@/ui/form';
+import { Input } from '@/ui/input';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import * as z from 'zod';
 
 const translatorSchema = z.object({
   fullName: z
     .string()
-    .min(1, "نام الزامی است")
-    .regex(/^[\u0600-\u06FF\s]+$/, "نام باید فارسی باشد"),
+    .min(1, 'نام الزامی است')
+    .regex(/^[\u0600-\u06FF\s]+$/, 'نام باید فارسی باشد'),
   slug: z
     .string()
-    .min(1, "اسلاگ الزامی است")
-    .regex(/^[a-z0-9-]+$/, "اسلاگ باید انگلیسی و بدون فاصله باشد"),
+    .min(1, 'اسلاگ الزامی است')
+    .regex(/^[a-z0-9-]+$/, 'اسلاگ باید انگلیسی و بدون فاصله باشد'),
 });
 
 type TranslatorFormValues = z.infer<typeof translatorSchema>;
@@ -42,7 +42,7 @@ type TranslatorFormValues = z.infer<typeof translatorSchema>;
 interface ModalEditTranslatorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  translator: Pick<TTranslator, "id" | "fullName" | "slug"> | null;
+  translator: Pick<TTranslator, 'id' | 'fullName' | 'slug'> | null;
 }
 
 export function ModalEditTranslator({
@@ -55,8 +55,8 @@ export function ModalEditTranslator({
   const form = useForm<TranslatorFormValues>({
     resolver: zodResolver(translatorSchema),
     defaultValues: {
-      fullName: "",
-      slug: "",
+      fullName: '',
+      slug: '',
     },
   });
   useEffect(() => {
@@ -72,19 +72,19 @@ export function ModalEditTranslator({
     try {
       setIsSubmitting(true);
       const formData = new FormData();
-      formData.append("fullName", data.fullName);
-      formData.append("slug", data.slug);
+      formData.append('fullName', data.fullName);
+      formData.append('slug', data.slug);
       const result = await updateTranslator(translator.slug, formData);
       if (!result.success) {
-        throw new Error(result.error || "خطا در به‌روزرسانی مترجم");
+        throw new Error(result.error || 'خطا در به‌روزرسانی مترجم');
       }
-      await queryClient.invalidateQueries({ queryKey: ["translators"] });
-      toast.success(result.message || "مترجم با موفقیت به‌روزرسانی شد");
+      await queryClient.invalidateQueries({ queryKey: ['translators'] });
+      toast.success(result.message || 'مترجم با موفقیت به‌روزرسانی شد');
       form.reset();
       onOpenChange(false);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "خطا در به‌روزرسانی مترجم"
+        error instanceof Error ? error.message : 'خطا در به‌روزرسانی مترجم',
       );
     } finally {
       setIsSubmitting(false);
@@ -125,8 +125,8 @@ export function ModalEditTranslator({
                       onChange={(e) => {
                         const value = e.target.value
                           .toLowerCase()
-                          .replace(/\s+/g, "-")
-                          .replace(/[^a-z0-9-]/g, "");
+                          .replace(/\s+/g, '-')
+                          .replace(/[^a-z0-9-]/g, '');
                         field.onChange(value);
                       }}
                     />
@@ -139,9 +139,9 @@ export function ModalEditTranslator({
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-11"
+                className="h-11 w-full"
               >
-                {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
+                {isSubmitting ? 'در حال ذخیره...' : 'ذخیره'}
               </Button>
             </DialogFooter>
           </form>

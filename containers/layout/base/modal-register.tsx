@@ -1,16 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/ui/dialog";
-import { Button } from "@/ui/button";
+import { register } from '@/actions/auth/register';
+import { Button } from '@/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/ui/dialog';
 import {
   Form,
   FormControl,
@@ -18,15 +10,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/ui/form";
-import { Input } from "@/ui/input";
-import toast from "react-hot-toast";
-import { register } from "@/actions/auth/register";
+} from '@/ui/form';
+import { Input } from '@/ui/input';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { z } from 'zod';
 
 const registerSchema = z.object({
-  fullName: z.string().min(1, "نام و نام خانوادگی الزامی است"),
-  username: z.string().min(1, "نام کاربری الزامی است"),
-  password: z.string().min(6, "رمز عبور باید حداقل ۶ کاراکتر باشد"),
+  fullName: z.string().min(1, 'نام و نام خانوادگی الزامی است'),
+  username: z.string().min(1, 'نام کاربری الزامی است'),
+  password: z.string().min(6, 'رمز عبور باید حداقل ۶ کاراکتر باشد'),
 });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -46,8 +41,8 @@ export function ModalRegister({
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    mode: "onChange",
-    defaultValues: { fullName: "", username: "", password: "" },
+    mode: 'onChange',
+    defaultValues: { fullName: '', username: '', password: '' },
   });
 
   const onSubmit = async (values: RegisterFormValues) => {
@@ -55,10 +50,10 @@ export function ModalRegister({
       setIsSubmitting(true);
       const result = await register(values);
       if (!result.success) {
-        toast.error(result.error || "خطا در ثبت‌نام");
+        toast.error(result.error || 'خطا در ثبت‌نام');
         return;
       }
-      toast.success(result.message || "ثبت‌نام با موفقیت انجام شد");
+      toast.success(result.message || 'ثبت‌نام با موفقیت انجام شد');
       form.reset();
       onOpenChange(false);
       if (onSwitchToLogin) {
@@ -67,7 +62,7 @@ export function ModalRegister({
         }, 500);
       }
     } catch {
-      toast.error("خطا در ثبت‌نام");
+      toast.error('خطا در ثبت‌نام');
     } finally {
       setIsSubmitting(false);
     }
@@ -130,13 +125,13 @@ export function ModalRegister({
                 </FormItem>
               )}
             />
-            <div className="flex flex-col gap-2 mt-6">
+            <div className="mt-6 flex flex-col gap-2">
               <Button
                 type="submit"
                 disabled={!form.formState.isValid || isSubmitting}
-                className="w-full h-11"
+                className="h-11 w-full"
               >
-                {isSubmitting ? "در حال ثبت‌نام..." : "ثبت‌نام"}
+                {isSubmitting ? 'در حال ثبت‌نام...' : 'ثبت‌نام'}
               </Button>
               {onSwitchToLogin && (
                 <button
@@ -145,7 +140,7 @@ export function ModalRegister({
                     onOpenChange(false);
                     onSwitchToLogin();
                   }}
-                  className="text-sm text-primary pt-1 hover:underline"
+                  className="text-primary pt-1 text-sm hover:underline"
                 >
                   قبلاً ثبت‌نام کرده‌اید؟ وارد شوید
                 </button>

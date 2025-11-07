@@ -1,26 +1,26 @@
-"use server";
+'use server';
 
-import { supabase } from "@/lib/supabase";
-import type { TBook } from "@/types/book";
-import type { TCategory } from "@/types/category";
-import type { TPublisher } from "@/types/publisher";
+import { supabase } from '@/lib/supabase';
+import type { TBook } from '@/types/book';
+import type { TCategory } from '@/types/category';
+import type { TPublisher } from '@/types/publisher';
 
 export async function getBook(slug: string) {
   try {
-    const decoded = decodeURIComponent(slug || "").trim();
+    const decoded = decodeURIComponent(slug || '').trim();
     const res = await supabase
-      .from("books")
+      .from('books')
       .select(
-        "id,name,slug,image,price,discount,description,pages,publication_year,created_at,updated_at,sold_count,author_ids,translator_ids, categories:category_id(id,name,slug), publishers:publisher_id(id,name,slug)"
+        'id,name,slug,image,price,discount,description,pages,publication_year,created_at,updated_at,sold_count,author_ids,translator_ids, categories:category_id(id,name,slug), publishers:publisher_id(id,name,slug)',
       )
-      .eq("slug", decoded)
+      .eq('slug', decoded)
       .limit(1)
       .single();
     if (res.error || !res.data) {
-      return { success: false, error: "کتاب یافت نشد" } as const;
+      return { success: false, error: 'کتاب یافت نشد' } as const;
     }
-    type CategoryRow = Pick<TCategory, "id" | "name" | "slug">;
-    type PublisherRow = Pick<TPublisher, "id" | "name" | "slug">;
+    type CategoryRow = Pick<TCategory, 'id' | 'name' | 'slug'>;
+    type PublisherRow = Pick<TPublisher, 'id' | 'name' | 'slug'>;
     type BookRow = {
       id: string;
       name: string;
@@ -41,14 +41,14 @@ export async function getBook(slug: string) {
     };
     const r = res.data as unknown as BookRow;
     if (!r.categories || !r.publishers) {
-      return { success: false, error: "کتاب یافت نشد" } as const;
+      return { success: false, error: 'کتاب یافت نشد' } as const;
     }
 
     let authorIds: string[] = [];
     let translatorIds: string[] = [];
 
     try {
-      if (typeof r.author_ids === "string") {
+      if (typeof r.author_ids === 'string') {
         authorIds = JSON.parse(r.author_ids);
       } else if (Array.isArray(r.author_ids)) {
         authorIds = r.author_ids;
@@ -58,7 +58,7 @@ export async function getBook(slug: string) {
     }
 
     try {
-      if (typeof r.translator_ids === "string") {
+      if (typeof r.translator_ids === 'string') {
         translatorIds = JSON.parse(r.translator_ids);
       } else if (Array.isArray(r.translator_ids)) {
         translatorIds = r.translator_ids;
@@ -70,41 +70,41 @@ export async function getBook(slug: string) {
     const authorsRes =
       authorIds.length > 0
         ? await supabase
-            .from("authors")
-            .select("id, full_name, slug")
-            .in("id", authorIds)
+            .from('authors')
+            .select('id, full_name, slug')
+            .in('id', authorIds)
         : { data: [], error: null };
 
     const translatorsRes =
       translatorIds.length > 0
         ? await supabase
-            .from("translators")
-            .select("id, full_name, slug")
-            .in("id", translatorIds)
+            .from('translators')
+            .select('id, full_name, slug')
+            .in('id', translatorIds)
         : { data: [], error: null };
 
     const authors = (authorsRes.data || []).map((a) => ({
       id: a.id,
       fullName: a.full_name,
       slug: a.slug,
-      createdAt: "",
-      updatedAt: "",
+      createdAt: '',
+      updatedAt: '',
     }));
 
     const translators = (translatorsRes.data || []).map((t) => ({
       id: t.id,
       fullName: t.full_name,
       slug: t.slug,
-      createdAt: "",
-      updatedAt: "",
+      createdAt: '',
+      updatedAt: '',
     }));
 
     const commentsRes = await supabase
-      .from("comments")
-      .select("id, full_name, text, rating, created_at")
-      .eq("book_id", r.id)
-      .eq("status", "approved")
-      .order("created_at", { ascending: false });
+      .from('comments')
+      .select('id, full_name, text, rating, created_at')
+      .eq('book_id', r.id)
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false });
 
     const comments = (commentsRes.data || []).map((c) => ({
       id: c.id,
@@ -112,7 +112,7 @@ export async function getBook(slug: string) {
       fullName: c.full_name,
       text: c.text,
       rating: c.rating,
-      status: "approved" as const,
+      status: 'approved' as const,
       createdAt: c.created_at,
     }));
 
@@ -128,15 +128,15 @@ export async function getBook(slug: string) {
         id: r.categories.id,
         name: r.categories.name,
         slug: r.categories.slug,
-        createdAt: "",
-        updatedAt: "",
+        createdAt: '',
+        updatedAt: '',
       },
       publisher: {
         id: r.publishers.id,
         name: r.publishers.name,
         slug: r.publishers.slug,
-        createdAt: "",
-        updatedAt: "",
+        createdAt: '',
+        updatedAt: '',
       },
       authors,
       translators,
@@ -149,6 +149,6 @@ export async function getBook(slug: string) {
     };
     return { success: true, data } as const;
   } catch {
-    return { success: false, error: "خطا در دریافت کتاب" } as const;
+    return { success: false, error: 'خطا در دریافت کتاب' } as const;
   }
 }

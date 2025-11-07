@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useKillua } from "killua";
-import { userSlice } from "@/slices/user";
-import { Button } from "@/ui/button";
-import { UserIcon, LogOut, ShoppingBag } from "lucide-react";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import { userSlice } from '@/slices/user';
+import { Button } from '@/ui/button';
+import { useKillua } from 'killua';
+import { LogOut, ShoppingBag, UserIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export function ProfileSidebar() {
   const user = useKillua(userSlice);
@@ -15,36 +15,36 @@ export function ProfileSidebar() {
 
   const handleLogout = () => {
     user.reducers.logout();
-    toast.success("با موفقیت خارج شدید");
-    router.push("/");
+    toast.success('با موفقیت خارج شدید');
+    router.push('/');
   };
 
   return (
-    <aside className="rounded-xl border bg-white border-slate-200 p-6">
-      <div className="flex items-center gap-4 mb-6 pb-6 border-b">
-        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-          <UserIcon className="w-8 h-8 text-primary" />
+    <aside className="rounded-xl border border-slate-200 bg-white p-6">
+      <div className="mb-6 flex items-center gap-4 border-b pb-6">
+        <div className="bg-primary/10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full">
+          <UserIcon className="text-primary h-8 w-8" />
         </div>
         <div className="flex flex-col gap-1">
           <p className="font-medium">{fullName}</p>
-          <p className="text-sm text-muted-foreground">{username || ""}</p>
+          <p className="text-muted-foreground text-sm">{username || ''}</p>
         </div>
       </div>
 
       <nav className="flex flex-col gap-2">
         <Button
           variant="default"
-          className="w-full justify-start bg-primary text-white hover:bg-primary/90"
+          className="bg-primary hover:bg-primary/90 w-full justify-start text-white"
         >
-          <ShoppingBag className="w-4 h-4 ml-2" />
+          <ShoppingBag className="ml-2 h-4 w-4" />
           لیست سفارش‌ها
         </Button>
         <Button
           variant="ghost"
-          className="w-full justify-start hover:bg-error/10 hover:text-error"
+          className="hover:bg-error/10 hover:text-error w-full justify-start"
           onClick={handleLogout}
         >
-          <LogOut className="w-4 h-4 ml-2" />
+          <LogOut className="ml-2 h-4 w-4" />
           خروج
         </Button>
       </nav>
