@@ -27,7 +27,7 @@ export function Header() {
   return (
     <TooltipProvider>
       <header>
-        <div className="container flex flex-col gap-4 border border-slate-200 bg-white py-4 lg:flex-row">
+        <div className="container flex flex-col gap-4 rounded-b-xl border border-slate-200 bg-white py-4 lg:flex-row">
           <div className="flex w-full items-center justify-between gap-4">
             <div className="shrink-0">
               <Logo />
