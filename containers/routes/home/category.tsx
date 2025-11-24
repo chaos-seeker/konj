@@ -40,7 +40,7 @@ export const Category = () => {
             <Link
               href={`/explore`}
               key={item.id}
-              className="hover:border-primary flex min-w-[140px] flex-shrink-0 snap-start items-center justify-center rounded-lg border border-2 border-dashed bg-white py-3 transition-colors"
+              className="hover:border-primary flex min-w-[140px] shrink-0 snap-start items-center justify-center rounded-lg border-2 border-dashed bg-white py-3 transition-colors"
             >
               <Image
                 src={item.image}
@@ -57,9 +57,9 @@ export const Category = () => {
       <div className="hidden justify-between gap-4 lg:flex">
         {data.map((item) => (
           <Link
-            href={`/explore/category/${item.id}`}
+            href={`/explore`}
             key={item.id}
-            className="hover:border-primary flex w-full items-center justify-center rounded-lg border border-2 border-dashed bg-white py-3 transition-colors"
+            className="hover:border-primary flex w-full items-center justify-center rounded-lg border-2 border-dashed bg-white py-3 transition-colors"
           >
             <Image
               src={item.image}

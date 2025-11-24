@@ -3,6 +3,13 @@
 import { supabase } from '@/lib/supabase';
 
 export async function createPublisher(formData: FormData) {
+  if (process.env.NODE_ENV !== 'development') {
+    return {
+      success: false,
+      error: 'دسترسی محدود شده است!',
+    } as const;
+  }
+
   try {
     const name = formData.get('name') as string;
     const slug = formData.get('slug') as string;

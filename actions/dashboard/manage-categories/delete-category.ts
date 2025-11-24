@@ -3,6 +3,13 @@
 import { supabase } from '@/lib/supabase';
 
 export async function deleteCategory(slug: string) {
+  if (process.env.NODE_ENV !== 'development') {
+    return {
+      success: false,
+      error: 'دسترسی محدود شده است!',
+    } as const;
+  }
+
   try {
     const find = await supabase
       .from('categories')

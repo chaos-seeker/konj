@@ -4,6 +4,13 @@ import { supabase } from '@/lib/supabase';
 import { revalidatePath } from 'next/cache';
 
 export async function updateBook(oldSlug: string, formData: FormData) {
+  if (process.env.NODE_ENV !== 'development') {
+    return {
+      success: false,
+      error: 'دسترسی محدود شده است!',
+    } as const;
+  }
+
   try {
     const name = formData.get('name') as string;
     const slug = formData.get('slug') as string;
